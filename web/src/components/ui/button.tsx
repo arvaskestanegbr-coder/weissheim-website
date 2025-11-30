@@ -3,11 +3,13 @@ import * as React from "react";
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "default" | "outline";
+  size?: "sm" | "md" | "lg";
   asChild?: boolean;
 }
 
 export const Button: React.FC<ButtonProps> = ({
   variant = "default",
+  size = "md",
   asChild,
   className = "",
   children,
@@ -16,14 +18,22 @@ export const Button: React.FC<ButtonProps> = ({
   const Comp: any = asChild ? "span" : "button";
 
   const base =
-    "inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors";
+    "inline-flex items-center justify-center rounded-md font-medium transition-colors";
+
   const variants =
     variant === "outline"
       ? "border border-primary text-primary bg-transparent hover:bg-primary/10"
       : "bg-primary text-primary-foreground hover:bg-primary/90";
 
+  const sizes =
+    size === "sm"
+      ? "h-9 px-3 text-sm"
+      : size === "lg"
+      ? "h-11 px-8 text-base"
+      : "h-10 px-4 text-sm";
+
   return (
-    <Comp className={`${base} ${variants} ${className}`} {...props}>
+    <Comp className={`${base} ${variants} ${sizes} ${className}`} {...props}>
       {children}
     </Comp>
   );
