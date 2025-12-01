@@ -1,212 +1,250 @@
-import { useState, FormEvent } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "./ui/dialog";
+import React, { useState } from "react";
+import type { FormEvent } from "react";
 import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Textarea } from "./ui/textarea";
-import { Label } from "./ui/label";
-import { Loader2, CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 
 type ContactFormProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
-const ContactForm = ({ open, onOpenChange }: ContactFormProps) => {
+type SubmitStatus = "idle" | "success" | "error";
+
+const ContactForm: React.FC<ContactFormProps> = ({ open, onOpenChange }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [status, setStatus] = useState<SubmitStatus>("idle");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [subject, setSubject] = useState("");
-  const [orderId, setOrderId] = useState("");
-  const [message, setMessage] = useState("");
-
-  const resetForm = () => {
-    setName("");
-    setEmail("");
-    setSubject("");
-    setOrderId("");
-    setMessage("");
-    setError(null);
-    setIsSuccess(false);
+  const handleClose = () => {
+    setStatus("idle");
+    setErrorMessage("");
     setIsSubmitting(false);
+    onOpenChange(false);
   };
 
-  const handleOpenChange = (nextOpen: boolean) => {
-    if (!nextOpen) {
-      resetForm();
-    }
-    onOpenChange(nextOpen);
-  };
-
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setError(null);
+    setStatus("idle");
+    setErrorMessage("");
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    const payload = {
+      access_key: "fccdc043-113c-450f-bf35-0cd834fa864e",
+      name: formData.get("name"),
+      email: formData.get("email"),
+      subject: formData.get("subject"),
+      order_number: formData.get("orderNumber"),
+      message: formData.get("message"),
+    };
 
     try {
-      const response = await fetch("https://api.web3forms.com/submit", {
+      const res = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
-        body: JSON.stringify({
-          access_key: "fccdc043-113c-450f-bf35-0cd834fa864e",
-          name,
-          email,
-          subject,
-          orderId,
-          message,
-        }),
+        body: JSON.stringify(payload),
       });
 
-      const data = await response.json();
+      const json = await res.json();
 
-      // Web3Forms schickt success als boolean ODER als "true" (String)
-      const success = (data as any).success === true || (data as any).success === "true";
-
-      if (!response.ok || !success) {
-        throw new Error((data as any).message || "Unbekannter Fehler");
+      if (res.ok && json.success) {
+        setStatus("success");
+        form.reset();
+      } else {
+        console.error("Web3Forms response:", json);
+        setStatus("error");
+        setErrorMessage(
+          "Leider hat das Senden nicht geklappt. Bitte probier es später noch einmal oder schreib uns direkt an info@weissheim.com."
+        );
       }
-
-      // Erfolg: Formular ausblenden, Bestätigung anzeigen
-      setIsSuccess(true);
-      setIsSubmitting(false);
-    } catch (err) {
-      console.error(err);
-      setError("Upsi, da ist etwas schiefgelaufen. Bitte versuch es später noch einmal.");
+    } catch (error) {
+      console.error(error);
+      setStatus("error");
+      setErrorMessage(
+        "Leider hat das Senden nicht geklappt. Bitte probier es später noch einmal oder schreib uns direkt an info@weissheim.com."
+      );
+    } finally {
       setIsSubmitting(false);
     }
   };
 
+  // Wenn nicht geöffnet, rendert die Komponente gar nichts
+  if (!open) return null;
+
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-lg">
-        {/* Erfolgsscreen */}
-        {isSuccess ? (
-          <div className="py-10 flex flex-col items-center text-center space-y-6">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+      aria-modal="true"
+      role="dialog"
+    >
+      <div className="bg-background text-foreground rounded-xl shadow-xl max-w-xl w-full mx-4">
+        {status === "success" ? (
+          // ✅ Erfolgsansicht mit grünem Haken
+          <div className="p-8 flex flex-col items-center text-center gap-4">
             <CheckCircle2 className="w-16 h-16 text-green-500" />
-            <div>
-              <DialogTitle className="text-2xl mb-2">
-                Danke für deine Nachricht!
-              </DialogTitle>
-              <DialogDescription className="text-base text-muted-foreground">
-                Wir haben deine Anfrage erhalten und melden uns in der Regel
-                innerhalb der nächsten <strong>24–48 Stunden</strong> bei dir.
-              </DialogDescription>
-            </div>
-            <Button
-              className="mt-4"
-              onClick={() => handleOpenChange(false)}
-            >
+            <h2 className="text-2xl font-semibold">
+              Danke für deine Nachricht!
+            </h2>
+            <p className="text-muted-foreground">
+              Wir haben deine Anfrage erhalten und melden uns in der Regel
+              innerhalb von{" "}
+              <span className="font-medium text-foreground">
+                24–48 Stunden
+              </span>{" "}
+              bei dir.
+            </p>
+            <Button className="mt-2" onClick={handleClose}>
               Fenster schließen
             </Button>
           </div>
         ) : (
-          <>
-            <DialogHeader>
-              <DialogTitle>Kontakt aufnehmen</DialogTitle>
-              <DialogDescription>
-                Füll kurz das Formular aus und wir melden uns so schnell wie möglich bei dir.
-              </DialogDescription>
-            </DialogHeader>
+          <div className="p-8">
+            <div className="flex items-start justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-semibold mb-1">
+                  Kontakt aufnehmen
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  Füll kurz das Formular aus und wir melden uns so schnell wie
+                  möglich bei dir.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleClose}
+                className="text-muted-foreground hover:text-foreground"
+                aria-label="Schließen"
+              >
+                ✕
+              </button>
+            </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">
-                  Name <span className="text-red-500">*</span>
-                </Label>
-                <Input
+            <form className="space-y-5" onSubmit={handleSubmit}>
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-foreground"
+                >
+                  Name *
+                </label>
+                <input
                   id="name"
+                  name="name"
                   required
                   placeholder="Dein vollständiger Name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="email">
-                  E-Mail <span className="text-red-500">*</span>
-                </Label>
-                <Input
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-foreground"
+                >
+                  E-Mail *
+                </label>
+                <input
                   id="email"
+                  name="email"
                   type="email"
                   required
-                  placeholder="deine.email@beispiel.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="deine.email@beispiel.de"
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="subject">
-                  Betreff <span className="text-red-500">*</span>
-                </Label>
-                <Input
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="subject"
+                  className="block text-sm font-medium text-foreground"
+                >
+                  Betreff *
+                </label>
+                <input
                   id="subject"
+                  name="subject"
                   required
                   placeholder="Worum geht es?"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="orderId">
-                  Bestellnummer <span className="text-muted-foreground text-xs">(optional)</span>
-                </Label>
-                <Input
-                  id="orderId"
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="orderNumber"
+                  className="block text-sm font-medium text-foreground"
+                >
+                  Bestellnummer{" "}
+                  <span className="text-xs text-muted-foreground">
+                    (optional)
+                  </span>
+                </label>
+                <input
+                  id="orderNumber"
+                  name="orderNumber"
                   placeholder="z.B. 123-4567890-1234567"
-                  value={orderId}
-                  onChange={(e) => setOrderId(e.target.value)}
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="message">
-                  Nachricht <span className="text-red-500">*</span>
-                </Label>
-                <Textarea
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="message"
+                  className="block text-sm font-medium text-foreground"
+                >
+                  Nachricht *
+                </label>
+                <textarea
                   id="message"
+                  name="message"
                   required
                   rows={5}
                   placeholder="Deine Nachricht an uns…"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary focus:border-primary resize-y"
                 />
               </div>
 
               <p className="text-xs text-muted-foreground">
-                Mit dem Absenden erklärst du dich mit der Verarbeitung deiner Daten
-                gemäß unserer <a href="/datenschutz" className="underline">Datenschutzerklärung</a> einverstanden.
+                Mit dem Absenden erklärst du dich mit der Verarbeitung deiner
+                Daten gemäß unserer{" "}
+                <a
+                  href="/datenschutz"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline underline-offset-2 hover:text-primary"
+                >
+                  Datenschutzerklärung
+                </a>{" "}
+                einverstanden.
               </p>
 
-              {error && (
-                <p className="text-sm text-red-500">
-                  {error}
-                </p>
+              {status === "error" && (
+                <div className="flex items-start gap-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2">
+                  <XCircle className="w-4 h-4 mt-0.5" />
+                  <span>{errorMessage}</span>
+                </div>
               )}
 
-              <div className="flex flex-col-reverse sm:flex-row gap-2 sm:justify-between sm:items-center mt-4">
+              <div className="flex items-center justify-between gap-4 pt-2">
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => handleOpenChange(false)}
+                  onClick={handleClose}
+                  className="flex-1"
+                  disabled={isSubmitting}
                 >
                   Abbrechen
                 </Button>
-
-                <Button type="submit" disabled={isSubmitting}>
+                <Button
+                  type="submit"
+                  className="flex-1"
+                  disabled={isSubmitting}
+                >
                   {isSubmitting && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
@@ -214,10 +252,10 @@ const ContactForm = ({ open, onOpenChange }: ContactFormProps) => {
                 </Button>
               </div>
             </form>
-          </>
+          </div>
         )}
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 };
 
