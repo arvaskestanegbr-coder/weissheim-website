@@ -1,12 +1,11 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
+import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
-  // WICHTIG: relative Pfade nutzen, damit es überall funktioniert
   base: "./",
   build: {
-    outDir: "../docs",   // in /docs bauen (für GitHub Pages)
-    emptyOutDir: true,   // docs vorher leeren, damit kein alter Kram drin bleibt
+    outDir: "../docs",
+    emptyOutDir: false, // wichtig: CNAME & Co. bleiben erhalten
   },
 });
