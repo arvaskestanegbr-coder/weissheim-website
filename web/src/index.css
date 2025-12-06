@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Global: kein horizontales Scrollen, volle Breite */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+#root {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Tailwind-Styles für den Body beibehalten */
 body {
   @apply bg-background text-foreground antialiased;
 }
