@@ -2,23 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Global: kein horizontales Scrollen, volle Breite */
+/* Verhindert horizontales Scrollen und sorgt dafür,
+   dass die Seite sich an jede Bildschirmbreite anpasst */
 html,
 body {
   margin: 0;
   padding: 0;
   width: 100%;
-  max-width: 100%;
+  min-height: 100%;
   overflow-x: hidden;
 }
 
+/* Root immer mindestens so hoch wie der Viewport */
 #root {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
-}
-
-/* Tailwind-Styles für den Body beibehalten */
-body {
-  @apply bg-background text-foreground antialiased;
+  min-height: 100vh;
 }
