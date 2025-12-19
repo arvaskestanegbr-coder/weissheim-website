@@ -1,190 +1,172 @@
-import React, { useState } from "react";
-import { Button } from "./ui/button";
+import { useState, type FormEvent } from "react";
 
-type ContactFormProps = {
+interface ContactFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-};
+}
 
-const ContactForm: React.FC<ContactFormProps> = ({ open, onOpenChange }) => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+const WEB3FORMS_ACCESS_KEY = "fccdc043-113c-450f-bf35-0cd834fa864e"; // <- einsetzen
+
+export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(
+    "idle",
+  );
 
   if (!open) return null;
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setIsSubmitting(true);
+  const close = () => {
     setStatus("idle");
+    onOpenChange(false);
+  };
 
-    const formData = new FormData(event.currentTarget);
-    // Web3Forms Access Key
-    formData.append("access_key", "fccdc043-113c-450f-bf35-0cd834fa864e");
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setStatus("loading");
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    formData.set("access_key", WEB3FORMS_ACCESS_KEY);
 
     try {
-      const response = await fetch("https://api.web3forms.com/submit", {
+      const res = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         body: formData,
       });
 
-      const json = await response.json();
+      const data = await res.json().catch(() => null);
 
-      if (json.success) {
+      if (res.ok && data?.success === true) {
         setStatus("success");
-        event.currentTarget.reset();
-      } else {
-        console.error("Web3Forms error:", json);
-        setStatus("error");
+        form.reset();
+        return;
       }
-    } catch (error) {
-      console.error("Network error:", error);
+
+      console.error("Web3Forms Fehler:", data);
       setStatus("error");
-    } finally {
-      setIsSubmitting(false);
+    } catch (err) {
+      console.error("Netzwerkfehler:", err);
+      setStatus("error");
     }
   };
 
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
-      onClick={() => onOpenChange(false)}
-    >
-      <div
-        className="bg-background text-foreground rounded-xl shadow-2xl max-w-2xl w-full mx-4 md:mx-0 p-6 md:p-8"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="flex items-start justify-between mb-6">
-          <div>
-            <h2 className="text-2xl md:text-3xl font-semibold">
-              Kontakt aufnehmen
-            </h2>
-            <p className="text-sm md:text-base text-muted-foreground mt-2">
-              Füll kurz das Formular aus und wir melden uns so schnell wie
-              möglich bei dir.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => onOpenChange(false)}
-            className="text-muted-foreground hover:text-foreground text-xl leading-none"
-            aria-label="Dialog schließen"
-          >
-            ×
-          </button>
-        </div>
+  const isSubmitting = status === "loading";
 
-        {/* Form */}
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <div className="relative w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl sm:p-8">
+        <button
+          onClick={close}
+          className="absolute right-4 top-4 text-sm text-slate-400 transition hover:text-slate-600"
+          aria-label="Fenster schließen"
+          type="button"
+        >
+          ✕
+        </button>
+
+        <h2 className="mb-2 text-2xl font-semibold text-slate-900 sm:text-3xl">
+          Kontakt aufnehmen
+        </h2>
+        <p className="mb-6 text-sm text-slate-500 sm:text-base">
+          Füll kurz das Formular aus und wir melden uns so schnell wie möglich
+          bei dir.
+        </p>
+
         <form className="space-y-4" onSubmit={handleSubmit}>
-          {/* Name */}
-          <div>
-            <label className="block text-sm font-medium mb-1">
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-slate-800">
               Name <span className="text-red-500">*</span>
             </label>
             <input
+              required
               name="name"
               type="text"
-              required
-              placeholder="Dein vollständiger Name"
-              className="mt-1 block w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition focus:border-slate-400 focus:bg-white"
             />
           </div>
 
-          {/* E-Mail */}
-          <div>
-            <label className="block text-sm font-medium mb-1">
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-slate-800">
               E-Mail <span className="text-red-500">*</span>
             </label>
             <input
+              required
               name="email"
               type="email"
-              required
-              placeholder="deine.email@beispiel.com"
-              className="mt-1 block w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition focus:border-slate-400 focus:bg-white"
             />
           </div>
 
-          {/* Betreff */}
-          <div>
-            <label className="block text-sm font-medium mb-1">
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-slate-800">
               Betreff <span className="text-red-500">*</span>
             </label>
             <input
+              required
               name="subject"
               type="text"
-              required
-              placeholder="Worum geht es?"
-              className="mt-1 block w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition focus:border-slate-400 focus:bg-white"
             />
           </div>
 
-          {/* Bestellnummer (optional) */}
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Bestellnummer <span className="text-xs text-muted-foreground">(optional)</span>
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-slate-800">
+              Bestellnummer{" "}
+              <span className="text-xs font-normal text-slate-400">(optional)</span>
             </label>
             <input
               name="order_number"
               type="text"
-              placeholder="z. B. 123-4567890-1234567"
-              className="mt-1 block w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition focus:border-slate-400 focus:bg-white"
             />
           </div>
 
-          {/* Nachricht */}
-          <div>
-            <label className="block text-sm font-medium mb-1">
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-slate-800">
               Nachricht <span className="text-red-500">*</span>
             </label>
             <textarea
-              name="message"
               required
+              name="message"
               rows={4}
-              placeholder="Deine Nachricht an uns..."
-              className="mt-1 block w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition focus:border-slate-400 focus:bg-white"
             />
           </div>
 
-          {/* Hinweis + Status */}
-          <p className="text-xs text-muted-foreground">
-            Mit dem Absenden erklärst du dich mit der Verarbeitung deiner Daten
-            gemäß unserer Datenschutzerklärung einverstanden.
-          </p>
+          <input type="hidden" name="access_key" value={WEB3FORMS_ACCESS_KEY} />
+          <input type="hidden" name="from" value="Kontaktformular weissheim.com" />
 
           {status === "success" && (
-            <p className="text-sm text-emerald-500">
-              Danke dir! Deine Nachricht wurde erfolgreich gesendet.
-            </p>
-          )}
-          {status === "error" && (
-            <p className="text-sm text-red-500">
-              Upsi, da ist etwas schiefgelaufen. Bitte versuch es später noch
-              einmal.
-            </p>
+            <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+              Danke dir! Deine Nachricht ist bei uns angekommen. Wir melden uns
+              innerhalb der nächsten 24–48 Stunden.
+            </div>
           )}
 
-          {/* Buttons */}
-          <div className="mt-6 flex flex-col-reverse gap-3 md:flex-row md:justify-end">
-            <Button
+          {status === "error" && (
+            <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
+              Upsi, da ist etwas schiefgelaufen. Bitte versuch es später noch
+              einmal.
+            </div>
+          )}
+
+          <div className="mt-4 flex justify-end gap-3">
+            <button
               type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              className="w-full md:w-auto"
+              onClick={close}
+              className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
             >
               Abbrechen
-            </Button>
-            <Button
+            </button>
+            <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full md:w-auto"
+              className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
             >
-              {isSubmitting ? "Wird gesendet..." : "Nachricht senden"}
-            </Button>
+              {isSubmitting ? "Wird gesendet …" : "Nachricht senden"}
+            </button>
           </div>
         </form>
       </div>
     </div>
   );
-};
-
-export default ContactForm;
+}
