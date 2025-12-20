@@ -4,6 +4,7 @@ import { Card } from "./components/ui/card";
 import weissheimLogo from "./assets/weissheim-logo.png";
 import ContactForm from "./components/ContactForm";
 import { Home, Package, Star, Mail } from "lucide-react";
+import schwarz4er from "./assets/Schwarz-4er.jpg";
 
 const Index = () => {
   const [contactFormOpen, setContactFormOpen] = useState(false);
@@ -139,18 +140,27 @@ const Index = () => {
       </section>
 
       {/* Product Section */}
-      <section id="produkt" className="py-20 px-4">
-        <div className="container mx-auto max-w-6xl">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <div className="bg-secondary/50 rounded-lg aspect-square flex items-center justify-center">
-                <Package className="w-48 h-48 text-primary/30" />
-              </div>
-            </div>
-            <div>
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground font-serif">
-                WEISSHEIM Wäschesammler mit System
-              </h2>
+<section id="produkt" className="py-20 px-4">
+  <div className="container mx-auto max-w-6xl">
+    <div className="grid md:grid-cols-2 gap-12 items-center">
+      {/* LINKS: Bild */}
+      <div className="flex justify-center">
+        <img
+          src={schwarz4er}
+          alt="WEISSHEIM Wäschesammler 4 Fächer – Schwarz"
+          className="w-full max-w-[520px] h-auto object-contain"
+          loading="lazy"
+        />
+      </div>
+
+      {/* RECHTS: Text */}
+      <div>
+        <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground font-serif">
+          WEISSHEIM Wäschesammler mit System
+        </h2>
+
+        {/* …dein restlicher Text/Ul/Button bleibt exakt wie er ist… */}
+
               <p className="text-lg text-muted-foreground mb-6">
                 Der WEISSHEIM Wäschesammler 4 Fächer mit großzügigem 200 L
                 Volumen kombiniert intelligentes Sortier-System mit elegantem
