@@ -1,23 +1,51 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "./components/ui/button";
 import { Card } from "./components/ui/card";
 import weissheimLogo from "./assets/weissheim-logo.png";
 import ContactForm from "./components/ContactForm";
-import { Home, Package, Star, Mail } from "lucide-react";
+import { Home, Package, Star, Mail, ShoppingCart, Check } from "lucide-react";
 import schwarz4er from "./assets/Schwarz-4er.jpg";
+import produktWeiss from "./assets/produkt-weiss.png";
+import Reveal from "./components/Reveal";
 
 const Index = () => {
   const [contactFormOpen, setContactFormOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const specs = [
+    { label: "Volumen", value: "200 Liter", icon: "📦" },
+    { label: "Fächer", value: "4 abnehmbare Taschen", icon: "🗂️" },
+    { label: "Material", value: "Oxford 600D", icon: "🧵" },
+    { label: "Rahmen", value: "Stabiler Stahlrahmen", icon: "🔩" },
+    { label: "Mobilität", value: "Mit Rollen", icon: "🛞" },
+    { label: "Ablage", value: "Holz-Ablagefläche", icon: "🪵" },
+  ];
 
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <nav className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+      <nav
+        className={`border-b border-border sticky top-0 z-50 transition-all duration-300 ${
+          scrolled
+            ? "bg-background shadow-md"
+            : "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+        }`}
+      >
+        <div className="container mx-auto px-4 py-2 flex items-center justify-between">
           <img
             src={weissheimLogo}
             alt="WEISSHEIM Logo"
-            className="h-20 md:h-24 w-auto"
+            className="h-24 md:h-32 w-auto"
           />
           <div className="hidden md:flex gap-8">
             <a
@@ -58,34 +86,53 @@ const Index = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="py-20 md:py-32 px-4 animate-fade-in">
-        <div className="container mx-auto text-center max-w-4xl">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 text-foreground font-serif">
-            Wäschesammler mit System
-          </h1>
-          <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-2xl mx-auto">
-            Der WEISSHEIM Wäschesammler 4 Fächer – 200 L Volumen mit
-            abnehmbaren Taschen. Wäschekorb 2 Fächer, Wäscheschrank,
-            Wäschesortierer mit Rollen für flexible Mobilität.
-          </p>
-          <div className="flex gap-4 justify-center flex-wrap">
-            <Button size="lg" className="text-lg px-8" asChild>
-              <a
-                href="https://www.amazon.de/WEISSHEIM%C2%AE-W%C3%A4schesammler-abnehmbaren-W%C3%A4scheschrank-W%C3%A4schesortierer/dp/B0F3ZBN75C"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Zu Amazon
-              </a>
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="text-lg px-8"
-              asChild
-            >
-              <a href="#produkt">Mehr erfahren</a>
-            </Button>
+      <section className="pt-44 pb-20 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <Reveal from="left" distance={30}>
+              <div>
+                <h1 className="text-5xl md:text-7xl font-bold mb-6 text-foreground font-serif">
+                  Wäschesammler mit System
+                </h1>
+                <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
+                  Der WEISSHEIM Wäschesammler 4 Fächer – 200 L Volumen mit
+                  abnehmbaren Taschen. Wäschekorb 2 Fächer, Wäscheschrank,
+                  Wäschesortierer mit Rollen für flexible Mobilität.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Button size="lg" className="text-lg px-8" asChild>
+                    <a
+                      href="https://www.amazon.de/WEISSHEIM%C2%AE-W%C3%A4schesammler-abnehmbaren-W%C3%A4scheschrank-W%C3%A4schesortierer/dp/B0F3ZBN75C"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2"
+                    >
+                      <ShoppingCart size={20} />
+                      Zu Amazon
+                    </a>
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="text-lg px-8"
+                    asChild
+                  >
+                    <a href="#produkt">Mehr erfahren</a>
+                  </Button>
+                </div>
+              </div>
+            </Reveal>
+
+            <Reveal from="right" distance={30} delayMs={150}>
+              <div className="relative flex justify-center">
+                <img
+                  src={produktWeiss}
+                  alt="WEISSHEIM Wäschesammler – Weiße Variante"
+                  className="w-full max-w-[620px] h-auto transform transition-transform duration-500 hover:scale-[1.02]"
+                  loading="lazy"
+                />
+              </div>
+            </Reveal>
           </div>
         </div>
       </section>
@@ -93,272 +140,245 @@ const Index = () => {
       {/* Features Section */}
       <section id="vorteile" className="py-20 px-4 bg-secondary/30">
         <div className="container mx-auto max-w-6xl">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 text-foreground font-serif">
-            Warum WEISSHEIM?
-          </h2>
+          <Reveal className="text-center mb-16" from="up" distance={24}>
+            <div>
+              <h2 className="text-4xl md:text-6xl font-bold mb-4 text-foreground font-serif">
+                Warum WEISSHEIM?
+              </h2>
+              <p className="text-xl text-muted-foreground">
+                Die perfekte Lösung für organisierte Wäscheverwaltung
+              </p>
+            </div>
+          </Reveal>
           <div className="grid md:grid-cols-3 gap-8">
-            <Card className="p-8 text-center hover:shadow-lg transition-shadow">
-              <div className="w-16 h-16 mx-auto mb-6 bg-primary/10 rounded-full flex items-center justify-center">
-                <Home className="w-8 h-8 text-primary" />
-              </div>
-              <h3 className="text-2xl font-semibold mb-4 text-foreground">
-                Hygienisch &amp; durchdacht
-              </h3>
-              <p className="text-muted-foreground">
-                Hochwertige, waschbare Oxford 600D Taschen für maximale Hygiene.
-                Bleibt stets frisch und geruchsfrei.
-              </p>
-            </Card>
+            <Reveal from="up" distance={24} delayMs={0}>
+              <Card className="p-8 text-center hover:shadow-xl hover:-translate-y-1">
+                <div className="w-16 h-16 mx-auto mb-6 bg-primary rounded-2xl flex items-center justify-center">
+                  <Home className="w-8 h-8 text-primary-foreground" />
+                </div>
+                <h3 className="text-2xl font-semibold mb-4 text-foreground">
+                  Hygienisch &amp; durchdacht
+                </h3>
+                <p className="text-muted-foreground">
+                  Hochwertige, waschbare Oxford 600D Taschen für maximale Hygiene.
+                  Bleibt stets frisch und geruchsfrei.
+                </p>
+              </Card>
+            </Reveal>
 
-            <Card className="p-8 text-center hover:shadow-lg transition-shadow">
-              <div className="w-16 h-16 mx-auto mb-6 bg-primary/10 rounded-full flex items-center justify-center">
-                <Package className="w-8 h-8 text-primary" />
-              </div>
-              <h3 className="text-2xl font-semibold mb-4 text-foreground">
-                Flexible Mobilität
-              </h3>
-              <p className="text-muted-foreground">
-                Mit Rollen ausgestattet – perfekt für den täglichen Gebrauch und
-                beim Umzug. Leicht zu bewegen.
-              </p>
-            </Card>
+            <Reveal from="up" distance={24} delayMs={100}>
+              <Card className="p-8 text-center hover:shadow-xl hover:-translate-y-1">
+                <div className="w-16 h-16 mx-auto mb-6 bg-primary rounded-2xl flex items-center justify-center">
+                  <Package className="w-8 h-8 text-primary-foreground" />
+                </div>
+                <h3 className="text-2xl font-semibold mb-4 text-foreground">
+                  Flexible Mobilität
+                </h3>
+                <p className="text-muted-foreground">
+                  Mit Rollen ausgestattet – perfekt für den täglichen Gebrauch und
+                  beim Umzug. Leicht zu bewegen.
+                </p>
+              </Card>
+            </Reveal>
 
-            <Card className="p-8 text-center hover:shadow-lg transition-shadow">
-              <div className="w-16 h-16 mx-auto mb-6 bg-primary/10 rounded-full flex items-center justify-center">
-                <Star className="w-8 h-8 text-primary" />
-              </div>
-              <h3 className="text-2xl font-semibold mb-4 text-foreground">
-                Ästhetischer Stauraum
-              </h3>
-              <p className="text-muted-foreground">
-                Elegante Holzablage und Stahlrahmen – sieht aus wie ein
-                hochwertiges Möbelstück für dein Zuhause.
-              </p>
-            </Card>
+            <Reveal from="up" distance={24} delayMs={200}>
+              <Card className="p-8 text-center hover:shadow-xl hover:-translate-y-1">
+                <div className="w-16 h-16 mx-auto mb-6 bg-primary rounded-2xl flex items-center justify-center">
+                  <Star className="w-8 h-8 text-primary-foreground" />
+                </div>
+                <h3 className="text-2xl font-semibold mb-4 text-foreground">
+                  Ästhetischer Stauraum
+                </h3>
+                <p className="text-muted-foreground">
+                  Elegante Holzablage und Stahlrahmen – sieht aus wie ein
+                  hochwertiges Möbelstück für dein Zuhause.
+                </p>
+              </Card>
+            </Reveal>
           </div>
         </div>
       </section>
 
       {/* Product Section */}
-<section id="produkt" className="py-20 px-4">
-  <div className="container mx-auto max-w-6xl">
-    <div className="grid md:grid-cols-2 gap-12 items-center">
-      {/* LINKS: Bild */}
-      <div className="flex justify-center">
-        <img
-          src={schwarz4er}
-          alt="WEISSHEIM Wäschesammler 4 Fächer – Schwarz"
-          className="w-full max-w-[520px] h-auto object-contain"
-          loading="lazy"
-        />
-      </div>
+      <section id="produkt" className="py-20 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <Reveal from="left" distance={30}>
+              <div className="flex justify-center">
+                <img
+                  src={schwarz4er}
+                  alt="WEISSHEIM Wäschesammler 4 Fächer – Schwarz"
+                  className="w-full max-w-[520px] h-auto object-contain"
+                  loading="lazy"
+                />
+              </div>
+            </Reveal>
 
-      {/* RECHTS: Text */}
-      <div>
-        <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground font-serif">
-          WEISSHEIM Wäschesammler mit System
-        </h2>
+            <Reveal from="right" distance={30} delayMs={150}>
+              <div>
+                <h2 className="text-4xl md:text-6xl font-bold mb-6 text-foreground font-serif">
+                  WEISSHEIM Wäschesammler mit System
+                </h2>
 
-        {/* …dein restlicher Text/Ul/Button bleibt exakt wie er ist… */}
+                <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
+                  Der WEISSHEIM Wäschesammler 4 Fächer mit großzügigem 200 L
+                  Volumen kombiniert intelligentes Sortier-System mit elegantem
+                  Design. Dank des smarten Haken-Systems und abnehmbaren Oxford
+                  600D Taschen wird deine Wäscheverwaltung stressfrei und
+                  effizient.
+                </p>
 
-              <p className="text-lg text-muted-foreground mb-6">
-                Der WEISSHEIM Wäschesammler 4 Fächer mit großzügigem 200 L
-                Volumen kombiniert intelligentes Sortier-System mit elegantem
-                Design. Dank des smarten Haken-Systems und abnehmbaren Oxford
-                600D Taschen wird deine Wäscheverwaltung stressfrei und
-                effizient.
-              </p>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-start gap-3">
-                  <span className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    ✓
-                  </span>
-                  <span className="text-foreground">
-                    200 L Volumen – 4 abnehmbare Oxford 600D Taschen
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    ✓
-                  </span>
-                  <span className="text-foreground">
-                    Smartes Haken-System für zeitsparende Handhabung
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    ✓
-                  </span>
-                  <span className="text-foreground">
-                    Wäschekorb mit Rollen – mobil und flexibel
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    ✓
-                  </span>
-                  <span className="text-foreground">
-                    Elegante Holzablage + verstärkter Stahlrahmen
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    ✓
-                  </span>
-                  <span className="text-foreground">
-                    Waschbare Taschen – hygienisch und geruchsfrei
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    ✓
-                  </span>
-                  <span className="text-foreground">
-                    Verfügbar in Schwarz, Beige und Himmelblau
-                  </span>
-                </li>
-              </ul>
-              <Button size="lg" asChild>
-                <a
-                  href="https://www.amazon.de/WEISSHEIM%C2%AE-W%C3%A4schesammler-abnehmbaren-W%C3%A4scheschrank-W%C3%A4schesortierer/dp/B0F3ZBN75C"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Jetzt auf Amazon ansehen
-                </a>
-              </Button>
-            </div>
+                <div className="space-y-3 mb-8">
+                  <div className="flex items-center gap-3 bg-secondary/30 p-4 rounded-xl hover:bg-secondary/50 transition-colors">
+                    <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+                      <Check size={16} className="text-primary-foreground" />
+                    </div>
+                    <span className="text-foreground">
+                      200 L Volumen – 4 abnehmbare Oxford 600D Taschen
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3 bg-secondary/30 p-4 rounded-xl hover:bg-secondary/50 transition-colors">
+                    <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+                      <Check size={16} className="text-primary-foreground" />
+                    </div>
+                    <span className="text-foreground">
+                      Smartes Haken-System für zeitsparende Handhabung
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3 bg-secondary/30 p-4 rounded-xl hover:bg-secondary/50 transition-colors">
+                    <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+                      <Check size={16} className="text-primary-foreground" />
+                    </div>
+                    <span className="text-foreground">
+                      Wäschekorb mit Rollen – mobil und flexibel
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3 bg-secondary/30 p-4 rounded-xl hover:bg-secondary/50 transition-colors">
+                    <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+                      <Check size={16} className="text-primary-foreground" />
+                    </div>
+                    <span className="text-foreground">
+                      Elegante Holzablage + verstärkter Stahlrahmen
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3 bg-secondary/30 p-4 rounded-xl hover:bg-secondary/50 transition-colors">
+                    <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+                      <Check size={16} className="text-primary-foreground" />
+                    </div>
+                    <span className="text-foreground">
+                      Waschbare Taschen – hygienisch und geruchsfrei
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3 bg-secondary/30 p-4 rounded-xl hover:bg-secondary/50 transition-colors">
+                    <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+                      <Check size={16} className="text-primary-foreground" />
+                    </div>
+                    <span className="text-foreground">
+                      Verfügbar in Schwarz, Beige und Himmelblau
+                    </span>
+                  </div>
+                </div>
+
+                <Button size="lg" asChild>
+                  <a
+                    href="https://www.amazon.de/WEISSHEIM%C2%AE-W%C3%A4schesammler-abnehmbaren-W%C3%A4scheschrank-W%C3%A4schesortierer/dp/B0F3ZBN75C"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2"
+                  >
+                    <ShoppingCart size={20} />
+                    Jetzt auf Amazon kaufen
+                  </a>
+                </Button>
+              </div>
+            </Reveal>
           </div>
         </div>
       </section>
 
       {/* Reviews Section */}
-      <section className="py-20 px-4 bg-secondary/30">
-        <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground font-serif">
-              Das sagen unsere Kunden
-            </h2>
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <div className="flex gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`w-6 h-6 ${
-                      i < 4
-                        ? "fill-primary text-primary"
-                        : "fill-primary/70 text-primary/70"
-                    }`}
-                  />
-                ))}
-              </div>
-              <span className="text-2xl font-bold text-foreground">4.7/5</span>
-            </div>
-            <p className="text-muted-foreground">
-              Basierend auf verifizierten Amazon-Bewertungen
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            <Card className="p-6">
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className="w-4 h-4 fill-primary text-primary"
-                  />
-                ))}
-              </div>
-              <p className="text-foreground mb-4 italic">
-                &quot;Endlich Ordnung im Badezimmer! Die abnehmbaren Taschen
-                sind super praktisch und das smarte Haken-System macht alles so
-                einfach. Klare Kaufempfehlung!&quot;
-              </p>
-              <p className="text-sm text-muted-foreground font-semibold">
-                – Sandra M.
-              </p>
-            </Card>
-
-            <Card className="p-6">
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className="w-4 h-4 fill-primary text-primary"
-                  />
-                ))}
-              </div>
-              <p className="text-foreground mb-4 italic">
-                &quot;Sehr stabil und hochwertig verarbeitet. Die Rollen machen
-                den Transport zur Waschmaschine kinderleicht. Das
-                Preis-Leistungs-Verhältnis ist top!&quot;
-              </p>
-              <p className="text-sm text-muted-foreground font-semibold">
-                – Michael K.
-              </p>
-            </Card>
-
-            <Card className="p-6">
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className="w-4 h-4 fill-primary text-primary"
-                  />
-                ))}
-              </div>
-              <p className="text-foreground mb-4 italic">
-                &quot;Die 4 Fächer sind perfekt für unsere Familie. Weiß, Bunt,
-                Schwarz und Feinwäsche – alles getrennt. Die Holzablage
-                obendrauf ist ein schönes Detail.&quot;
-              </p>
-              <p className="text-sm text-muted-foreground font-semibold">
-                – Anna L.
-              </p>
-            </Card>
-          </div>
-        </div>
-      </section>
+      {null}
 
       {/* About Section */}
       <section id="ueber-uns" className="py-20 px-4 bg-secondary/30">
-        <div className="container mx-auto max-w-4xl text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-8 text-foreground font-serif">
-            Über WEISSHEIM
-          </h2>
-          <p className="text-lg text-muted-foreground mb-6">
-            WEISSHEIM steht für Qualität, Funktionalität und zeitloses Design.
-            Als Amazon FBM Händler bieten wir dir durchdachte Haushaltsprodukte,
-            die deinen Alltag erleichtern und dein Zuhause verschönern.
-          </p>
-          <p className="text-lg text-muted-foreground">
-            Unsere Mission ist es, Produkte zu entwickeln, die nicht nur
-            praktisch sind, sondern auch ästhetisch überzeugen und sich
-            nahtlos in dein Zuhause integrieren.
-          </p>
+        <div className="container mx-auto max-w-6xl">
+          <Reveal className="text-center mb-16" from="up" distance={24}>
+            <div>
+              <h2 className="text-4xl md:text-6xl font-bold mb-4 text-foreground font-serif">
+                Technische Details
+              </h2>
+              <p className="text-xl text-muted-foreground">
+                Hochwertige Materialien und durchdachte Konstruktion
+              </p>
+            </div>
+          </Reveal>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {specs.map((spec, index) => (
+              <Reveal key={spec.label} from="up" distance={24} delayMs={index * 80}>
+                <div className="bg-background p-6 rounded-2xl shadow-md hover:shadow-xl transition-all hover:-translate-y-1">
+                  <div className="text-4xl mb-3">{spec.icon}</div>
+                  <p className="text-sm text-muted-foreground mb-1">{spec.label}</p>
+                  <p className="text-xl text-foreground">{spec.value}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Contact Section */}
       <section id="kontakt" className="py-20 px-4">
         <div className="container mx-auto max-w-4xl text-center">
-          <div className="w-16 h-16 mx-auto mb-6 bg-primary/10 rounded-full flex items-center justify-center">
-            <Mail className="w-8 h-8 text-primary" />
-          </div>
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground font-serif">
-            Hast du Fragen?
-          </h2>
-          <p className="text-lg text-muted-foreground mb-8">
-            Wir sind für dich da. Kontaktiere uns gern bei Fragen zu unseren
-            Produkten oder deiner Bestellung.
-          </p>
-          <Button
-            size="lg"
-            variant="outline"
-            onClick={() => setContactFormOpen(true)}
-          >
-            Kontakt aufnehmen
-          </Button>
+          <Reveal from="up" distance={24}>
+            <div>
+              <div className="w-20 h-20 mx-auto mb-6 bg-secondary rounded-full flex items-center justify-center">
+                <Mail className="w-10 h-10 text-foreground" />
+              </div>
+              <h2 className="text-4xl md:text-6xl font-bold mb-6 text-foreground font-serif">
+                Hast du Fragen?
+              </h2>
+              <p className="text-xl text-muted-foreground mb-8">
+                Wir sind für dich da. Kontaktiere uns gern bei Fragen zu unseren
+                Produkten oder deiner Bestellung.
+              </p>
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={() => setContactFormOpen(true)}
+              >
+                Kontakt aufnehmen
+              </Button>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="py-20 px-4">
+        <div className="container mx-auto max-w-4xl text-center">
+          <Reveal from="up" distance={24}>
+            <div>
+              <h2 className="text-4xl md:text-6xl font-bold mb-6 text-foreground font-serif">
+                Bereit für eine organisierte Wäscheverwaltung?
+              </h2>
+              <p className="text-xl text-muted-foreground mb-8">
+                Bestellen Sie jetzt Ihren WEISSHEIM Wäschesammler und erleben Sie den Unterschied
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button size="lg" className="text-lg px-8" asChild>
+                  <a
+                    href="https://www.amazon.de/WEISSHEIM%C2%AE-W%C3%A4schesammler-abnehmbaren-W%C3%A4scheschrank-W%C3%A4schesortierer/dp/B0F3ZBN75C"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2"
+                  >
+                    <ShoppingCart size={20} />
+                    Jetzt auf Amazon kaufen
+                  </a>
+                </Button>
+              </div>
+            </div>
+          </Reveal>
         </div>
       </section>
 
@@ -369,16 +389,16 @@ const Index = () => {
       />
 
       {/* Footer */}
-      <footer className="border-t border-border py-12 px-4 bg-secondary/20">
+      <footer className="py-12 px-4 bg-background border-t border-border">
         <div className="container mx-auto max-w-6xl">
-          <div className="grid md:grid-cols-3 gap-8 mb-8">
-            <div>
+          <div className="grid md:grid-cols-4 gap-8 mb-12">
+            <div className="md:col-span-2">
               <img
                 src={weissheimLogo}
                 alt="WEISSHEIM Logo"
-                className="h-14 mb-4"
+                className="h-16 w-auto mb-4"
               />
-              <p className="text-muted-foreground text-sm">
+              <p className="text-muted-foreground">
                 Premium Wäschesammler &amp; Wäschesortierer für mehr Ordnung.
               </p>
             </div>
@@ -388,7 +408,7 @@ const Index = () => {
                 <li>
                   <a
                     href="#produkt"
-                    className="hover:text-primary transition-colors"
+                    className="hover:text-foreground transition-colors"
                   >
                     Produkt
                   </a>
@@ -396,7 +416,7 @@ const Index = () => {
                 <li>
                   <a
                     href="#vorteile"
-                    className="hover:text-primary transition-colors"
+                    className="hover:text-foreground transition-colors"
                   >
                     Vorteile
                   </a>
@@ -404,7 +424,7 @@ const Index = () => {
                 <li>
                   <a
                     href="#ueber-uns"
-                    className="hover:text-primary transition-colors"
+                    className="hover:text-foreground transition-colors"
                   >
                     Über uns
                   </a>
@@ -413,7 +433,7 @@ const Index = () => {
                   <button
                     type="button"
                     onClick={() => setContactFormOpen(true)}
-                    className="hover:text-primary transition-colors"
+                    className="hover:text-foreground transition-colors"
                   >
                     Kontakt
                   </button>
@@ -428,7 +448,7 @@ const Index = () => {
                 <li>
                   <a
                     href="/impressum.html"
-                    className="hover:text-primary transition-colors"
+                    className="hover:text-foreground transition-colors"
                   >
                     Impressum
                   </a>
@@ -436,7 +456,7 @@ const Index = () => {
                 <li>
                   <a
                     href="/datenschutz.html"
-                    className="hover:text-primary transition-colors"
+                    className="hover:text-foreground transition-colors"
                   >
                     Datenschutzerklärung
                   </a>
@@ -444,7 +464,7 @@ const Index = () => {
                 <li>
                   <a
                     href="/agb.html"
-                    className="hover:text-primary transition-colors"
+                    className="hover:text-foreground transition-colors"
                   >
                     AGB / Hinweise
                   </a>
