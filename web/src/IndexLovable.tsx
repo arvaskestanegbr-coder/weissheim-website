@@ -1,16 +1,30 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "./components/ui/button";
 import { Card } from "./components/ui/card";
 import weissheimLogo from "./assets/weissheim-logo.png";
 import ContactForm from "./components/ContactForm";
-import { Home, Package, Star, Mail, ShoppingCart, Check } from "lucide-react";
-import schwarz4er from "./assets/Schwarz-4er.jpg";
+import {
+  Home,
+  Package,
+  Star,
+  Mail,
+  Menu,
+  ShoppingCart,
+  Check,
+  ChevronDown,
+  X,
+} from "lucide-react";
 import produktWeiss from "./assets/produkt-weiss.png";
+import produktSchwarz from "./assets/produkt-schwarz.png";
 import Reveal from "./components/Reveal";
 
 const Index = () => {
   const [contactFormOpen, setContactFormOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState<
+    "produkt" | "vorteile" | "ueber-uns"
+  >("vorteile");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,6 +35,54 @@ const Index = () => {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    const ids: Array<"produkt" | "vorteile" | "ueber-uns"> = [
+      "produkt",
+      "vorteile",
+      "ueber-uns",
+    ];
+
+    const elements = ids
+      .map((id) => document.getElementById(id))
+      .filter(Boolean) as HTMLElement[];
+
+    if (elements.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => (b.intersectionRatio ?? 0) - (a.intersectionRatio ?? 0));
+
+        const top = visible[0];
+        const id = top?.target?.id as "produkt" | "vorteile" | "ueber-uns" | undefined;
+        if (id) setActiveSection(id);
+      },
+      {
+        root: null,
+        threshold: [0.2, 0.35, 0.5, 0.65],
+        rootMargin: "-20% 0px -55% 0px",
+      },
+    );
+
+    for (const el of elements) observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const navLinkClass = useMemo(() => {
+    const base =
+      "relative text-[15px] lg:text-base font-medium tracking-tight transition-colors";
+
+    return (id: "produkt" | "vorteile" | "ueber-uns") => {
+      const isActive = activeSection === id;
+      return `${base} ${
+        isActive
+          ? "text-foreground"
+          : "text-foreground/70 hover:text-foreground"
+      }`;
+    };
+  }, [activeSection]);
 
   const specs = [
     { label: "Volumen", value: "200 Liter", icon: "📦" },
@@ -35,77 +97,176 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       {/* Navigation */}
       <nav
-        className={`border-b border-border sticky top-0 z-50 transition-all duration-300 ${
+        className={`sticky top-0 z-50 transition-all duration-300 ${
           scrolled
-            ? "bg-background shadow-md"
-            : "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+            ? "bg-background shadow-[0_10px_30px_rgba(15,23,42,0.08)] border-b border-border/60"
+            : "bg-background"
         }`}
       >
-        <div className="container mx-auto px-4 py-2 flex items-center justify-between">
-          <img
-            src={weissheimLogo}
-            alt="WEISSHEIM Logo"
-            className="h-24 md:h-32 w-auto"
-          />
-          <div className="hidden md:flex gap-8">
+        <div className="container mx-auto px-4 md:px-6 py-4 md:py-5 md:flex md:items-center md:justify-between">
+          <div className="grid grid-cols-3 items-center md:block">
+            <div className="md:hidden" />
+            <img
+              src={weissheimLogo}
+              alt="WEISSHEIM Logo"
+              className="h-16 w-auto justify-self-center md:h-24 lg:h-28"
+            />
+            <div className="justify-self-end md:hidden">
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen(true)}
+                className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-border/60 bg-background shadow-sm hover:bg-muted/30 transition-colors"
+                aria-label="Menü öffnen"
+              >
+                <Menu className="h-5 w-5 text-foreground" />
+              </button>
+            </div>
+          </div>
+
+          <div
+            className="relative hidden md:flex gap-8 items-center ml-auto mr-6"
+          >
             <a
               href="#produkt"
-              className="text-foreground hover:text-primary transition-colors font-medium"
+              className={navLinkClass("produkt")}
             >
               Produkt
             </a>
             <a
               href="#vorteile"
-              className="text-foreground hover:text-primary transition-colors font-medium"
+              className={navLinkClass("vorteile")}
             >
               Vorteile
             </a>
             <a
               href="#ueber-uns"
-              className="text-foreground hover:text-primary transition-colors font-medium"
+              className={navLinkClass("ueber-uns")}
             >
-              Über uns
+              Details
             </a>
-            <a
-              href="#kontakt"
-              className="text-foreground hover:text-primary transition-colors font-medium"
+            <button
+              type="button"
+              onClick={() => setContactFormOpen(true)}
+              className="relative text-[15px] lg:text-base font-medium tracking-tight text-foreground/70 hover:text-foreground transition-colors"
             >
               Kontakt
-            </a>
+            </button>
           </div>
-          <Button variant="default" asChild>
-            <a
-              href="https://www.amazon.de/WEISSHEIM%C2%AE-W%C3%A4schesammler-abnehmbaren-W%C3%A4scheschrank-W%C3%A4schesortierer/dp/B0F3ZBN75C"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Jetzt kaufen
-            </a>
-          </Button>
+
+          <div className="hidden md:flex items-center gap-3">
+            <div>
+              <Button variant="default" className="px-6" asChild>
+                <a
+                  href="https://www.amazon.de/WEISSHEIM%C2%AE-W%C3%A4schesammler-abnehmbaren-W%C3%A4scheschrank-W%C3%A4schesortierer/dp/B0F3ZBN75C"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Jetzt kaufen
+                </a>
+              </Button>
+            </div>
+          </div>
         </div>
       </nav>
 
+      {mobileMenuOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/20 p-4"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="mx-auto w-full max-w-sm rounded-[28px] bg-white shadow-2xl">
+            <div className="flex items-start justify-between px-8 pt-8">
+              <img
+                src={weissheimLogo}
+                alt="WEISSHEIM Logo"
+                className="h-12 w-auto"
+              />
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen(false)}
+                className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-border/60 bg-white shadow-sm hover:bg-muted/30 transition-colors"
+                aria-label="Menü schließen"
+              >
+                <X className="h-5 w-5 text-foreground" />
+              </button>
+            </div>
+
+            <div className="mt-6 h-px bg-border/60" />
+
+            <div className="px-8 py-8">
+              <div className="space-y-7 text-3xl font-semibold tracking-tight text-foreground">
+                <a
+                  href="#produkt"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block"
+                >
+                  Produkt
+                </a>
+                <a
+                  href="#vorteile"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block"
+                >
+                  Vorteile
+                </a>
+                <a
+                  href="#ueber-uns"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block"
+                >
+                  Details
+                </a>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    setContactFormOpen(true);
+                  }}
+                  className="block"
+                >
+                  Kontakt
+                </button>
+              </div>
+
+              <div className="mt-10">
+                <Button size="lg" className="w-full text-lg" asChild>
+                  <a
+                    href="https://www.amazon.de/WEISSHEIM%C2%AE-W%C3%A4schesammler-abnehmbaren-W%C3%A4scheschrank-W%C3%A4schesortierer/dp/B0F3ZBN75C"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex w-full items-center justify-center"
+                  >
+                    Jetzt kaufen
+                  </a>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
-      <section className="pt-44 pb-20 px-4">
+      <section className="pt-28 md:pt-36 pb-20 md:pb-24 px-4 bg-white">
         <div className="container mx-auto max-w-6xl">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 xl:gap-24 items-center">
             <Reveal from="left" distance={30}>
-              <div>
-                <h1 className="text-5xl md:text-7xl font-bold mb-6 text-foreground font-serif">
+              <div className="max-w-xl">
+                <h1 className="text-5xl md:text-7xl font-semibold tracking-tight mb-6 text-foreground leading-[1.05]">
                   Wäschesammler mit System
                 </h1>
-                <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
-                  Der WEISSHEIM Wäschesammler 4 Fächer – 200 L Volumen mit
-                  abnehmbaren Taschen. Wäschekorb 2 Fächer, Wäscheschrank,
-                  Wäschesortierer mit Rollen für flexible Mobilität.
+                <p className="text-lg md:text-xl text-muted-foreground mb-10 leading-7 md:leading-8">
+                  Hol dir den WEISSHEIM Wäschesammler mit 4 Fächern – 200 L
+                  Volumen und abnehmbaren Taschen. Mit Rollen für maximale
+                  Flexibilität in deinem Alltag.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <Button size="lg" className="text-lg px-8" asChild>
+                  <Button size="lg" className="text-lg w-full sm:w-auto" asChild>
                     <a
                       href="https://www.amazon.de/WEISSHEIM%C2%AE-W%C3%A4schesammler-abnehmbaren-W%C3%A4scheschrank-W%C3%A4schesortierer/dp/B0F3ZBN75C"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2"
+                      className="inline-flex w-full items-center justify-center gap-2"
                     >
                       <ShoppingCart size={20} />
                       Zu Amazon
@@ -114,7 +275,7 @@ const Index = () => {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="text-lg px-8"
+                    className="text-lg w-full sm:w-auto"
                     asChild
                   >
                     <a href="#produkt">Mehr erfahren</a>
@@ -124,11 +285,11 @@ const Index = () => {
             </Reveal>
 
             <Reveal from="right" distance={30} delayMs={150}>
-              <div className="relative flex justify-center">
+              <div className="group relative mt-10 lg:mt-0 flex justify-center lg:justify-end bg-transparent border-0 ring-0 outline-none shadow-none overflow-visible before:content-[''] before:pointer-events-none before:absolute before:inset-[-16%] before:rounded-[999px] before:bg-[radial-gradient(circle_at_center,rgba(15,23,42,0.18),transparent_62%)] before:blur-3xl before:opacity-0 before:transition-opacity before:duration-500 group-hover:before:opacity-100">
                 <img
-                  src={produktWeiss}
-                  alt="WEISSHEIM Wäschesammler – Weiße Variante"
-                  className="w-full max-w-[620px] h-auto transform transition-transform duration-500 hover:scale-[1.02]"
+                  src={produktSchwarz}
+                  alt="WEISSHEIM Wäschesammler – Schwarze Variante"
+                  className="relative z-10 w-full max-w-[620px] h-auto transform-gpu transition-transform duration-500 ease-out will-change-transform group-hover:-translate-y-2 group-hover:scale-[1.03]"
                   loading="lazy"
                 />
               </div>
@@ -138,60 +299,60 @@ const Index = () => {
       </section>
 
       {/* Features Section */}
-      <section id="vorteile" className="py-20 px-4 bg-secondary/30">
+      <section id="vorteile" className="py-20 px-4 bg-slate-50">
         <div className="container mx-auto max-w-6xl">
           <Reveal className="text-center mb-16" from="up" distance={24}>
             <div>
-              <h2 className="text-4xl md:text-6xl font-bold mb-4 text-foreground font-serif">
+              <h2 className="text-4xl md:text-6xl font-bold tracking-tight mb-4 text-foreground leading-[1.05]">
                 Warum WEISSHEIM?
               </h2>
-              <p className="text-xl text-muted-foreground">
-                Die perfekte Lösung für organisierte Wäscheverwaltung
+              <p className="text-base md:text-lg text-muted-foreground">
+                Die perfekte Lösung für deine organisierte Wäscheverwaltung
               </p>
             </div>
           </Reveal>
           <div className="grid md:grid-cols-3 gap-8">
             <Reveal from="up" distance={24} delayMs={0}>
-              <Card className="p-8 text-center hover:shadow-xl hover:-translate-y-1">
-                <div className="w-16 h-16 mx-auto mb-6 bg-primary rounded-2xl flex items-center justify-center">
-                  <Home className="w-8 h-8 text-primary-foreground" />
+              <Card className="p-10 hover:shadow-[0_18px_50px_rgba(15,23,42,0.10)] hover:-translate-y-1">
+                <div className="w-14 h-14 mb-6 bg-primary rounded-2xl flex items-center justify-center">
+                  <Home className="w-6 h-6 text-primary-foreground" />
                 </div>
-                <h3 className="text-2xl font-semibold mb-4 text-foreground">
+                <h3 className="text-xl font-semibold tracking-tight mb-3 text-foreground">
                   Hygienisch &amp; durchdacht
                 </h3>
-                <p className="text-muted-foreground">
+                <p className="text-sm leading-6 text-muted-foreground">
                   Hochwertige, waschbare Oxford 600D Taschen für maximale Hygiene.
-                  Bleibt stets frisch und geruchsfrei.
+                  Damit bleibt deine Wäsche frisch und geruchsfrei.
                 </p>
               </Card>
             </Reveal>
 
             <Reveal from="up" distance={24} delayMs={100}>
-              <Card className="p-8 text-center hover:shadow-xl hover:-translate-y-1">
-                <div className="w-16 h-16 mx-auto mb-6 bg-primary rounded-2xl flex items-center justify-center">
-                  <Package className="w-8 h-8 text-primary-foreground" />
+              <Card className="p-10 hover:shadow-[0_18px_50px_rgba(15,23,42,0.10)] hover:-translate-y-1">
+                <div className="w-14 h-14 mb-6 bg-primary rounded-2xl flex items-center justify-center">
+                  <Package className="w-6 h-6 text-primary-foreground" />
                 </div>
-                <h3 className="text-2xl font-semibold mb-4 text-foreground">
+                <h3 className="text-xl font-semibold tracking-tight mb-3 text-foreground">
                   Flexible Mobilität
                 </h3>
-                <p className="text-muted-foreground">
-                  Mit Rollen ausgestattet – perfekt für den täglichen Gebrauch und
+                <p className="text-sm leading-6 text-muted-foreground">
+                  Mit Rollen ausgestattet – perfekt für deinen Alltag und auch
                   beim Umzug. Leicht zu bewegen.
                 </p>
               </Card>
             </Reveal>
 
             <Reveal from="up" distance={24} delayMs={200}>
-              <Card className="p-8 text-center hover:shadow-xl hover:-translate-y-1">
-                <div className="w-16 h-16 mx-auto mb-6 bg-primary rounded-2xl flex items-center justify-center">
-                  <Star className="w-8 h-8 text-primary-foreground" />
+              <Card className="p-10 hover:shadow-[0_18px_50px_rgba(15,23,42,0.10)] hover:-translate-y-1">
+                <div className="w-14 h-14 mb-6 bg-primary rounded-2xl flex items-center justify-center">
+                  <Star className="w-6 h-6 text-primary-foreground" />
                 </div>
-                <h3 className="text-2xl font-semibold mb-4 text-foreground">
+                <h3 className="text-xl font-semibold tracking-tight mb-3 text-foreground">
                   Ästhetischer Stauraum
                 </h3>
-                <p className="text-muted-foreground">
-                  Elegante Holzablage und Stahlrahmen – sieht aus wie ein
-                  hochwertiges Möbelstück für dein Zuhause.
+                <p className="text-sm leading-6 text-muted-foreground">
+                  Elegante Holzablage und Stahlrahmen – wirkt wie ein
+                  hochwertiges Möbelstück in deinem Zuhause.
                 </p>
               </Card>
             </Reveal>
@@ -200,15 +361,15 @@ const Index = () => {
       </section>
 
       {/* Product Section */}
-      <section id="produkt" className="py-20 px-4">
+      <section id="produkt" className="py-20 px-4 bg-white">
         <div className="container mx-auto max-w-6xl">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
+          <div className="grid md:grid-cols-2 gap-14 lg:gap-20 items-center">
             <Reveal from="left" distance={30}>
-              <div className="flex justify-center">
+              <div className="group relative flex justify-center bg-transparent border-0 ring-0 outline-none shadow-none overflow-visible before:content-[''] before:pointer-events-none before:absolute before:inset-[-16%] before:rounded-[999px] before:bg-[radial-gradient(circle_at_center,rgba(15,23,42,0.18),transparent_62%)] before:blur-3xl before:opacity-0 before:transition-opacity before:duration-500 group-hover:before:opacity-100">
                 <img
-                  src={schwarz4er}
-                  alt="WEISSHEIM Wäschesammler 4 Fächer – Schwarz"
-                  className="w-full max-w-[520px] h-auto object-contain"
+                  src={produktWeiss}
+                  alt="WEISSHEIM Wäschesammler – Weiße Variante"
+                  className="relative z-10 w-full max-w-[560px] h-auto object-contain transform-gpu transition-transform duration-500 ease-out will-change-transform group-hover:-translate-y-2 group-hover:scale-[1.03]"
                   loading="lazy"
                 />
               </div>
@@ -216,64 +377,63 @@ const Index = () => {
 
             <Reveal from="right" distance={30} delayMs={150}>
               <div>
-                <h2 className="text-4xl md:text-6xl font-bold mb-6 text-foreground font-serif">
+                <h2 className="text-4xl md:text-6xl font-bold tracking-tight mb-6 text-foreground leading-[1.05]">
                   WEISSHEIM Wäschesammler mit System
                 </h2>
 
-                <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
-                  Der WEISSHEIM Wäschesammler 4 Fächer mit großzügigem 200 L
-                  Volumen kombiniert intelligentes Sortier-System mit elegantem
-                  Design. Dank des smarten Haken-Systems und abnehmbaren Oxford
-                  600D Taschen wird deine Wäscheverwaltung stressfrei und
-                  effizient.
+                <p className="text-base md:text-lg text-muted-foreground mb-10 leading-7 md:leading-8">
+                  Mit dem WEISSHEIM Wäschesammler mit 4 Fächern und großzügigen
+                  200 L Volumen kombinierst du smartes Sortieren mit elegantem
+                  Design. Dank Haken-System und abnehmbaren Oxford 600D Taschen
+                  wird deine Wäscheverwaltung stressfrei und effizient.
                 </p>
 
-                <div className="space-y-3 mb-8">
-                  <div className="flex items-center gap-3 bg-secondary/30 p-4 rounded-xl hover:bg-secondary/50 transition-colors">
+                <div className="space-y-4 mb-10">
+                  <div className="flex items-center gap-3 bg-slate-50 p-4 rounded-2xl shadow-[0_10px_30px_rgba(15,23,42,0.06)]">
                     <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
-                      <Check size={16} className="text-primary-foreground" />
+                      <Check size={14} className="text-primary-foreground" />
                     </div>
-                    <span className="text-foreground">
+                    <span className="text-sm text-foreground">
                       200 L Volumen – 4 abnehmbare Oxford 600D Taschen
                     </span>
                   </div>
-                  <div className="flex items-center gap-3 bg-secondary/30 p-4 rounded-xl hover:bg-secondary/50 transition-colors">
+                  <div className="flex items-center gap-3 bg-slate-50 p-4 rounded-2xl shadow-[0_10px_30px_rgba(15,23,42,0.06)]">
                     <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
-                      <Check size={16} className="text-primary-foreground" />
+                      <Check size={14} className="text-primary-foreground" />
                     </div>
-                    <span className="text-foreground">
+                    <span className="text-sm text-foreground">
                       Smartes Haken-System für zeitsparende Handhabung
                     </span>
                   </div>
-                  <div className="flex items-center gap-3 bg-secondary/30 p-4 rounded-xl hover:bg-secondary/50 transition-colors">
+                  <div className="flex items-center gap-3 bg-slate-50 p-4 rounded-2xl shadow-[0_10px_30px_rgba(15,23,42,0.06)]">
                     <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
-                      <Check size={16} className="text-primary-foreground" />
+                      <Check size={14} className="text-primary-foreground" />
                     </div>
-                    <span className="text-foreground">
+                    <span className="text-sm text-foreground">
                       Wäschekorb mit Rollen – mobil und flexibel
                     </span>
                   </div>
-                  <div className="flex items-center gap-3 bg-secondary/30 p-4 rounded-xl hover:bg-secondary/50 transition-colors">
+                  <div className="flex items-center gap-3 bg-slate-50 p-4 rounded-2xl shadow-[0_10px_30px_rgba(15,23,42,0.06)]">
                     <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
-                      <Check size={16} className="text-primary-foreground" />
+                      <Check size={14} className="text-primary-foreground" />
                     </div>
-                    <span className="text-foreground">
+                    <span className="text-sm text-foreground">
                       Elegante Holzablage + verstärkter Stahlrahmen
                     </span>
                   </div>
-                  <div className="flex items-center gap-3 bg-secondary/30 p-4 rounded-xl hover:bg-secondary/50 transition-colors">
+                  <div className="flex items-center gap-3 bg-slate-50 p-4 rounded-2xl shadow-[0_10px_30px_rgba(15,23,42,0.06)]">
                     <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
-                      <Check size={16} className="text-primary-foreground" />
+                      <Check size={14} className="text-primary-foreground" />
                     </div>
-                    <span className="text-foreground">
+                    <span className="text-sm text-foreground">
                       Waschbare Taschen – hygienisch und geruchsfrei
                     </span>
                   </div>
-                  <div className="flex items-center gap-3 bg-secondary/30 p-4 rounded-xl hover:bg-secondary/50 transition-colors">
+                  <div className="flex items-center gap-3 bg-slate-50 p-4 rounded-2xl shadow-[0_10px_30px_rgba(15,23,42,0.06)]">
                     <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
-                      <Check size={16} className="text-primary-foreground" />
+                      <Check size={14} className="text-primary-foreground" />
                     </div>
-                    <span className="text-foreground">
+                    <span className="text-sm text-foreground">
                       Verfügbar in Schwarz, Beige und Himmelblau
                     </span>
                   </div>
@@ -296,19 +456,16 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Reviews Section */}
-      {null}
-
       {/* About Section */}
-      <section id="ueber-uns" className="py-20 px-4 bg-secondary/30">
+      <section id="ueber-uns" className="py-20 px-4 bg-slate-50">
         <div className="container mx-auto max-w-6xl">
           <Reveal className="text-center mb-16" from="up" distance={24}>
             <div>
-              <h2 className="text-4xl md:text-6xl font-bold mb-4 text-foreground font-serif">
+              <h2 className="text-4xl md:text-6xl font-bold tracking-tight mb-4 text-foreground leading-[1.05]">
                 Technische Details
               </h2>
-              <p className="text-xl text-muted-foreground">
-                Hochwertige Materialien und durchdachte Konstruktion
+              <p className="text-base md:text-lg text-muted-foreground">
+                Hochwertige Materialien und durchdachte Konstruktion für deinen Alltag
               </p>
             </div>
           </Reveal>
@@ -316,11 +473,11 @@ const Index = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {specs.map((spec, index) => (
               <Reveal key={spec.label} from="up" distance={24} delayMs={index * 80}>
-                <div className="bg-background p-6 rounded-2xl shadow-md hover:shadow-xl transition-all hover:-translate-y-1">
-                  <div className="text-4xl mb-3">{spec.icon}</div>
-                  <p className="text-sm text-muted-foreground mb-1">{spec.label}</p>
-                  <p className="text-xl text-foreground">{spec.value}</p>
-                </div>
+                <Card className="p-6 hover:shadow-[0_18px_50px_rgba(15,23,42,0.10)] hover:-translate-y-1">
+                  <div className="text-2xl mb-4">{spec.icon}</div>
+                  <p className="text-xs text-muted-foreground mb-1">{spec.label}</p>
+                  <p className="text-sm font-medium text-foreground">{spec.value}</p>
+                </Card>
               </Reveal>
             ))}
           </div>
@@ -328,17 +485,17 @@ const Index = () => {
       </section>
 
       {/* Contact Section */}
-      <section id="kontakt" className="py-20 px-4">
+      <section id="kontakt" className="py-20 px-4 bg-white">
         <div className="container mx-auto max-w-4xl text-center">
           <Reveal from="up" distance={24}>
             <div>
               <div className="w-20 h-20 mx-auto mb-6 bg-secondary rounded-full flex items-center justify-center">
                 <Mail className="w-10 h-10 text-foreground" />
               </div>
-              <h2 className="text-4xl md:text-6xl font-bold mb-6 text-foreground font-serif">
+              <h2 className="text-4xl md:text-6xl font-bold tracking-tight mb-6 text-foreground leading-[1.05]">
                 Hast du Fragen?
               </h2>
-              <p className="text-xl text-muted-foreground mb-8">
+              <p className="text-base md:text-lg text-muted-foreground mb-10 leading-7 md:leading-8">
                 Wir sind für dich da. Kontaktiere uns gern bei Fragen zu unseren
                 Produkten oder deiner Bestellung.
               </p>
@@ -354,23 +511,23 @@ const Index = () => {
         </div>
       </section>
 
-      <section className="py-20 px-4">
+      <section className="py-20 md:py-24 px-4 bg-slate-50">
         <div className="container mx-auto max-w-4xl text-center">
           <Reveal from="up" distance={24}>
             <div>
-              <h2 className="text-4xl md:text-6xl font-bold mb-6 text-foreground font-serif">
+              <h2 className="text-4xl md:text-6xl font-bold tracking-tight mb-6 text-foreground leading-[1.05]">
                 Bereit für eine organisierte Wäscheverwaltung?
               </h2>
-              <p className="text-xl text-muted-foreground mb-8">
-                Bestellen Sie jetzt Ihren WEISSHEIM Wäschesammler und erleben Sie den Unterschied
+              <p className="text-base md:text-lg text-muted-foreground mb-10 leading-7 md:leading-8">
+                Bestell jetzt deinen WEISSHEIM Wäschesammler und erlebe den Unterschied.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" className="text-lg px-8" asChild>
+                <Button size="lg" className="text-lg w-full sm:w-auto" asChild>
                   <a
                     href="https://www.amazon.de/WEISSHEIM%C2%AE-W%C3%A4schesammler-abnehmbaren-W%C3%A4scheschrank-W%C3%A4schesortierer/dp/B0F3ZBN75C"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2"
+                    className="inline-flex w-full items-center justify-center gap-2"
                   >
                     <ShoppingCart size={20} />
                     Jetzt auf Amazon kaufen
@@ -388,8 +545,19 @@ const Index = () => {
         onOpenChange={setContactFormOpen}
       />
 
+      {scrolled && (
+        <button
+          type="button"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="fixed bottom-6 right-5 md:bottom-8 md:right-8 bg-primary text-primary-foreground h-12 w-12 flex items-center justify-center rounded-full shadow-[0_14px_40px_rgba(15,23,42,0.18)] hover:shadow-[0_18px_55px_rgba(15,23,42,0.22)] hover:-translate-y-0.5 hover:bg-primary/90 transition-all transform-gpu z-40"
+          aria-label="Nach oben scrollen"
+        >
+          <ChevronDown size={24} className="rotate-180" />
+        </button>
+      )}
+
       {/* Footer */}
-      <footer className="py-12 px-4 bg-background border-t border-border">
+      <footer className="py-12 px-4 bg-white border-t border-border">
         <div className="container mx-auto max-w-6xl">
           <div className="grid md:grid-cols-4 gap-8 mb-12">
             <div className="md:col-span-2">
@@ -399,7 +567,7 @@ const Index = () => {
                 className="h-16 w-auto mb-4"
               />
               <p className="text-muted-foreground">
-                Premium Wäschesammler &amp; Wäschesortierer für mehr Ordnung.
+                Premium Wäschesammler &amp; Wäschesortierer für mehr Ordnung bei dir zuhause.
               </p>
             </div>
             <div>
@@ -426,7 +594,7 @@ const Index = () => {
                     href="#ueber-uns"
                     className="hover:text-foreground transition-colors"
                   >
-                    Über uns
+                    Details
                   </a>
                 </li>
                 <li>

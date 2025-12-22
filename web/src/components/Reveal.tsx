@@ -17,11 +17,11 @@ export default function Reveal({
   children,
   className = "",
   from = "up",
-  distance = 24,
+  distance = 20,
   delayMs = 0,
-  durationMs = 600,
+  durationMs = 700,
   once = true,
-  threshold = 0.15,
+  threshold = 0.2,
 }: RevealProps) {
   const ref = useRef<HTMLDivElement | null>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -67,7 +67,7 @@ export default function Reveal({
         transform: isVisible ? "translate3d(0, 0, 0)" : initialTransform,
         transitionProperty: "opacity, transform",
         transitionDuration: `${durationMs}ms`,
-        transitionTimingFunction: "cubic-bezier(0.2, 0.8, 0.2, 1)",
+        transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
         transitionDelay: `${delayMs}ms`,
         willChange: "opacity, transform",
       }}
