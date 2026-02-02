@@ -37,6 +37,19 @@ const Index = () => {
   }, []);
 
   useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [mobileMenuOpen]);
+
+  useEffect(() => {
     const ids: Array<"produkt" | "vorteile" | "ueber-uns"> = [
       "produkt",
       "vorteile",
@@ -109,7 +122,7 @@ const Index = () => {
             <img
               src={weissheimLogo}
               alt="WEISSHEIM Logo"
-              className="h-16 w-auto justify-self-center md:h-24 lg:h-28"
+              className="h-20 w-auto justify-self-center md:h-24 lg:h-28"
             />
             <div className="justify-self-end md:hidden">
               <button
@@ -174,8 +187,12 @@ const Index = () => {
           className="fixed inset-0 z-40 bg-black/20 p-4"
           role="dialog"
           aria-modal="true"
+          onClick={() => setMobileMenuOpen(false)}
         >
-          <div className="mx-auto w-full max-w-sm rounded-[28px] bg-white shadow-2xl">
+          <div
+            className="mx-auto w-full max-w-sm rounded-[28px] bg-white shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-start justify-between px-8 pt-8">
               <img
                 src={weissheimLogo}
