@@ -5,7 +5,7 @@ interface ContactFormProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const WEB3FORMS_ACCESS_KEY = "fccdc043-113c-450f-bf35-0cd834fa864e"; // <- einsetzen
+const WEB3FORMS_ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY;
 
 export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(

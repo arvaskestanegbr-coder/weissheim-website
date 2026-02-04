@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "./components/ui/button";
 import { Card } from "./components/ui/card";
-import weissheimLogo from "./assets/weissheim-logo.png";
+import weissheimLogo from "./assets/weissheim-logo.webp";
 import ContactForm from "./components/ContactForm";
 import {
   Home,
@@ -14,8 +14,8 @@ import {
   ChevronDown,
   X,
 } from "lucide-react";
-import produktWeiss from "./assets/produkt-weiss.png";
-import produktSchwarz from "./assets/produkt-schwarz.png";
+import produktWeiss from "./assets/produkt-weiss.webp";
+import produktSchwarz from "./assets/produkt-schwarz.webp";
 import Reveal from "./components/Reveal";
 
 const Index = () => {
@@ -109,31 +109,39 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <nav
-        className={`sticky top-0 z-50 transition-all duration-300 ${
+      <nav className={`sticky top-0 z-50 transition-all duration-300 ${
           scrolled
-            ? "bg-background shadow-[0_10px_30px_rgba(15,23,42,0.08)] border-b border-border/60"
-            : "bg-background"
-        }`}
-      >
-        <div className="container mx-auto px-4 md:px-6 py-4 md:py-5 md:flex md:items-center md:justify-between">
-          <div className="grid grid-cols-3 items-center md:block">
-            <div className="md:hidden" />
+            ? "bg-white/70 backdrop-blur-md shadow-sm py-1"
+            : "bg-transparent py-2 md:py-4"
+        }`}>
+        <div className="container mx-auto px-4 md:px-6 md:flex md:items-center md:justify-between">
+          {/* Mobile: Logo zentriert, Button rechts | Desktop: Logo links */}
+          <div className={`flex items-center justify-between md:block transition-all duration-300`}>
+            {/* Placeholder links für Layout-Balance (Mobile) */}
+            <div className={`md:hidden w-10 h-10 ${scrolled ? "hidden" : "invisible"}`} />
             <img
               src={weissheimLogo}
               alt="WEISSHEIM Logo"
-              className="h-20 w-auto justify-self-center md:h-24 lg:h-28"
+              className={`w-auto transition-all duration-300 ${
+                scrolled ? "h-14 md:h-16 lg:h-20 -my-2" : "h-24 md:h-28 lg:h-32"
+              }`}
             />
-            <div className="justify-self-end md:hidden">
-              <button
-                type="button"
-                onClick={() => setMobileMenuOpen(true)}
-                className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-border/60 bg-background shadow-sm hover:bg-muted/30 transition-colors"
-                aria-label="Menü öffnen"
-              >
-                <Menu className="h-5 w-5 text-foreground" />
-              </button>
-            </div>
+            {/* Hamburger Button - immer rechts (Mobile) */}
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className={`md:hidden inline-flex h-10 w-10 items-center justify-center rounded-full backdrop-blur-sm shadow-md hover:scale-105 active:scale-95 transition-all duration-200 ${
+                scrolled
+                  ? "bg-white/60 hover:bg-white/80"
+                  : "bg-white/80 hover:bg-white"
+              }`}
+              aria-label={mobileMenuOpen ? "Menü schließen" : "Menü öffnen"}
+            >
+              <div className="relative h-5 w-5">
+                <Menu className={`absolute inset-0 h-5 w-5 text-foreground transition-all duration-300 ${mobileMenuOpen ? "opacity-0 rotate-90 scale-0" : "opacity-100 rotate-0 scale-100"}`} />
+                <X className={`absolute inset-0 h-5 w-5 text-foreground transition-all duration-300 ${mobileMenuOpen ? "opacity-100 rotate-0 scale-100" : "opacity-0 -rotate-90 scale-0"}`} />
+              </div>
+            </button>
           </div>
 
           <div
@@ -180,57 +188,33 @@ const Index = () => {
             </div>
           </div>
         </div>
-      </nav>
-
-      {mobileMenuOpen && (
+        {/* Mobile Dropdown Menu - direkt am Header */}
         <div
-          className="fixed inset-0 z-40 bg-black/20 p-4"
-          role="dialog"
-          aria-modal="true"
-          onClick={() => setMobileMenuOpen(false)}
+          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+            mobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+          }`}
         >
-          <div
-            className="mx-auto w-full max-w-sm rounded-[28px] bg-white shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-start justify-between px-8 pt-8">
-              <img
-                src={weissheimLogo}
-                alt="WEISSHEIM Logo"
-                className="h-12 w-auto"
-              />
-              <button
-                type="button"
-                onClick={() => setMobileMenuOpen(false)}
-                className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-border/60 bg-white shadow-sm hover:bg-muted/30 transition-colors"
-                aria-label="Menü schließen"
-              >
-                <X className="h-5 w-5 text-foreground" />
-              </button>
-            </div>
-
-            <div className="mt-6 h-px bg-border/60" />
-
-            <div className="px-8 py-8">
-              <div className="space-y-7 text-3xl font-semibold tracking-tight text-foreground">
+          <div className="container mx-auto px-4 pb-4">
+            <div className="rounded-2xl p-4 mt-2 bg-white/70 backdrop-blur-md shadow-lg">
+              <div className="space-y-1">
                 <a
                   href="#produkt"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block"
+                  className="block px-4 py-3 text-lg font-medium text-foreground hover:bg-gray-100 rounded-xl transition-colors"
                 >
                   Produkt
                 </a>
                 <a
                   href="#vorteile"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block"
+                  className="block px-4 py-3 text-lg font-medium text-foreground hover:bg-gray-100 rounded-xl transition-colors"
                 >
                   Vorteile
                 </a>
                 <a
                   href="#ueber-uns"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block"
+                  className="block px-4 py-3 text-lg font-medium text-foreground hover:bg-gray-100 rounded-xl transition-colors"
                 >
                   Details
                 </a>
@@ -240,19 +224,17 @@ const Index = () => {
                     setMobileMenuOpen(false);
                     setContactFormOpen(true);
                   }}
-                  className="block"
+                  className="block w-full text-left px-4 py-3 text-lg font-medium text-foreground hover:bg-gray-100 rounded-xl transition-colors"
                 >
                   Kontakt
                 </button>
               </div>
-
-              <div className="mt-10">
-                <Button size="lg" className="w-full text-lg" asChild>
+              <div className="mt-3 pt-3 border-t border-gray-200">
+                <Button size="lg" className="w-full" asChild>
                   <a
                     href="https://www.amazon.de/WEISSHEIM%C2%AE-W%C3%A4schesammler-abnehmbaren-W%C3%A4scheschrank-W%C3%A4schesortierer/dp/B0F3ZBN75C"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex w-full items-center justify-center"
                   >
                     Jetzt kaufen
                   </a>
@@ -261,10 +243,10 @@ const Index = () => {
             </div>
           </div>
         </div>
-      )}
+      </nav>
 
       {/* Hero Section */}
-      <section className="pt-28 md:pt-36 pb-20 md:pb-24 px-4 bg-white">
+      <section className="pt-16 md:pt-36 pb-20 md:pb-24 px-4 bg-white">
         <div className="container mx-auto max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 xl:gap-24 items-center">
             <Reveal from="left" distance={30}>
