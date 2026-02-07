@@ -85,7 +85,7 @@ const Index = () => {
 
   const navLinkClass = useMemo(() => {
     const base =
-      "relative text-[15px] lg:text-base font-medium tracking-tight transition-colors";
+      "relative text-[13px] lg:text-sm font-semibold uppercase tracking-[0.15em] transition-colors";
 
     return (id: "produkt" | "vorteile" | "ueber-uns") => {
       const isActive = activeSection === id;
@@ -168,7 +168,7 @@ const Index = () => {
             <button
               type="button"
               onClick={() => setContactFormOpen(true)}
-              className="relative text-[15px] lg:text-base font-medium tracking-tight text-foreground/70 hover:text-foreground transition-colors"
+              className="relative text-[13px] lg:text-sm font-semibold uppercase tracking-[0.15em] text-foreground/70 hover:text-foreground transition-colors"
             >
               Kontakt
             </button>
@@ -200,21 +200,21 @@ const Index = () => {
                 <a
                   href="#produkt"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block px-4 py-3 text-lg font-medium text-foreground hover:bg-gray-100 rounded-xl transition-colors"
+                  className="block px-4 py-3 text-sm font-semibold uppercase tracking-[0.15em] text-foreground hover:bg-gray-100 rounded-xl transition-colors"
                 >
                   Produkt
                 </a>
                 <a
                   href="#vorteile"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block px-4 py-3 text-lg font-medium text-foreground hover:bg-gray-100 rounded-xl transition-colors"
+                  className="block px-4 py-3 text-sm font-semibold uppercase tracking-[0.15em] text-foreground hover:bg-gray-100 rounded-xl transition-colors"
                 >
                   Vorteile
                 </a>
                 <a
                   href="#ueber-uns"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block px-4 py-3 text-lg font-medium text-foreground hover:bg-gray-100 rounded-xl transition-colors"
+                  className="block px-4 py-3 text-sm font-semibold uppercase tracking-[0.15em] text-foreground hover:bg-gray-100 rounded-xl transition-colors"
                 >
                   Details
                 </a>
@@ -224,7 +224,7 @@ const Index = () => {
                     setMobileMenuOpen(false);
                     setContactFormOpen(true);
                   }}
-                  className="block w-full text-left px-4 py-3 text-lg font-medium text-foreground hover:bg-gray-100 rounded-xl transition-colors"
+                  className="block w-full text-left px-4 py-3 text-sm font-semibold uppercase tracking-[0.15em] text-foreground hover:bg-gray-100 rounded-xl transition-colors"
                 >
                   Kontakt
                 </button>
@@ -251,10 +251,13 @@ const Index = () => {
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 xl:gap-24 items-center">
             <Reveal from="left" distance={30}>
               <div className="max-w-xl">
-                <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 text-foreground leading-[1.05]">
-                  Wäschesammler mit System
+                <span className="label-tag">Premium Wäscheorganisation</span>
+                <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-4 text-foreground leading-[1.0]">
+                  Wäschesammler<br />
+                  <em className="italic font-normal">mit System</em>
                 </h1>
-                <p className="text-lg md:text-xl text-muted-foreground mb-10 leading-7 md:leading-8">
+                <hr className="heading-rule-left" />
+                <p className="text-lg md:text-xl text-muted-foreground mb-10 leading-7 md:leading-8 font-light">
                   Hol dir den WEISSHEIM Wäschesammler mit 4 Fächern – 200 L
                   Volumen und abnehmbaren Taschen. Mit Rollen für maximale
                   Flexibilität in deinem Alltag.
@@ -302,10 +305,12 @@ const Index = () => {
         <div className="container mx-auto max-w-6xl">
           <Reveal className="text-center mb-16" from="up" distance={24}>
             <div>
-              <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-4 text-foreground leading-[1.05]">
-                Warum WEISSHEIM?
+              <span className="label-tag">Vorteile</span>
+              <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-2 text-foreground leading-[1.05]">
+                Warum <em className="italic font-normal">WEISSHEIM?</em>
               </h2>
-              <p className="text-base md:text-lg text-muted-foreground">
+              <hr className="heading-rule" />
+              <p className="text-base md:text-lg text-muted-foreground font-light">
                 Die perfekte Lösung für deine organisierte Wäscheverwaltung
               </p>
             </div>
@@ -316,7 +321,7 @@ const Index = () => {
                 <div className="w-14 h-14 mb-6 bg-primary rounded-2xl flex items-center justify-center">
                   <Home className="w-6 h-6 text-primary-foreground" />
                 </div>
-                <h3 className="text-xl font-semibold tracking-tight mb-3 text-foreground">
+                <h3 className="text-xl font-semibold tracking-tight mb-3 text-foreground italic">
                   Hygienisch &amp; durchdacht
                 </h3>
                 <p className="text-sm leading-6 text-muted-foreground">
@@ -331,7 +336,7 @@ const Index = () => {
                 <div className="w-14 h-14 mb-6 bg-primary rounded-2xl flex items-center justify-center">
                   <Package className="w-6 h-6 text-primary-foreground" />
                 </div>
-                <h3 className="text-xl font-semibold tracking-tight mb-3 text-foreground">
+                <h3 className="text-xl font-semibold tracking-tight mb-3 text-foreground italic">
                   Flexible Mobilität
                 </h3>
                 <p className="text-sm leading-6 text-muted-foreground">
@@ -346,7 +351,7 @@ const Index = () => {
                 <div className="w-14 h-14 mb-6 bg-primary rounded-2xl flex items-center justify-center">
                   <Star className="w-6 h-6 text-primary-foreground" />
                 </div>
-                <h3 className="text-xl font-semibold tracking-tight mb-3 text-foreground">
+                <h3 className="text-xl font-semibold tracking-tight mb-3 text-foreground italic">
                   Ästhetischer Stauraum
                 </h3>
                 <p className="text-sm leading-6 text-muted-foreground">
@@ -376,11 +381,13 @@ const Index = () => {
 
             <Reveal from="right" distance={30} delayMs={150}>
               <div>
-                <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 text-foreground leading-[1.05]">
-                  WEISSHEIM Wäschesammler mit System
+                <span className="label-tag">Das Produkt</span>
+                <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-4 text-foreground leading-[1.05]">
+                  Wäschesammler<br />
+                  <em className="italic font-normal">mit System</em>
                 </h2>
-
-                <p className="text-base md:text-lg text-muted-foreground mb-10 leading-7 md:leading-8">
+                <hr className="heading-rule-left" />
+                <p className="text-base md:text-lg text-muted-foreground mb-10 leading-7 md:leading-8 font-light">
                   Mit dem WEISSHEIM Wäschesammler mit 4 Fächern und großzügigen
                   200 L Volumen kombinierst du smartes Sortieren mit elegantem
                   Design. Dank Haken-System und abnehmbaren Oxford 600D Taschen
@@ -460,10 +467,12 @@ const Index = () => {
         <div className="container mx-auto max-w-6xl">
           <Reveal className="text-center mb-16" from="up" distance={24}>
             <div>
-              <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-4 text-foreground leading-[1.05]">
-                Technische Details
+              <span className="label-tag">Spezifikationen</span>
+              <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-2 text-foreground leading-[1.05]">
+                Technische <em className="italic font-normal">Details</em>
               </h2>
-              <p className="text-base md:text-lg text-muted-foreground">
+              <hr className="heading-rule" />
+              <p className="text-base md:text-lg text-muted-foreground font-light">
                 Hochwertige Materialien und durchdachte Konstruktion für deinen Alltag
               </p>
             </div>
@@ -491,10 +500,11 @@ const Index = () => {
               <div className="w-20 h-20 mx-auto mb-6 bg-secondary rounded-full flex items-center justify-center">
                 <Mail className="w-10 h-10 text-foreground" />
               </div>
-              <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 text-foreground leading-[1.05]">
-                Hast du Fragen?
+              <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-4 text-foreground leading-[1.05]">
+                Hast du <em className="italic font-normal">Fragen?</em>
               </h2>
-              <p className="text-base md:text-lg text-muted-foreground mb-10 leading-7 md:leading-8">
+              <hr className="heading-rule" />
+              <p className="text-base md:text-lg text-muted-foreground mb-10 leading-7 md:leading-8 font-light">
                 Wir sind für dich da. Kontaktiere uns gern bei Fragen zu unseren
                 Produkten oder deiner Bestellung.
               </p>
@@ -514,10 +524,12 @@ const Index = () => {
         <div className="container mx-auto max-w-4xl text-center">
           <Reveal from="up" distance={24}>
             <div>
-              <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 text-foreground leading-[1.05]">
-                Bereit für eine organisierte Wäscheverwaltung?
+              <span className="label-tag">Jetzt starten</span>
+              <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-4 text-foreground leading-[1.05]">
+                Bereit für <em className="italic font-normal">organisierte</em> Wäsche?
               </h2>
-              <p className="text-base md:text-lg text-muted-foreground mb-10 leading-7 md:leading-8">
+              <hr className="heading-rule" />
+              <p className="text-base md:text-lg text-muted-foreground mb-10 leading-7 md:leading-8 font-light">
                 Bestell jetzt deinen WEISSHEIM Wäschesammler und erlebe den Unterschied.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -570,7 +582,7 @@ const Index = () => {
               </p>
             </div>
             <div>
-              <h4 className="font-semibold mb-4 text-foreground">Links</h4>
+              <h4 className="font-semibold mb-4 text-foreground uppercase tracking-[0.15em] text-sm">Links</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>
                   <a
@@ -608,7 +620,7 @@ const Index = () => {
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4 text-foreground">
+              <h4 className="font-semibold mb-4 text-foreground uppercase tracking-[0.15em] text-sm">
                 Rechtliches
               </h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
