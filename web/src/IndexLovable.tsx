@@ -251,7 +251,7 @@ const Index = () => {
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 xl:gap-24 items-center">
             <Reveal from="left" distance={30}>
               <div className="max-w-xl">
-                <h1 className="text-5xl md:text-7xl font-semibold tracking-tight mb-6 text-foreground leading-[1.05]">
+                <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 text-foreground leading-[1.05]">
                   Wäschesammler mit System
                 </h1>
                 <p className="text-lg md:text-xl text-muted-foreground mb-10 leading-7 md:leading-8">
@@ -302,7 +302,7 @@ const Index = () => {
         <div className="container mx-auto max-w-6xl">
           <Reveal className="text-center mb-16" from="up" distance={24}>
             <div>
-              <h2 className="text-4xl md:text-6xl font-bold tracking-tight mb-4 text-foreground leading-[1.05]">
+              <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-4 text-foreground leading-[1.05]">
                 Warum WEISSHEIM?
               </h2>
               <p className="text-base md:text-lg text-muted-foreground">
@@ -376,7 +376,7 @@ const Index = () => {
 
             <Reveal from="right" distance={30} delayMs={150}>
               <div>
-                <h2 className="text-4xl md:text-6xl font-bold tracking-tight mb-6 text-foreground leading-[1.05]">
+                <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 text-foreground leading-[1.05]">
                   WEISSHEIM Wäschesammler mit System
                 </h2>
 
@@ -460,7 +460,7 @@ const Index = () => {
         <div className="container mx-auto max-w-6xl">
           <Reveal className="text-center mb-16" from="up" distance={24}>
             <div>
-              <h2 className="text-4xl md:text-6xl font-bold tracking-tight mb-4 text-foreground leading-[1.05]">
+              <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-4 text-foreground leading-[1.05]">
                 Technische Details
               </h2>
               <p className="text-base md:text-lg text-muted-foreground">
@@ -491,7 +491,7 @@ const Index = () => {
               <div className="w-20 h-20 mx-auto mb-6 bg-secondary rounded-full flex items-center justify-center">
                 <Mail className="w-10 h-10 text-foreground" />
               </div>
-              <h2 className="text-4xl md:text-6xl font-bold tracking-tight mb-6 text-foreground leading-[1.05]">
+              <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 text-foreground leading-[1.05]">
                 Hast du Fragen?
               </h2>
               <p className="text-base md:text-lg text-muted-foreground mb-10 leading-7 md:leading-8">
@@ -514,7 +514,7 @@ const Index = () => {
         <div className="container mx-auto max-w-4xl text-center">
           <Reveal from="up" distance={24}>
             <div>
-              <h2 className="text-4xl md:text-6xl font-bold tracking-tight mb-6 text-foreground leading-[1.05]">
+              <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 text-foreground leading-[1.05]">
                 Bereit für eine organisierte Wäscheverwaltung?
               </h2>
               <p className="text-base md:text-lg text-muted-foreground mb-10 leading-7 md:leading-8">
