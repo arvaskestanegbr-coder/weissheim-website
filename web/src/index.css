@@ -4,8 +4,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Verhindert horizontales Scrollen und sorgt dafür,
-   dass die Seite sich an jede Bildschirmbreite anpasst */
+/* ─── Base ─── */
 html,
 body {
   margin: 0;
@@ -14,48 +13,97 @@ body {
   min-height: 100%;
   overflow-x: clip;
   font-family: 'DM Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans",
-    sans-serif;
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: geometricPrecision;
+  background-color: #fafaf8;
+  color: #1a1a1a;
 }
 
-/* Serif-Schrift für alle Überschriften */
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
 }
 
-/* Kleine Uppercase-Label über Überschriften */
-.label-tag {
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: #6b7280;
-  display: block;
-  margin-bottom: 1rem;
-}
-
-/* Dekorativer Trennstrich */
-.heading-rule {
-  width: 3rem;
-  height: 2px;
-  background: #0f172a;
-  margin: 1.5rem auto;
-  border: none;
-}
-
-.heading-rule-left {
-  width: 3rem;
-  height: 2px;
-  background: #0f172a;
-  margin: 1.5rem 0;
-  border: none;
-}
-
-/* Root immer mindestens so hoch wie der Viewport */
 #root {
   min-height: 100vh;
+}
+
+/* ─── Premium Label (Kleine Uppercase-Tags) ─── */
+.label-tag {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #b8965a;
+  display: inline-block;
+  margin-bottom: 1.25rem;
+}
+
+/* ─── Gold Accent Line ─── */
+.accent-line {
+  width: 3rem;
+  height: 2px;
+  background: linear-gradient(90deg, #b8965a, #d4b07a);
+  border: none;
+  margin: 1.25rem 0;
+}
+
+.accent-line-center {
+  width: 3rem;
+  height: 2px;
+  background: linear-gradient(90deg, #b8965a, #d4b07a);
+  border: none;
+  margin: 1.25rem auto;
+}
+
+/* ─── Premium Section Divider ─── */
+.section-divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #e8e6e1, transparent);
+  border: none;
+  margin: 0;
+}
+
+/* ─── Gradient Backgrounds ─── */
+.bg-warm-gradient {
+  background: linear-gradient(180deg, #fafaf8 0%, #f5f4f0 100%);
+}
+
+.bg-dark-section {
+  background: linear-gradient(180deg, #1a1a1a 0%, #262524 100%);
+}
+
+/* ─── Gold Text ─── */
+.text-gold {
+  color: #b8965a;
+}
+
+/* ─── Spec Card Hover ─── */
+.spec-card {
+  position: relative;
+  overflow: hidden;
+}
+.spec-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #b8965a, #d4b07a);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.spec-card:hover::before {
+  transform: scaleX(1);
+}
+
+/* ─── Selection Color ─── */
+::selection {
+  background-color: #b8965a;
+  color: #ffffff;
 }
