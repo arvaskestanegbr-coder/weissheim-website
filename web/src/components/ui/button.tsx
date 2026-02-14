@@ -15,8 +15,6 @@ export const Button: React.FC<ButtonProps> = ({
   children,
   ...props
 }) => {
-  const Comp: React.ElementType = asChild ? "span" : "button";
-
   const base =
     "inline-flex items-center justify-center rounded-2xl font-medium transition-all transform-gpu focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40";
 
@@ -32,12 +30,20 @@ export const Button: React.FC<ButtonProps> = ({
       ? "h-14 px-8 text-base"
       : "h-11 px-6 text-sm";
 
+  const allClasses = `${base} ${variants} ${sizes} ${className}`;
+
+  if (asChild && React.isValidElement(children)) {
+    return React.cloneElement(children as React.ReactElement<Record<string, unknown>>, {
+      className: `${allClasses} ${(children.props as Record<string, unknown>).className ?? ""}`,
+    });
+  }
+
   return (
-    <Comp
-      className={`${base} ${variants} ${sizes} ${className}`}
+    <button
+      className={allClasses}
       {...props}
     >
       {children}
-    </Comp>
+    </button>
   );
 };
