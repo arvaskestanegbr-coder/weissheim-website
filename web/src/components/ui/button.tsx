@@ -15,7 +15,7 @@ export const Button: React.FC<ButtonProps> = ({
   children,
   ...props
 }) => {
-  const Comp: any = asChild ? "span" : "button";
+  const Comp: React.ElementType = asChild ? "span" : "button";
 
   const base =
     "inline-flex items-center justify-center rounded-2xl font-medium transition-all transform-gpu focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40";
