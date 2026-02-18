@@ -30,19 +30,24 @@ export const Button: React.FC<ButtonProps> = ({
       ? "h-14 px-8 text-base"
       : "h-11 px-6 text-sm";
 
-  const allClasses = `${base} ${variants} ${sizes} ${className}`;
+  const composedClassName = `${base} ${variants} ${sizes} ${className}`.trim();
 
   if (asChild && React.isValidElement(children)) {
-    return React.cloneElement(children as React.ReactElement<Record<string, unknown>>, {
-      className: `${allClasses} ${(children.props as Record<string, unknown>).className ?? ""}`,
+    const child = children as React.ReactElement<{ className?: string }>;
+    const childClassName = child.props.className ?? "";
+
+    return React.cloneElement(child, {
+      ...props,
+      className: `${composedClassName} ${childClassName}`.trim(),
     });
   }
 
+  if (asChild) {
+    return <span className={composedClassName}>{children}</span>;
+  }
+
   return (
-    <button
-      className={allClasses}
-      {...props}
-    >
+    <button className={composedClassName} {...props}>
       {children}
     </button>
   );

@@ -6,6 +6,6 @@ export default defineConfig({
   base: "./",
   build: {
     outDir: "../docs",
-    emptyOutDir: false, // wichtig: CNAME & Co. bleiben erhalten
+    emptyOutDir: true,
   },
 });

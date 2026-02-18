@@ -1,1 +1,8 @@
 .DS_Store
+.vscode/
+web/node_modules/
+web/dist/
+web/.env
+web/.env.*
+!web/.env.example
+npm-debug.log*
