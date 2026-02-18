@@ -38,3 +38,7 @@ export function trackContactOpen(source: string): void {
 export function trackContactSubmit(status: "success" | "error"): void {
   trackEvent("contact_submit", { status });
 }
+
+export function trackTestsiegerClick(source: string): void {
+  trackEvent("testsieger_click", { source });
+}
