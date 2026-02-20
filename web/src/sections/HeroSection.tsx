@@ -3,24 +3,18 @@ import { Button } from "../components/ui/button";
 import Reveal from "../components/Reveal";
 import { AMAZON_PRODUCT_URL, HERO_HIGHLIGHTS } from "../config/site";
 import produktSchwarz from "../assets/produkt-schwarz.webp";
-import TestsiegerBanner from "./TestsiegerBanner";
 
 interface HeroSectionProps {
   onAmazonClick: (source: string) => void;
-  onTestsiegerClick: (source: string) => void;
 }
 
-export default function HeroSection({ onAmazonClick, onTestsiegerClick }: HeroSectionProps) {
+export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
   return (
-    <section className="pt-16 md:pt-36 pb-20 md:pb-24 px-4 bg-[radial-gradient(circle_at_15%_5%,rgba(37,99,235,0.08),transparent_38%),radial-gradient(circle_at_85%_15%,rgba(15,23,42,0.08),transparent_45%),#ffffff]">
+    <section className="pt-16 md:pt-36 pb-20 md:pb-24 px-4 bg-white">
       <div className="container mx-auto max-w-6xl">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 xl:gap-24 items-center">
           <Reveal from="left" distance={30}>
             <div className="max-w-xl">
-              <div className="mb-6">
-                <TestsiegerBanner onClick={() => onTestsiegerClick("hero_banner")} />
-              </div>
-
               <h1 className="text-5xl md:text-7xl font-semibold tracking-tight mb-6 text-foreground leading-[1.05]">
                 Wäschesammler mit System
               </h1>

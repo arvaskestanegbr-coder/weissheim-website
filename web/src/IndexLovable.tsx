@@ -2,11 +2,7 @@ import { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import ContactForm from "./components/ContactForm";
 import { SECTION_IDS, type SectionId } from "./config/site";
-import {
-  trackAmazonClick,
-  trackContactOpen,
-  trackTestsiegerClick,
-} from "./lib/analytics";
+import { trackAmazonClick, trackContactOpen } from "./lib/analytics";
 import ContactSection from "./sections/ContactSection";
 import FeaturesSection from "./sections/FeaturesSection";
 import FinalCtaSection from "./sections/FinalCtaSection";
@@ -97,10 +93,7 @@ const Index = () => {
         onAmazonClick={trackAmazonClick}
       />
 
-      <HeroSection
-        onAmazonClick={trackAmazonClick}
-        onTestsiegerClick={trackTestsiegerClick}
-      />
+      <HeroSection onAmazonClick={trackAmazonClick} />
       <FeaturesSection />
       <ProductSection onAmazonClick={trackAmazonClick} />
       <SpecsSection />

@@ -1,11 +1,6 @@
 export const AMAZON_PRODUCT_URL =
   "https://www.amazon.de/WEISSHEIM%C2%AE-W%C3%A4schesammler-abnehmbaren-W%C3%A4scheschrank-W%C3%A4schesortierer/dp/B0F3ZBN75C";
 
-export const TESTSIEGER_URL = "https://testsieger-online.de/17367105";
-export const TESTSIEGER_DOMAIN = "www.testsieger-online.de";
-export const TESTSIEGER_RATING = "SEHR GUT (1,2)";
-export const TESTSIEGER_PERIOD = "05/25";
-
 export const SECTION_IDS = ["produkt", "vorteile", "ueber-uns"] as const;
 
 export type SectionId = (typeof SECTION_IDS)[number];
