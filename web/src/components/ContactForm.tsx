@@ -214,10 +214,11 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="space-y-1">
-            <label className="text-sm font-medium text-slate-800">
+            <label htmlFor="cf-name" className="text-sm font-medium text-slate-800">
               Name <span className="text-red-500">*</span>
             </label>
             <input
+              id="cf-name"
               required
               ref={firstInputRef}
               name="name"
@@ -228,10 +229,11 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
           </div>
 
           <div className="space-y-1">
-            <label className="text-sm font-medium text-slate-800">
+            <label htmlFor="cf-email" className="text-sm font-medium text-slate-800">
               E-Mail <span className="text-red-500">*</span>
             </label>
             <input
+              id="cf-email"
               required
               name="email"
               type="email"
@@ -241,10 +243,11 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
           </div>
 
           <div className="space-y-1">
-            <label className="text-sm font-medium text-slate-800">
+            <label htmlFor="cf-subject" className="text-sm font-medium text-slate-800">
               Betreff <span className="text-red-500">*</span>
             </label>
             <input
+              id="cf-subject"
               required
               name="subject"
               type="text"
@@ -254,10 +257,11 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
           </div>
 
           <div className="space-y-1">
-            <label className="text-sm font-medium text-slate-800">
+            <label htmlFor="cf-order" className="text-sm font-medium text-slate-800">
               Bestellnummer <span className="text-xs font-normal text-slate-400">(optional)</span>
             </label>
             <input
+              id="cf-order"
               name="order_number"
               type="text"
               autoComplete="off"
@@ -266,10 +270,11 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
           </div>
 
           <div className="space-y-1">
-            <label className="text-sm font-medium text-slate-800">
+            <label htmlFor="cf-message" className="text-sm font-medium text-slate-800">
               Nachricht <span className="text-red-500">*</span>
             </label>
             <textarea
+              id="cf-message"
               required
               name="message"
               rows={4}

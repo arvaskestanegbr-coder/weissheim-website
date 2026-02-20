@@ -4,7 +4,7 @@ import { SPECS } from "../config/site";
 
 export default function SpecsSection() {
   return (
-    <section id="ueber-uns" className="py-20 px-4 bg-slate-50">
+    <section id="details" className="py-20 px-4 bg-slate-50">
       <div className="container mx-auto max-w-6xl">
         <Reveal className="text-center mb-16" from="up" distance={24}>
           <div>
