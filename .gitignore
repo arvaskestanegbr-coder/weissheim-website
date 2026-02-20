@@ -6,3 +6,4 @@ web/.env
 web/.env.*
 !web/.env.example
 npm-debug.log*
+_figma_export/
