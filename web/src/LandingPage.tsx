@@ -4,6 +4,7 @@ import ContactForm from "./components/ContactForm";
 import { SECTION_IDS, type SectionId } from "./config/site";
 import { trackAmazonClick, trackContactOpen } from "./lib/analytics";
 import ContactSection from "./sections/ContactSection";
+import FaqSection from "./sections/FaqSection";
 import FeaturesSection from "./sections/FeaturesSection";
 import FinalCtaSection from "./sections/FinalCtaSection";
 import HeroSection from "./sections/HeroSection";
@@ -98,6 +99,7 @@ const Index = () => {
       <ProductSection onAmazonClick={trackAmazonClick} />
       <SpecsSection />
       <ContactSection onOpenContact={() => openContactModal("contact_section")} />
+      <FaqSection />
       <FinalCtaSection onAmazonClick={trackAmazonClick} />
 
       <ContactForm open={contactFormOpen} onOpenChange={setContactFormOpen} />

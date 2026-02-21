@@ -27,6 +27,21 @@ web/                    # Source code (Vite project)
 
 docs/                   # Build output (served by GitHub Pages)
 _figma_export/          # Design reference (git-ignored, local only)
+
+.claude/                # AI session configuration
+├── settings.json              # Tool permissions
+├── rules/
+│   ├── general.md             # Git workflow, commit style
+│   └── frontend.md            # React/Vite/Tailwind coding rules
+└── skills/
+    ├── requirements/SKILL.md  # /requirements slash command
+    ├── requirements/template.md # Feature spec template
+    ├── deploy/SKILL.md        # /deploy slash command
+    └── help/SKILL.md          # /help slash command
+
+features/               # Feature tracking
+├── INDEX.md                   # Status of all features
+└── README.md                  # How to document features
 ```
 
 ## Build & Deploy
@@ -59,3 +74,7 @@ Deploy = push to `main`. GitHub Pages serves from `docs/`.
 - Always run `npm run build` in `web/` after source changes before pushing
 - Never edit files in `docs/` manually — they get overwritten by build
 - Keep `CLAUDE.md` updated when making structural changes
+
+## Feature Overview
+
+@features/INDEX.md

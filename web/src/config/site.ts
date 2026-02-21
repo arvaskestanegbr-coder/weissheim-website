@@ -30,3 +30,31 @@ export const SPECS = [
 ];
 
 export const HERO_HIGHLIGHTS = ["200 L Volumen", "4 Fächer", "Mit Rollen"];
+
+export const FAQS: Array<{ question: string; answer: string }> = [
+  {
+    question: "Wie lange dauert die Lieferung?",
+    answer:
+      "Wir versenden über Amazon Prime aus Berlin. Deutschlandweit bekommst du deine Bestellung in der Regel innerhalb von 1–3 Werktagen.",
+  },
+  {
+    question: "Welche Maße hat der Wäschesortierer?",
+    answer:
+      "Der WEISSHEIM Wäschesortierer hat eine Höhe von 144,5 cm, eine Breite von 70 cm und eine Tiefe von 30 cm – kompakt genug für jede Ecke, groß genug für den ganzen Haushalt.",
+  },
+  {
+    question: "In welchen Farben ist er erhältlich?",
+    answer:
+      "Du kannst zwischen drei Farben wählen: Himmelblau, Beige und Schwarz. Alle Varianten sind auf Amazon verfügbar.",
+  },
+  {
+    question: "Wie lange gilt das Rückgaberecht?",
+    answer:
+      "Wir gewähren dir freiwillig 30 Tage Rückgaberecht – doppelt so lang wie gesetzlich vorgeschrieben. Deine Zufriedenheit hat für uns oberste Priorität.",
+  },
+  {
+    question: "Wie reinige ich die Taschen?",
+    answer:
+      "Ganz einfach: Haken aus den Schlaufen entnehmen, Bodenplatte herausnehmen, Tasche in die Waschmaschine oder per Hand waschen. Das Oxford 600D-Material ist hochdichtes, reißfestes Polyester mit wasserabweisender PU-Beschichtung – robust, leicht und pflegeleicht.",
+  },
+];

@@ -9,7 +9,7 @@ interface FinalCtaSectionProps {
 
 export default function FinalCtaSection({ onAmazonClick }: FinalCtaSectionProps) {
   return (
-    <section className="py-20 md:py-24 px-4 bg-slate-50">
+    <section className="py-20 md:py-24 px-4 bg-white">
       <div className="container mx-auto max-w-4xl text-center">
         <Reveal from="up" distance={24}>
           <div>
