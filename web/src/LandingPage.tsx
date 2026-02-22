@@ -86,7 +86,6 @@ const Index = () => {
     <div className="min-h-screen bg-background pb-24 md:pb-0">
       <SiteHeader
         scrolled={scrolled}
-        heroIsDark
         mobileMenuOpen={mobileMenuOpen}
         activeSection={activeSection}
         onToggleMobileMenu={() => setMobileMenuOpen((open) => !open)}
@@ -109,7 +108,7 @@ const Index = () => {
         <button
           type="button"
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-24 right-5 md:bottom-8 md:right-8 bg-primary text-primary-foreground h-12 w-12 flex items-center justify-center rounded-full shadow-[0_14px_40px_rgba(15,23,42,0.18)] hover:shadow-[0_18px_55px_rgba(15,23,42,0.22)] hover:-translate-y-0.5 hover:bg-primary/90 transition-all transform-gpu z-40"
+          className="fixed bottom-24 right-5 md:bottom-8 md:right-8 h-12 w-12 flex items-center justify-center border-[3px] border-black bg-[#87CEEB] text-black shadow-[4px_4px_0_#000] hover:shadow-[6px_6px_0_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all transform-gpu z-40"
           aria-label="Nach oben scrollen"
         >
           <ChevronDown size={24} className="rotate-180" />

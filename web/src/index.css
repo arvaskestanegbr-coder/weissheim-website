@@ -2,32 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --neo-black: #000000;
+  --neo-cream: #FAFAF5;
+  --neo-cream-warm: #F2EDE4;
+  --neo-blue: #87CEEB;
+  --neo-shadow: 4px 4px 0 #000000;
+  --neo-shadow-lg: 6px 6px 0 #000000;
+  --neo-border: 3px solid #000000;
+}
+
 @layer base {
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+    overflow-x: clip;
+    font-family: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    background-color: var(--neo-cream);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   h1,
   h2,
-  h3 {
-    font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  h3,
+  h4 {
+    font-family: "Archivo Black", "Impact", ui-sans-serif, sans-serif;
+    font-weight: 900;
   }
-}
 
-/* Verhindert horizontales Scrollen und sorgt dafür,
-   dass die Seite sich an jede Bildschirmbreite anpasst */
-html,
-body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  min-height: 100%;
-  overflow-x: clip;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans",
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: geometricPrecision;
-}
-
-/* Root immer mindestens so hoch wie der Viewport */
-#root {
-  min-height: 100vh;
+  #root {
+    min-height: 100vh;
+  }
 }

@@ -25,40 +25,39 @@ const FEATURES: { icon: LucideIcon; title: string; description: string }[] = [
 
 export default function FeaturesSection() {
   return (
-    <section id="vorteile" className="py-20 px-4 bg-white">
+    <section id="vorteile" className="bg-black border-b-[3px] border-black py-20 px-4">
       <div className="container mx-auto max-w-5xl">
-        <Reveal className="mb-16" from="up" distance={24}>
+        <Reveal className="mb-14" from="up" distance={24}>
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground leading-[1.05] max-w-xs">
-              Warum WEISSHEIM?
+            <h2 className="text-4xl md:text-6xl leading-none text-white">
+              Warum<br />
+              <span className="text-[#87CEEB]">WEISSHEIM?</span>
             </h2>
-            <p className="text-sm text-muted-foreground max-w-xs md:text-right leading-6">
+            <p className="text-sm text-white/50 max-w-xs md:text-right leading-6">
               Die perfekte Lösung für deine organisierte Wäscheverwaltung — jeden Tag.
             </p>
           </div>
         </Reveal>
 
-        <div className="border-t border-slate-100">
+        <div className="grid md:grid-cols-3 gap-0 border-[3px] border-white shadow-[6px_6px_0_#87CEEB]">
           {FEATURES.map((feature, index) => (
             <Reveal key={feature.title} from="up" distance={16} delayMs={index * 80}>
-              <div className="flex items-start gap-8 md:gap-16 py-8 md:py-10 border-b border-slate-100">
-                {/* Big number */}
-                <span className="text-[56px] md:text-[72px] leading-none font-bold text-slate-100 select-none tabular-nums flex-shrink-0 pt-1">
-                  0{index + 1}
-                </span>
-                <div className="flex-1 pt-1">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-8 h-8 rounded-lg bg-[#EBF6FD] flex items-center justify-center flex-shrink-0">
-                      <feature.icon className="w-4 h-4 text-[#2B90C8]" />
-                    </div>
-                    <h3 className="text-lg md:text-xl font-semibold tracking-tight text-foreground">
-                      {feature.title}
-                    </h3>
+              <div className={`p-8 md:p-10 group h-full ${index < FEATURES.length - 1 ? "border-b-[3px] md:border-b-0 md:border-r-[3px] border-white/20" : ""}`}>
+                {/* Number + icon row */}
+                <div className="flex items-center justify-between mb-6">
+                  <span className="text-[56px] leading-none font-bold text-white/10 select-none tabular-nums">
+                    0{index + 1}
+                  </span>
+                  <div className="border-[3px] border-[#87CEEB] bg-[#87CEEB] p-2.5 shadow-[3px_3px_0_#fff]">
+                    <feature.icon className="w-5 h-5 text-black" />
                   </div>
-                  <p className="text-sm md:text-base leading-7 text-muted-foreground max-w-lg">
-                    {feature.description}
-                  </p>
                 </div>
+                <h3 className="text-xl font-bold text-white mb-3 leading-tight">
+                  {feature.title}
+                </h3>
+                <p className="text-sm leading-7 text-white/55">
+                  {feature.description}
+                </p>
               </div>
             </Reveal>
           ))}

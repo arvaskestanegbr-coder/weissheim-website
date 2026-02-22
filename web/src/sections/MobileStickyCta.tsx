@@ -11,13 +11,13 @@ export default function MobileStickyCta({
   onOpenContact,
 }: MobileStickyCtaProps) {
   return (
-    <div className="md:hidden fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80 px-4 py-3">
-      <div className="mx-auto flex max-w-md items-center gap-2">
+    <div className="md:hidden fixed inset-x-0 bottom-0 z-40 border-t-[3px] border-black bg-black px-4 py-3">
+      <div className="mx-auto flex max-w-md items-center gap-3">
         <a
           href={AMAZON_PRODUCT_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-medium text-primary-foreground shadow-sm transition hover:bg-primary/90"
+          className="inline-flex h-12 flex-1 items-center justify-center gap-2 border-[3px] border-[#87CEEB] bg-[#87CEEB] px-4 text-sm font-bold text-black uppercase tracking-wide shadow-[3px_3px_0_#fff] transition hover:shadow-[4px_4px_0_#fff] hover:-translate-x-px hover:-translate-y-px"
           onClick={() => onAmazonClick("sticky_mobile")}
           data-analytics-id="amazon-sticky-mobile"
         >
@@ -27,7 +27,7 @@ export default function MobileStickyCta({
         <button
           type="button"
           onClick={onOpenContact}
-          className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-3 text-sm font-medium text-foreground transition hover:bg-slate-50"
+          className="inline-flex h-12 items-center justify-center gap-2 border-[3px] border-white bg-black px-4 text-sm font-bold text-white uppercase tracking-wide transition hover:bg-white hover:text-black"
         >
           <MessageCircleQuestion size={16} />
           Fragen?
