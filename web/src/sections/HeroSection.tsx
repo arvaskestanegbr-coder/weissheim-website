@@ -1,7 +1,7 @@
 import { ShoppingCart } from "lucide-react";
 import { Button } from "../components/ui/button";
 import Reveal from "../components/Reveal";
-import { AMAZON_PRODUCT_URL, HERO_HIGHLIGHTS } from "../config/site";
+import { AMAZON_PRODUCT_URL, HERO_HIGHLIGHTS, PRODUCT_COLORS } from "../config/site";
 import produktSchwarz from "../assets/produkt-schwarz.webp";
 
 interface HeroSectionProps {
@@ -28,6 +28,20 @@ export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
                     {highlight}
                   </span>
                 ))}
+              </div>
+
+              <div className="mb-8 flex items-center gap-3">
+                <span className="text-xs text-muted-foreground">Farbe:</span>
+                <div className="flex items-center gap-3">
+                  {PRODUCT_COLORS.map((color) => (
+                    <div key={color.name} className="flex items-center gap-1.5">
+                      <span
+                        className={`w-4 h-4 rounded-full ring-1 ring-slate-200 inline-block ${color.bgClass}`}
+                      />
+                      <span className="text-xs text-slate-600">{color.name}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <p className="text-lg md:text-xl text-muted-foreground mb-10 leading-7 md:leading-8">

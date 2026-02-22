@@ -21,12 +21,18 @@ export const PRODUCT_BENEFITS = [
 ];
 
 export const SPECS = [
-  { label: "Volumen", value: "200 Liter", icon: "📦" },
-  { label: "Fächer", value: "4 abnehmbare Taschen", icon: "🗂️" },
-  { label: "Material", value: "Oxford 600D", icon: "🧵" },
-  { label: "Rahmen", value: "Stabiler Stahlrahmen", icon: "🔩" },
-  { label: "Mobilität", value: "Mit Rollen", icon: "🛞" },
-  { label: "Ablage", value: "Holz-Ablagefläche", icon: "🪵" },
+  { label: "Volumen", value: "200 Liter", icon: "Package" },
+  { label: "Fächer", value: "4 abnehmbare Taschen", icon: "LayoutGrid" },
+  { label: "Material", value: "Oxford 600D", icon: "Layers" },
+  { label: "Rahmen", value: "Stabiler Stahlrahmen", icon: "Wrench" },
+  { label: "Mobilität", value: "Mit Rollen", icon: "Disc3" },
+  { label: "Ablage", value: "Holz-Ablagefläche", icon: "PanelTop" },
+];
+
+export const PRODUCT_COLORS = [
+  { name: "Himmelblau", bgClass: "bg-[#87CEEB]" },
+  { name: "Beige", bgClass: "bg-[#C8B99A]" },
+  { name: "Schwarz", bgClass: "bg-[#1C1C1E]" },
 ];
 
 export const HERO_HIGHLIGHTS = ["200 L Volumen", "4 Fächer", "Mit Rollen"];

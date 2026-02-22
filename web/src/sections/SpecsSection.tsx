@@ -1,6 +1,24 @@
+import {
+  Disc3,
+  LayersIcon,
+  LayoutGrid,
+  Package,
+  PanelTop,
+  Wrench,
+  type LucideIcon,
+} from "lucide-react";
 import { Card } from "../components/ui/card";
 import Reveal from "../components/Reveal";
 import { SPECS } from "../config/site";
+
+const ICON_MAP: Record<string, LucideIcon> = {
+  Package,
+  LayoutGrid,
+  Layers: LayersIcon,
+  Wrench,
+  Disc3,
+  PanelTop,
+};
 
 export default function SpecsSection() {
   return (
@@ -18,15 +36,20 @@ export default function SpecsSection() {
         </Reveal>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {SPECS.map((spec, index) => (
-            <Reveal key={spec.label} from="up" distance={24} delayMs={index * 80}>
-              <Card className="p-6 hover:shadow-[0_18px_50px_rgba(15,23,42,0.10)] hover:-translate-y-1">
-                <div className="text-2xl mb-4">{spec.icon}</div>
-                <p className="text-xs text-muted-foreground mb-1">{spec.label}</p>
-                <p className="text-sm font-medium text-foreground">{spec.value}</p>
-              </Card>
-            </Reveal>
-          ))}
+          {SPECS.map((spec, index) => {
+            const Icon = ICON_MAP[spec.icon];
+            return (
+              <Reveal key={spec.label} from="up" distance={24} delayMs={index * 80}>
+                <Card className="p-6 hover:shadow-[0_18px_50px_rgba(15,23,42,0.10)] hover:-translate-y-1">
+                  <div className="mb-4 text-foreground">
+                    {Icon && <Icon size={24} strokeWidth={1.5} />}
+                  </div>
+                  <p className="text-xs text-muted-foreground mb-1">{spec.label}</p>
+                  <p className="text-sm font-medium text-foreground">{spec.value}</p>
+                </Card>
+              </Reveal>
+            );
+          })}
         </div>
       </div>
     </section>

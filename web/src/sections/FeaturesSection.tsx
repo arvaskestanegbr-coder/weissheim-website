@@ -41,8 +41,8 @@ export default function FeaturesSection() {
           {FEATURES.map((feature, index) => (
             <Reveal key={feature.title} from="up" distance={24} delayMs={index * 100}>
               <Card className="p-10 hover:shadow-[0_18px_50px_rgba(15,23,42,0.10)] hover:-translate-y-1">
-                <div className="w-14 h-14 mb-6 bg-primary rounded-2xl flex items-center justify-center">
-                  <feature.icon className="w-6 h-6 text-primary-foreground" />
+                <div className="w-14 h-14 mb-6 bg-[#EBF6FD] rounded-2xl flex items-center justify-center">
+                  <feature.icon className="w-6 h-6 text-[#2B90C8]" />
                 </div>
                 <h3 className="text-xl font-semibold tracking-tight mb-3 text-foreground">
                   {feature.title}

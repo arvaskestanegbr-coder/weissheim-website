@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  h1,
+  h2,
+  h3 {
+    font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  }
+}
+
 /* Verhindert horizontales Scrollen und sorgt dafür,
    dass die Seite sich an jede Bildschirmbreite anpasst */
 html,
