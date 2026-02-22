@@ -11,25 +11,25 @@ export default function MobileStickyCta({
   onOpenContact,
 }: MobileStickyCtaProps) {
   return (
-    <div className="md:hidden fixed inset-x-0 bottom-0 z-40 border-t-[3px] border-black bg-black px-4 py-3">
-      <div className="mx-auto flex max-w-md items-center gap-3">
+    <div className="md:hidden fixed inset-x-0 bottom-0 z-40 border-t border-[#0A0A0A]/10 bg-[#FAF8F3]/95 backdrop-blur supports-[backdrop-filter]:bg-[#FAF8F3]/85 px-4 py-3">
+      <div className="mx-auto flex max-w-md items-center gap-2.5">
         <a
           href={AMAZON_PRODUCT_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex h-12 flex-1 items-center justify-center gap-2 border-[3px] border-[#87CEEB] bg-[#87CEEB] px-4 text-sm font-bold text-black uppercase tracking-wide shadow-[3px_3px_0_#fff] transition hover:shadow-[4px_4px_0_#fff] hover:-translate-x-px hover:-translate-y-px"
+          className="inline-flex h-12 flex-1 items-center justify-center gap-2 bg-[#0A0A0A] text-[#FAF8F3] px-4 text-[13px] font-semibold tracking-wider uppercase transition-colors hover:bg-[#0A0A0A]/80"
           onClick={() => onAmazonClick("sticky_mobile")}
           data-analytics-id="amazon-sticky-mobile"
         >
-          <ShoppingCart size={16} />
+          <ShoppingCart size={15} />
           Jetzt kaufen
         </a>
         <button
           type="button"
           onClick={onOpenContact}
-          className="inline-flex h-12 items-center justify-center gap-2 border-[3px] border-white bg-black px-4 text-sm font-bold text-white uppercase tracking-wide transition hover:bg-white hover:text-black"
+          className="inline-flex h-12 items-center justify-center gap-2 border border-[#0A0A0A]/20 bg-transparent text-[#0A0A0A]/60 px-4 text-[13px] font-semibold tracking-wider uppercase transition-colors hover:border-[#0A0A0A]/40 hover:text-[#0A0A0A]"
         >
-          <MessageCircleQuestion size={16} />
+          <MessageCircleQuestion size={15} />
           Fragen?
         </button>
       </div>

@@ -3,13 +3,11 @@
 @tailwind utilities;
 
 :root {
-  --neo-black: #000000;
-  --neo-cream: #FAFAF5;
-  --neo-cream-warm: #F2EDE4;
-  --neo-blue: #87CEEB;
-  --neo-shadow: 4px 4px 0 #000000;
-  --neo-shadow-lg: 6px 6px 0 #000000;
-  --neo-border: 3px solid #000000;
+  --warm-black: #0A0A0A;
+  --warm-white: #FAF8F3;
+  --warm-surface: #F0EBE3;
+  --warm-taupe: #C9B99A;
+  --warm-taupe-dark: #A09178;
 }
 
 @layer base {
@@ -21,17 +19,18 @@
     min-height: 100%;
     overflow-x: clip;
     font-family: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
-    background-color: var(--neo-cream);
+    background-color: var(--warm-white);
+    color: var(--warm-black);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   h1,
   h2,
-  h3,
-  h4 {
-    font-family: "Archivo Black", "Impact", ui-sans-serif, sans-serif;
-    font-weight: 900;
+  h3 {
+    font-family: "Cormorant Garamond", "Georgia", ui-serif, serif;
+    font-weight: 700;
+    letter-spacing: -0.01em;
   }
 
   #root {

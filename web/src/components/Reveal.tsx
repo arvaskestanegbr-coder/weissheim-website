@@ -1,4 +1,8 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 type RevealFrom = "left" | "right" | "up" | "down";
 
@@ -10,68 +14,52 @@ interface RevealProps {
   delayMs?: number;
   durationMs?: number;
   once?: boolean;
-  threshold?: number;
 }
 
 export default function Reveal({
   children,
   className = "",
   from = "up",
-  distance = 20,
+  distance = 28,
   delayMs = 0,
-  durationMs = 700,
+  durationMs = 900,
   once = true,
-  threshold = 0.2,
 }: RevealProps) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0];
-        if (!entry) return;
+    const fromVars: gsap.TweenVars = { opacity: 0 };
+    if (from === "up") fromVars.y = distance;
+    if (from === "down") fromVars.y = -distance;
+    if (from === "left") fromVars.x = -distance;
+    if (from === "right") fromVars.x = distance;
 
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          if (once) observer.disconnect();
-        } else if (!once) {
-          setIsVisible(false);
-        }
+    gsap.set(el, fromVars);
+
+    const st = ScrollTrigger.create({
+      trigger: el,
+      start: "top 88%",
+      once,
+      onEnter: () => {
+        gsap.to(el, {
+          opacity: 1,
+          x: 0,
+          y: 0,
+          duration: durationMs / 1000,
+          delay: delayMs / 1000,
+          ease: "power3.out",
+        });
       },
-      { threshold },
-    );
+    });
 
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [once, threshold]);
-
-  const initialTransform =
-    from === "left"
-      ? `translate3d(-${distance}px, 0, 0)`
-      : from === "right"
-        ? `translate3d(${distance}px, 0, 0)`
-        : from === "down"
-          ? `translate3d(0, ${distance}px, 0)`
-          : `translate3d(0, -${distance}px, 0)`;
+    return () => st.kill();
+  }, [from, distance, delayMs, durationMs, once]);
 
   return (
-    <div
-      ref={ref}
-      className={className}
-      style={{
-        opacity: isVisible ? 1 : 0,
-        transform: isVisible ? "translate3d(0, 0, 0)" : initialTransform,
-        transitionProperty: "opacity, transform",
-        transitionDuration: `${durationMs}ms`,
-        transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
-        transitionDelay: `${delayMs}ms`,
-        willChange: "opacity, transform",
-      }}
-    >
+    <div ref={ref} className={className}>
       {children}
     </div>
   );

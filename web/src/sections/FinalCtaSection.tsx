@@ -8,34 +8,28 @@ interface FinalCtaSectionProps {
 
 export default function FinalCtaSection({ onAmazonClick }: FinalCtaSectionProps) {
   return (
-    <section className="bg-black py-24 md:py-32 px-4 overflow-hidden">
-      {/* Diagonal stripe texture */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.05]"
-        style={{
-          backgroundImage:
-            "repeating-linear-gradient(45deg, #fff 0, #fff 1px, transparent 0, transparent 50%)",
-          backgroundSize: "20px 20px",
-        }}
-      />
+    <section className="relative bg-[#0A0A0A] py-28 md:py-40 px-5 md:px-8 overflow-hidden">
+      {/* Subtle warm gradient wash */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(201,185,154,0.06),transparent_70%)]" />
 
       <div className="container relative mx-auto max-w-3xl text-center">
-        <Reveal from="up" distance={32}>
+        <Reveal from="up" distance={24}>
           <div>
-            {/* Tag */}
-            <div className="mb-8 inline-block border-[3px] border-[#87CEEB] bg-[#87CEEB] px-6 py-1.5 shadow-[4px_4px_0_#fff]">
-              <span className="text-xs font-bold uppercase tracking-widest text-black">
+            {/* Eyebrow */}
+            <div className="mb-8 flex items-center justify-center gap-3">
+              <span className="h-px w-10 bg-[#C9B99A]/40" />
+              <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#C9B99A] font-[Space_Grotesk]">
                 Jetzt bestellen
               </span>
+              <span className="h-px w-10 bg-[#C9B99A]/40" />
             </div>
 
-            <h2 className="text-5xl md:text-7xl leading-none mb-6 text-white">
-              Bereit für<br />
-              echte<br />
-              <span className="text-[#87CEEB]">Ordnung?</span>
+            <h2 className="text-5xl md:text-7xl text-[#FAF8F3] leading-[0.95] mb-8">
+              Bereit für echte<br />
+              <em className="text-[#C9B99A]">Ordnung?</em>
             </h2>
 
-            <p className="text-base md:text-lg text-white/50 mb-12 leading-7 max-w-xl mx-auto">
+            <p className="text-[15px] text-[#FAF8F3]/35 mb-14 leading-7 max-w-md mx-auto font-[Space_Grotesk]">
               Bestell jetzt deinen WEISSHEIM Wäschesammler und erlebe den Unterschied.
               Direkt über Amazon — schnelle Lieferung, 30 Tage Rückgabe.
             </p>
@@ -44,11 +38,11 @@ export default function FinalCtaSection({ onAmazonClick }: FinalCtaSectionProps)
               href={AMAZON_PRODUCT_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 border-[3px] border-[#87CEEB] bg-[#87CEEB] px-10 py-5 text-base font-bold text-black uppercase tracking-wide shadow-[6px_6px_0_#fff] hover:shadow-[8px_8px_0_#fff] hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all"
+              className="inline-flex items-center justify-center gap-2.5 bg-[#FAF8F3] text-[#0A0A0A] px-10 py-5 text-[13px] font-semibold tracking-wider uppercase transition-all duration-300 hover:bg-[#FAF8F3]/85 font-[Space_Grotesk]"
               onClick={() => onAmazonClick("final_cta")}
               data-analytics-id="amazon-final-cta"
             >
-              <ShoppingCart size={20} />
+              <ShoppingCart size={15} />
               Jetzt auf Amazon kaufen
             </a>
           </div>
