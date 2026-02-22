@@ -1,8 +1,8 @@
 import { Home, Package, Star } from "lucide-react";
-import { Card } from "../components/ui/card";
+import type { LucideIcon } from "lucide-react";
 import Reveal from "../components/Reveal";
 
-const FEATURES = [
+const FEATURES: { icon: LucideIcon; title: string; description: string }[] = [
   {
     icon: Home,
     title: "Hygienisch & durchdacht",
@@ -25,30 +25,41 @@ const FEATURES = [
 
 export default function FeaturesSection() {
   return (
-    <section id="vorteile" className="py-20 px-4 bg-slate-50">
-      <div className="container mx-auto max-w-6xl">
-        <Reveal className="text-center mb-16" from="up" distance={24}>
-          <div>
-            <h2 className="text-4xl md:text-6xl font-bold tracking-tight mb-4 text-foreground leading-[1.05]">
+    <section id="vorteile" className="py-20 px-4 bg-white">
+      <div className="container mx-auto max-w-5xl">
+        <Reveal className="mb-16" from="up" distance={24}>
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground leading-[1.05] max-w-xs">
               Warum WEISSHEIM?
             </h2>
-            <p className="text-base md:text-lg text-muted-foreground">
-              Die perfekte Lösung für deine organisierte Wäscheverwaltung
+            <p className="text-sm text-muted-foreground max-w-xs md:text-right leading-6">
+              Die perfekte Lösung für deine organisierte Wäscheverwaltung — jeden Tag.
             </p>
           </div>
         </Reveal>
-        <div className="grid md:grid-cols-3 gap-8">
+
+        <div className="border-t border-slate-100">
           {FEATURES.map((feature, index) => (
-            <Reveal key={feature.title} from="up" distance={24} delayMs={index * 100}>
-              <Card className="p-10 hover:shadow-[0_18px_50px_rgba(15,23,42,0.10)] hover:-translate-y-1">
-                <div className="w-14 h-14 mb-6 bg-[#EBF6FD] rounded-2xl flex items-center justify-center">
-                  <feature.icon className="w-6 h-6 text-[#2B90C8]" />
+            <Reveal key={feature.title} from="up" distance={16} delayMs={index * 80}>
+              <div className="flex items-start gap-8 md:gap-16 py-8 md:py-10 border-b border-slate-100">
+                {/* Big number */}
+                <span className="text-[56px] md:text-[72px] leading-none font-bold text-slate-100 select-none tabular-nums flex-shrink-0 pt-1">
+                  0{index + 1}
+                </span>
+                <div className="flex-1 pt-1">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-8 h-8 rounded-lg bg-[#EBF6FD] flex items-center justify-center flex-shrink-0">
+                      <feature.icon className="w-4 h-4 text-[#2B90C8]" />
+                    </div>
+                    <h3 className="text-lg md:text-xl font-semibold tracking-tight text-foreground">
+                      {feature.title}
+                    </h3>
+                  </div>
+                  <p className="text-sm md:text-base leading-7 text-muted-foreground max-w-lg">
+                    {feature.description}
+                  </p>
                 </div>
-                <h3 className="text-xl font-semibold tracking-tight mb-3 text-foreground">
-                  {feature.title}
-                </h3>
-                <p className="text-sm leading-6 text-muted-foreground">{feature.description}</p>
-              </Card>
+              </div>
             </Reveal>
           ))}
         </div>

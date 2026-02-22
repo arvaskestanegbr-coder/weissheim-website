@@ -1,10 +1,10 @@
 import { Menu, X } from "lucide-react";
-import { Button } from "../components/ui/button";
 import { AMAZON_PRODUCT_URL, NAV_ITEMS, type SectionId } from "../config/site";
-import weissheimLogo from "../assets/weissheim-logo.webp";
+import weissheimLogo from "../assets/weissheim-logo-transparent.webp";
 
 interface SiteHeaderProps {
   scrolled: boolean;
+  heroIsDark?: boolean;
   mobileMenuOpen: boolean;
   activeSection: SectionId;
   onToggleMobileMenu: () => void;
@@ -13,19 +13,28 @@ interface SiteHeaderProps {
   onAmazonClick: (source: string) => void;
 }
 
-const baseLinkClass =
-  "relative text-[15px] lg:text-base font-medium tracking-tight transition-colors";
-
-function navLinkClass(activeSection: SectionId, section: SectionId): string {
-  return `${baseLinkClass} ${
+function navLinkClass(
+  activeSection: SectionId,
+  section: SectionId,
+  useLightText: boolean,
+): string {
+  const base =
+    "relative text-[15px] font-medium tracking-tight transition-colors";
+  if (useLightText) {
+    return `${base} ${
+      activeSection === section ? "text-white" : "text-white/55 hover:text-white"
+    }`;
+  }
+  return `${base} ${
     activeSection === section
       ? "text-foreground"
-      : "text-foreground/70 hover:text-foreground"
+      : "text-foreground/60 hover:text-foreground"
   }`;
 }
 
 export default function SiteHeader({
   scrolled,
+  heroIsDark,
   mobileMenuOpen,
   activeSection,
   onToggleMobileMenu,
@@ -33,11 +42,13 @@ export default function SiteHeader({
   onOpenContact,
   onAmazonClick,
 }: SiteHeaderProps) {
+  const useLightText = !scrolled && !!heroIsDark;
+
   return (
     <nav
       className={`sticky top-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-white/70 backdrop-blur-md shadow-sm py-1"
+          ? "bg-white/80 backdrop-blur-md shadow-sm py-1"
           : "bg-transparent py-2 md:py-4"
       }`}
     >
@@ -49,7 +60,7 @@ export default function SiteHeader({
             alt="WEISSHEIM Logo"
             className={`w-auto transition-all duration-300 ${
               scrolled ? "h-14 md:h-16 lg:h-20 -my-2" : "h-24 md:h-28 lg:h-32"
-            }`}
+            } ${useLightText ? "invert brightness-200" : ""}`}
             width={400}
             height={252}
             decoding="async"
@@ -58,7 +69,11 @@ export default function SiteHeader({
             type="button"
             onClick={onToggleMobileMenu}
             className={`md:hidden inline-flex h-10 w-10 items-center justify-center rounded-full backdrop-blur-sm shadow-md hover:scale-105 active:scale-95 transition-all duration-200 ${
-              scrolled ? "bg-white/60 hover:bg-white/80" : "bg-white/80 hover:bg-white"
+              scrolled
+                ? "bg-white/60 hover:bg-white/80"
+                : useLightText
+                  ? "bg-white/10 hover:bg-white/20"
+                  : "bg-white/80 hover:bg-white"
             }`}
             aria-label={mobileMenuOpen ? "Menü schließen" : "Menü öffnen"}
             aria-expanded={mobileMenuOpen}
@@ -66,12 +81,16 @@ export default function SiteHeader({
           >
             <div className="relative h-5 w-5">
               <Menu
-                className={`absolute inset-0 h-5 w-5 text-foreground transition-all duration-300 ${
+                className={`absolute inset-0 h-5 w-5 transition-all duration-300 ${
+                  useLightText ? "text-white" : "text-foreground"
+                } ${
                   mobileMenuOpen ? "opacity-0 rotate-90 scale-0" : "opacity-100 rotate-0 scale-100"
                 }`}
               />
               <X
-                className={`absolute inset-0 h-5 w-5 text-foreground transition-all duration-300 ${
+                className={`absolute inset-0 h-5 w-5 transition-all duration-300 ${
+                  useLightText ? "text-white" : "text-foreground"
+                } ${
                   mobileMenuOpen ? "opacity-100 rotate-0 scale-100" : "opacity-0 -rotate-90 scale-0"
                 }`}
               />
@@ -81,31 +100,51 @@ export default function SiteHeader({
 
         <div className="relative hidden md:flex gap-8 items-center ml-auto mr-6">
           {NAV_ITEMS.map((item) => (
-            <a key={item.id} href={`#${item.id}`} className={navLinkClass(activeSection, item.id)}>
+            <a
+              key={item.id}
+              href={`#${item.id}`}
+              className={navLinkClass(activeSection, item.id, useLightText)}
+            >
               {item.label}
             </a>
           ))}
           <button
             type="button"
             onClick={onOpenContact}
-            className="relative text-[15px] lg:text-base font-medium tracking-tight text-foreground/70 hover:text-foreground transition-colors"
+            className={`relative text-[15px] font-medium tracking-tight transition-colors ${
+              useLightText
+                ? "text-white/55 hover:text-white"
+                : "text-foreground/60 hover:text-foreground"
+            }`}
           >
             Kontakt
           </button>
         </div>
 
         <div className="hidden md:flex items-center gap-3">
-          <Button variant="default" className="px-6" asChild>
+          {useLightText ? (
             <a
               href={AMAZON_PRODUCT_URL}
               target="_blank"
               rel="noopener noreferrer"
+              className="inline-flex items-center justify-center rounded-full bg-[#87CEEB] px-5 py-2 text-sm font-semibold text-[#0C1628] transition-all hover:bg-[#A8DCF0]"
               onClick={() => onAmazonClick("header_desktop")}
               data-analytics-id="amazon-header-desktop"
             >
               Jetzt kaufen
             </a>
-          </Button>
+          ) : (
+            <a
+              href={AMAZON_PRODUCT_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center rounded-full bg-foreground px-5 py-2 text-sm font-semibold text-background transition-all hover:bg-foreground/80"
+              onClick={() => onAmazonClick("header_desktop")}
+              data-analytics-id="amazon-header-desktop"
+            >
+              Jetzt kaufen
+            </a>
+          )}
         </div>
       </div>
 
@@ -116,7 +155,7 @@ export default function SiteHeader({
         }`}
       >
         <div className="container mx-auto px-4 pb-4">
-          <div className="rounded-2xl p-4 mt-2 bg-white/70 backdrop-blur-md shadow-lg">
+          <div className="rounded-2xl p-4 mt-2 bg-white/90 backdrop-blur-md shadow-lg">
             <div className="space-y-1">
               {NAV_ITEMS.map((item) => (
                 <a
@@ -140,17 +179,16 @@ export default function SiteHeader({
               </button>
             </div>
             <div className="mt-3 pt-3 border-t border-gray-200">
-              <Button size="lg" className="w-full" asChild>
-                <a
-                  href={AMAZON_PRODUCT_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => onAmazonClick("header_mobile")}
-                  data-analytics-id="amazon-header-mobile"
-                >
-                  Jetzt kaufen
-                </a>
-              </Button>
+              <a
+                href={AMAZON_PRODUCT_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex w-full items-center justify-center rounded-full bg-foreground py-3 text-base font-semibold text-background"
+                onClick={() => onAmazonClick("header_mobile")}
+                data-analytics-id="amazon-header-mobile"
+              >
+                Jetzt kaufen
+              </a>
             </div>
           </div>
         </div>

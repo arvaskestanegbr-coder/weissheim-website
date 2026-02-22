@@ -86,6 +86,7 @@ const Index = () => {
     <div className="min-h-screen bg-background pb-24 md:pb-0">
       <SiteHeader
         scrolled={scrolled}
+        heroIsDark
         mobileMenuOpen={mobileMenuOpen}
         activeSection={activeSection}
         onToggleMobileMenu={() => setMobileMenuOpen((open) => !open)}
