@@ -1,7 +1,7 @@
 import { ShoppingCart } from "lucide-react";
 import Reveal from "../components/Reveal";
 import { AMAZON_PRODUCT_URL, PRODUCT_BENEFITS } from "../config/site";
-import produktWeiss from "../assets/produkt-weiss.webp";
+import produktSchwarz from "../assets/produkt-schwarz.webp";
 
 interface ProductSectionProps {
   onAmazonClick: (source: string) => void;
@@ -15,12 +15,11 @@ export default function ProductSection({ onAmazonClick }: ProductSectionProps) {
 
           {/* Image — editorial, no border, just space */}
           <Reveal from="left" distance={24}>
-            <div className="group relative">
-              {/* Warm wash behind */}
-              <div className="absolute inset-8 bg-[#F0EBE3] rounded-full blur-2xl opacity-80" />
+            {/* Warm beige bg makes mix-blend-multiply invisible for white studio bg */}
+            <div className="group relative bg-[#EDE6DC] rounded-sm p-6 md:p-10">
               <img
-                src={produktWeiss}
-                alt="WEISSHEIM Wäschesammler – Weiße Variante"
+                src={produktSchwarz}
+                alt="WEISSHEIM Wäschesammler – Schwarze Variante"
                 className="relative z-10 w-full h-auto object-contain mix-blend-multiply transform-gpu transition-transform duration-700 ease-out will-change-transform group-hover:-translate-y-2"
                 width={2000}
                 height={2500}

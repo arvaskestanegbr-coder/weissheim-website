@@ -17,7 +17,7 @@ export const PRODUCT_BENEFITS = [
   "Wäschekorb mit Rollen – mobil und flexibel",
   "Elegante Holzablage + verstärkter Stahlrahmen",
   "Waschbare Taschen – hygienisch und geruchsfrei",
-  "Verfügbar in Schwarz, Beige und Himmelblau",
+  "Verfügbar in Schwarz und Beige",
 ];
 
 export const SPECS = [
@@ -30,7 +30,6 @@ export const SPECS = [
 ];
 
 export const PRODUCT_COLORS = [
-  { name: "Himmelblau", bgClass: "bg-[#87CEEB]" },
   { name: "Beige", bgClass: "bg-[#C8B99A]" },
   { name: "Schwarz", bgClass: "bg-[#1C1C1E]" },
 ];
@@ -51,7 +50,7 @@ export const FAQS: Array<{ question: string; answer: string }> = [
   {
     question: "In welchen Farben ist er erhältlich?",
     answer:
-      "Du kannst zwischen drei Farben wählen: Himmelblau, Beige und Schwarz. Alle Varianten sind auf Amazon verfügbar.",
+      "Du kannst zwischen zwei Farben wählen: Beige und Schwarz. Beide Varianten sind auf Amazon verfügbar.",
   },
   {
     question: "Wie lange gilt das Rückgaberecht?",

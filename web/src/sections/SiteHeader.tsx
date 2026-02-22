@@ -35,7 +35,7 @@ export default function SiteHeader({
         <img
           src={weissheimLogo}
           alt="WEISSHEIM Logo"
-          className="h-8 md:h-9 w-auto"
+          className="h-12 md:h-14 w-auto"
           width={400}
           height={252}
           decoding="async"

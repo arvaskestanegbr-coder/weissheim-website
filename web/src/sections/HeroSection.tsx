@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { ShoppingCart } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Reveal from "../components/Reveal";
+import MagneticButton from "../components/MagneticButton";
 import { AMAZON_PRODUCT_URL, PRODUCT_COLORS } from "../config/site";
 import produktWeiss from "../assets/produkt-weiss.webp";
 
@@ -15,7 +15,12 @@ interface HeroSectionProps {
 export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
   const imgRef = useRef<HTMLImageElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
+  const headlineRef = useRef<HTMLHeadingElement>(null);
+  const eyebrowRef = useRef<HTMLDivElement>(null);
+  const subtextRef = useRef<HTMLParagraphElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
 
+  // Parallax: product image scrolls slower than page
   useEffect(() => {
     const img = imgRef.current;
     const section = sectionRef.current;
@@ -25,13 +30,52 @@ export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
       trigger: section,
       start: "top top",
       end: "bottom top",
-      scrub: true,
+      scrub: 1.2,
       onUpdate: (self) => {
-        gsap.set(img, { y: self.progress * 60 });
+        gsap.set(img, { y: self.progress * 55 });
       },
     });
-
     return () => st.kill();
+  }, []);
+
+  // Stagger entrance animation for hero text
+  useEffect(() => {
+    const tl = gsap.timeline({ delay: 0.1 });
+
+    if (eyebrowRef.current) {
+      tl.fromTo(eyebrowRef.current,
+        { opacity: 0, y: 16 },
+        { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }
+      );
+    }
+
+    if (headlineRef.current) {
+      // Animate each line individually
+      const lines = headlineRef.current.querySelectorAll(".hero-line");
+      tl.fromTo(lines,
+        { opacity: 0, y: 32, skewY: 2 },
+        { opacity: 1, y: 0, skewY: 0, duration: 1, ease: "power3.out", stagger: 0.12 },
+        "-=0.4"
+      );
+    }
+
+    if (subtextRef.current) {
+      tl.fromTo(subtextRef.current,
+        { opacity: 0, y: 12 },
+        { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" },
+        "-=0.5"
+      );
+    }
+
+    if (ctaRef.current) {
+      tl.fromTo(ctaRef.current,
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" },
+        "-=0.45"
+      );
+    }
+
+    return () => { tl.kill(); };
   }, []);
 
   return (
@@ -39,7 +83,7 @@ export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
       ref={sectionRef}
       className="relative bg-[#FAF8F3] overflow-hidden min-h-[90vh] flex items-center"
     >
-      {/* Subtle warm texture */}
+      {/* Subtle warm dot texture */}
       <div className="pointer-events-none absolute inset-0 opacity-[0.015]"
         style={{
           backgroundImage: "radial-gradient(circle at 1px 1px, #0A0A0A 1px, transparent 0)",
@@ -52,32 +96,34 @@ export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
 
           {/* Left: Copy */}
           <div className="lg:pr-16">
-            <Reveal from="up" distance={20} delayMs={0}>
-              {/* Eyebrow */}
-              <div className="mb-8 flex items-center gap-3">
-                <span className="h-px w-10 bg-[#C9B99A]" />
-                <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#C9B99A]">
-                  Premium Wäscheorganizer
-                </span>
-              </div>
-            </Reveal>
+            {/* Eyebrow — animated separately */}
+            <div ref={eyebrowRef} className="mb-8 flex items-center gap-3" style={{ opacity: 0 }}>
+              <span className="h-px w-10 bg-[#C9B99A]" />
+              <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#C9B99A]">
+                Premium Wäscheorganizer
+              </span>
+            </div>
 
-            <Reveal from="up" distance={24} delayMs={80}>
-              <h1 className="text-[60px] md:text-[88px] lg:text-[96px] leading-[0.92] mb-8 text-[#0A0A0A]">
-                Ordnung,<br />
-                die man<br />
-                <em className="not-italic text-[#0A0A0A]/30">spürt.</em>
-              </h1>
-            </Reveal>
+            {/* Headline — each line animates individually */}
+            <h1
+              ref={headlineRef}
+              className="text-[60px] md:text-[88px] lg:text-[96px] leading-[0.92] mb-8 text-[#0A0A0A] overflow-hidden"
+            >
+              <span className="hero-line block">Ordnung,</span>
+              <span className="hero-line block">die man</span>
+              <em className="hero-line block not-italic text-[#0A0A0A]/30">spürt.</em>
+            </h1>
 
-            <Reveal from="up" distance={20} delayMs={160}>
-              <p className="text-base md:text-lg text-[#0A0A0A]/50 mb-10 leading-7 max-w-sm font-[Space_Grotesk]">
-                200 Liter, 4 abnehmbare Fächer, Rollen — und eine elegante Holzablage.
-                Für Haushalte, die Ordnung ernst nehmen.
-              </p>
-            </Reveal>
+            <p
+              ref={subtextRef}
+              className="text-base md:text-lg text-[#0A0A0A]/50 mb-10 leading-7 max-w-sm font-[Space_Grotesk]"
+              style={{ opacity: 0 }}
+            >
+              200 Liter, 4 abnehmbare Fächer, Rollen — und eine elegante Holzablage.
+              Für Haushalte, die Ordnung ernst nehmen.
+            </p>
 
-            <Reveal from="up" distance={16} delayMs={240}>
+            <div ref={ctaRef} style={{ opacity: 0 }}>
               {/* Color swatches */}
               <div className="mb-10 flex items-center gap-5">
                 <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#0A0A0A]/30">
@@ -95,37 +141,40 @@ export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
                 </div>
               </div>
 
-              {/* CTAs */}
+              {/* CTAs — Magnetic buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
-                <a
+                <MagneticButton
+                  as="a"
                   href={AMAZON_PRODUCT_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2.5 bg-[#0A0A0A] text-[#FAF8F3] px-8 py-4 text-[13px] font-semibold tracking-wider uppercase transition-all duration-300 hover:bg-[#0A0A0A]/80"
+                  className="inline-flex items-center justify-center gap-2.5 bg-[#0A0A0A] text-[#FAF8F3] px-8 py-4 text-[13px] font-semibold tracking-wider uppercase transition-colors duration-300 hover:bg-[#0A0A0A]/80"
                   onClick={() => onAmazonClick("hero_primary")}
                   data-analytics-id="amazon-hero-primary"
+                  strength={0.25}
                 >
                   <ShoppingCart size={15} />
                   Jetzt auf Amazon
-                </a>
-                <a
+                </MagneticButton>
+                <MagneticButton
+                  as="a"
                   href="#produkt"
                   className="inline-flex items-center justify-center gap-2 border border-[#0A0A0A]/20 text-[#0A0A0A]/60 px-8 py-4 text-[13px] font-semibold tracking-wider uppercase transition-all duration-300 hover:border-[#0A0A0A]/50 hover:text-[#0A0A0A]"
+                  strength={0.2}
                 >
                   Mehr erfahren
-                </a>
+                </MagneticButton>
               </div>
-            </Reveal>
+            </div>
           </div>
 
-          {/* Right: Product — editorial float, no frame */}
+          {/* Right: Product — editorial float, parallax via GSAP */}
           <div className="relative flex justify-center lg:justify-end mt-12 lg:mt-0">
-            {/* Warm wash behind product */}
             <div className="absolute inset-0 bg-[#F0EBE3] rounded-full scale-[0.75] blur-3xl opacity-60" />
             <img
               ref={imgRef}
               src={produktWeiss}
-              alt="WEISSHEIM Wäschesammler"
+              alt="WEISSHEIM Wäschesammler – Beige Variante"
               className="relative z-10 w-full max-w-[420px] lg:max-w-[480px] h-auto object-contain mix-blend-multiply will-change-transform"
               width={2000}
               height={2500}
