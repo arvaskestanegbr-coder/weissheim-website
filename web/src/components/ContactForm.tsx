@@ -184,7 +184,6 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
         if (event.target === event.currentTarget) close();
       }}
       onKeyDown={handleBackdropKeyDown}
-      aria-hidden={!open}
     >
       <div
         ref={dialogRef}

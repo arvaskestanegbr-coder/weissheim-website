@@ -240,7 +240,7 @@ export default function SiteHeader({
               target="_blank"
               rel="noopener noreferrer"
               className="group relative flex w-full items-center justify-center bg-[#0A0A0A] text-[#FAF8F3] py-3.5 text-[13px] font-semibold tracking-wider uppercase overflow-hidden font-[Space_Grotesk]"
-              onClick={() => onAmazonClick("header_mobile")}
+              onClick={() => { onCloseMobileMenu(); onAmazonClick("header_mobile"); }}
               data-analytics-id="amazon-header-mobile"
             >
               <span className="relative z-10">Jetzt kaufen</span>

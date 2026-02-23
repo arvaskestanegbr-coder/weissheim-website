@@ -294,6 +294,8 @@ export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
     return () => { tl.kill(); };
   }, []);
 
+  const colorTweenRef = useRef<gsap.core.Tween | null>(null);
+
   const handleColorSwitch = useCallback((colorName: string) => {
     if (colorName === selectedColor) return;
     const img = productImgRef.current;
@@ -301,8 +303,11 @@ export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
       setSelectedColor(colorName);
       return;
     }
+    // Kill any running crossfade to prevent overlapping animations
+    if (colorTweenRef.current) colorTweenRef.current.kill();
+
     // Crossfade: fade out → swap → fade in, then clear inline styles for CSS hover
-    gsap.to(img, {
+    colorTweenRef.current = gsap.to(img, {
       opacity: 0,
       scale: 0.97,
       filter: "blur(4px)",
@@ -310,11 +315,14 @@ export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
       ease: "power2.in",
       onComplete: () => {
         setSelectedColor(colorName);
-        gsap.fromTo(img,
+        colorTweenRef.current = gsap.fromTo(img,
           { opacity: 0, scale: 1.03, filter: "blur(4px)" },
           {
             opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.4, ease: "power2.out",
-            onComplete: () => { gsap.set(img, { clearProps: "transform,opacity,filter" }); },
+            onComplete: () => {
+              gsap.set(img, { clearProps: "transform,opacity,filter" });
+              colorTweenRef.current = null;
+            },
           },
         );
       },

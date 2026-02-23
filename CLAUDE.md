@@ -54,7 +54,7 @@ Deploy = push to `main`. GitHub Pages serves from `docs/`.
 
 ## Key Decisions
 
-- **Favicon:** SVG with `prefers-color-scheme` — auto-switches black/white for light/dark browser mode. ICO fallback for older browsers.
+- **Favicon:** ICO format (`web/public/favicon.ico`). SVG variant was removed.
 - **Images:** All product/logo images in WebP format for performance.
 - **Config:** All constants centralized in `web/src/config/site.ts` (Amazon URL, nav items, specs, features).
 - **No router:** Single-page landing page. Legal pages (impressum, datenschutz, agb) are static HTML in `public/`.
@@ -67,7 +67,7 @@ Deploy = push to `main`. GitHub Pages serves from `docs/`.
 | `web/src/LandingPage.tsx` | Main page layout + state |
 | `web/src/components/ContactForm.tsx` | Web3Forms contact modal |
 | `docs/index.html` | Live site entry (built, don't edit manually) |
-| `web/public/favicon.svg` | Adaptive favicon (dark/light mode) |
+| `web/public/favicon.ico` | Site favicon |
 
 ## Rules
 
