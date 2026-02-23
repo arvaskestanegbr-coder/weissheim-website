@@ -156,7 +156,7 @@ function TiltCard({ children, className, isDark }: { children: React.ReactNode; 
   }, []);
 
   return (
-    <div style={{ perspective: "800px" }}>
+    <div className="h-full" style={{ perspective: "800px" }}>
       <div
         ref={ref}
         className={className}
@@ -336,12 +336,12 @@ export default function SpecsSection() {
         </Reveal>
 
         {/* Hero stats — 3D tilt, asymmetric */}
-        <div className="grid grid-cols-2 md:grid-cols-[1.15fr_1fr] gap-4 md:gap-5 mb-0">
+        <div className="grid grid-cols-2 gap-4 md:gap-5 mb-0">
           {HERO_STATS.map((stat, i) => {
             const isDark = i === 0;
             return (
-              <Reveal key={stat.label} from="up" distance={20} delayMs={i * 120}>
-                <TiltCard isDark={isDark} className={`group relative rounded-sm p-8 md:p-10 overflow-hidden transition-shadow duration-500 hover:shadow-[0_16px_56px_rgba(0,0,0,0.14)] ${
+              <Reveal key={stat.label} from="up" distance={20} delayMs={i * 120} className="h-full">
+                <TiltCard isDark={isDark} className={`group relative rounded-sm p-8 md:p-10 overflow-hidden transition-shadow duration-500 hover:shadow-[0_16px_56px_rgba(0,0,0,0.14)] h-full ${
                   isDark
                     ? "bg-gradient-to-br from-[#0A0A0A] via-[#111111] to-[#1a1a1a]"
                     : "bg-[#FAF8F3]"

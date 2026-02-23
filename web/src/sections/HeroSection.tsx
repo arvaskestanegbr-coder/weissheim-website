@@ -341,10 +341,10 @@ export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
       <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-1/2 bg-[radial-gradient(ellipse_at_center_right,rgba(201,185,154,0.05),transparent_70%)]" />
 
       <div className="container relative mx-auto max-w-6xl px-5 md:px-8 py-20 md:py-28 w-full">
-        <div className="grid lg:grid-cols-[1fr_1fr] gap-12 lg:gap-0 items-center">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-0 items-center">
 
-          {/* Left: Copy */}
-          <div className="lg:pr-16">
+          {/* Text: headline, subtext, color swatches — row 1 left on desktop, order 1 on mobile */}
+          <div className="order-1 lg:col-start-1 lg:row-start-1 lg:pr-16">
             {/* Eyebrow — animated line draw-in */}
             <div ref={eyebrowRef} className="mb-8 flex items-center gap-3" style={{ opacity: 0 }}>
               <AnimatedEyebrowLine />
@@ -374,9 +374,9 @@ export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
               Für Haushalte, die Ordnung ernst nehmen.
             </p>
 
+            {/* Color swatches — clickable, switches product image */}
             <div ref={ctaRef} style={{ opacity: 0 }}>
-              {/* Color swatches — clickable, switches product image */}
-              <div className="mb-10 flex items-center gap-5">
+              <div className="flex items-center gap-5">
                 <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#0A0A0A]/30">
                   Farben
                 </span>
@@ -403,71 +403,11 @@ export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
                   })}
                 </div>
               </div>
-
-              {/* CTAs — Magnetic buttons with shimmer */}
-              <div className="flex flex-col sm:flex-row gap-4">
-                <MagneticButton
-                  as="a"
-                  href={AMAZON_PRODUCT_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group relative inline-flex items-center justify-center gap-2.5 bg-[#0A0A0A] text-[#FAF8F3] px-8 py-4 text-[13px] font-semibold tracking-wider uppercase transition-colors duration-300 hover:bg-[#0A0A0A]/80 overflow-hidden"
-                  onClick={() => onAmazonClick("hero_primary")}
-                  data-analytics-id="amazon-hero-primary"
-                >
-                  <ShoppingCart size={15} className="relative z-10" />
-                  <span className="relative z-10">Jetzt auf Amazon</span>
-                  <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-0 transition-opacity duration-500 group-hover:opacity-100">
-                    <div className="absolute inset-0 animate-shimmer" style={{ background: "linear-gradient(105deg, transparent 30%, rgba(201,185,154,0.15) 50%, transparent 70%)" }} />
-                  </div>
-                </MagneticButton>
-                <MagneticButton
-                  as="a"
-                  href="#produkt"
-                  className="group relative inline-flex items-center justify-center gap-2 border border-[#0A0A0A]/20 text-[#0A0A0A]/60 px-8 py-4 text-[13px] font-semibold tracking-wider uppercase transition-all duration-300 hover:border-[#C9B99A]/50 hover:text-[#0A0A0A] overflow-hidden"
-                >
-                  <span className="relative z-10">Mehr erfahren</span>
-                  <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-0 transition-opacity duration-500 group-hover:opacity-100">
-                    <div className="absolute inset-0 animate-shimmer" style={{ background: "linear-gradient(105deg, transparent 30%, rgba(201,185,154,0.1) 50%, transparent 70%)" }} />
-                  </div>
-                </MagneticButton>
-              </div>
-
-              {/* Amazon star rating — social proof */}
-              <div className="mt-8 flex items-center gap-2">
-                <div className="flex items-center gap-0.5">
-                  {Array.from({ length: 5 }, (_, i) => {
-                    const fill = Math.min(1, Math.max(0, AMAZON_RATING.stars - i));
-                    return (
-                      <span key={i} className="relative">
-                        <Star size={14} className="text-[#0A0A0A]/10" />
-                        {fill > 0 && (
-                          <span className="absolute inset-0 overflow-hidden" style={{ width: `${fill * 100}%` }}>
-                            <Star size={14} className="text-[#E8A030] fill-[#E8A030]" />
-                          </span>
-                        )}
-                      </span>
-                    );
-                  })}
-                </div>
-                <span className="text-[13px] font-medium text-[#0A0A0A]/70 font-[Space_Grotesk]">
-                  {AMAZON_RATING.stars.toLocaleString("de-DE")}
-                </span>
-                <a
-                  href={AMAZON_REVIEWS_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[13px] text-[#0A0A0A]/40 font-[Space_Grotesk] hover:text-[#0A0A0A]/60 transition-colors"
-                  onClick={() => onAmazonClick("hero_rating")}
-                >
-                  ({AMAZON_RATING.count} Bewertungen)
-                </a>
-              </div>
             </div>
           </div>
 
-          {/* Right: Product — CSS hover zoom + radial shadow (matches live site) */}
-          <div ref={parallaxRef} className="group relative mt-12 lg:mt-0 flex justify-center lg:justify-end bg-[#FAF8F3] border-0 ring-0 outline-none shadow-none overflow-visible p-6 before:content-[''] before:pointer-events-none before:absolute before:inset-[-16%] before:rounded-[999px] before:bg-[radial-gradient(circle_at_center,rgba(10,10,10,0.12),transparent_62%)] before:blur-3xl before:opacity-0 before:transition-opacity before:duration-500 hover:before:opacity-100">
+          {/* Product image — right column spanning both rows on desktop, order 2 on mobile */}
+          <div ref={parallaxRef} className="order-2 lg:col-start-2 lg:row-start-1 lg:row-span-2 group relative flex justify-center lg:justify-end bg-[#FAF8F3] border-0 ring-0 outline-none shadow-none overflow-visible p-6 before:content-[''] before:pointer-events-none before:absolute before:inset-[-16%] before:rounded-[999px] before:bg-[radial-gradient(circle_at_center,rgba(10,10,10,0.12),transparent_62%)] before:blur-3xl before:opacity-0 before:transition-opacity before:duration-500 hover:before:opacity-100">
             <img
               ref={productImgRef}
               src={PRODUCT_IMAGES[selectedColor] ?? produktWeiss}
@@ -480,6 +420,68 @@ export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
               decoding="async"
               sizes="(min-width: 1280px) 620px, (min-width: 1024px) 45vw, 92vw"
             />
+          </div>
+
+          {/* CTAs + Rating — below product on mobile (order 3), row 2 left on desktop */}
+          <div className="order-3 lg:col-start-1 lg:row-start-2 lg:pr-16">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <MagneticButton
+                as="a"
+                href={AMAZON_PRODUCT_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative inline-flex items-center justify-center gap-2.5 bg-[#0A0A0A] text-[#FAF8F3] px-8 py-4 text-[13px] font-semibold tracking-wider uppercase transition-colors duration-300 hover:bg-[#0A0A0A]/80 overflow-hidden"
+                onClick={() => onAmazonClick("hero_primary")}
+                data-analytics-id="amazon-hero-primary"
+              >
+                <ShoppingCart size={15} className="relative z-10" />
+                <span className="relative z-10">Jetzt auf Amazon</span>
+                <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+                  <div className="absolute inset-0 animate-shimmer" style={{ background: "linear-gradient(105deg, transparent 30%, rgba(201,185,154,0.15) 50%, transparent 70%)" }} />
+                </div>
+              </MagneticButton>
+              <MagneticButton
+                as="a"
+                href="#produkt"
+                className="group relative inline-flex items-center justify-center gap-2 border border-[#0A0A0A]/20 text-[#0A0A0A]/60 px-8 py-4 text-[13px] font-semibold tracking-wider uppercase transition-all duration-300 hover:border-[#C9B99A]/50 hover:text-[#0A0A0A] overflow-hidden"
+              >
+                <span className="relative z-10">Mehr erfahren</span>
+                <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+                  <div className="absolute inset-0 animate-shimmer" style={{ background: "linear-gradient(105deg, transparent 30%, rgba(201,185,154,0.1) 50%, transparent 70%)" }} />
+                </div>
+              </MagneticButton>
+            </div>
+
+            {/* Amazon star rating — social proof (entire area clickable) */}
+            <a
+              href={AMAZON_REVIEWS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-6 inline-flex items-center justify-center sm:justify-start gap-2 transition-opacity duration-300 hover:opacity-75"
+              onClick={() => onAmazonClick("hero_rating")}
+            >
+              <div className="flex items-center gap-0.5">
+                {Array.from({ length: 5 }, (_, i) => {
+                  const fill = Math.min(1, Math.max(0, AMAZON_RATING.stars - i));
+                  return (
+                    <span key={i} className="relative">
+                      <Star size={14} className="text-[#0A0A0A]/10" />
+                      {fill > 0 && (
+                        <span className="absolute inset-0 overflow-hidden" style={{ width: `${fill * 100}%` }}>
+                          <Star size={14} className="text-[#E8A030] fill-[#E8A030]" />
+                        </span>
+                      )}
+                    </span>
+                  );
+                })}
+              </div>
+              <span className="text-[13px] font-medium text-[#0A0A0A]/70 font-[Space_Grotesk]">
+                {AMAZON_RATING.stars.toLocaleString("de-DE")}
+              </span>
+              <span className="text-[13px] text-[#0A0A0A]/40 font-[Space_Grotesk]">
+                ({AMAZON_RATING.count} Bewertungen)
+              </span>
+            </a>
           </div>
 
         </div>
