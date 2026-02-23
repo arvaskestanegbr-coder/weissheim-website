@@ -218,15 +218,12 @@ export default function SiteHeader({
               key={item.id}
               href={`#${item.id}`}
               onClick={onCloseMobileMenu}
-              className={`mobile-nav-item flex items-center gap-3 py-3 text-[13px] font-medium tracking-wider uppercase transition-colors font-[Space_Grotesk] ${
+              className={`mobile-nav-item flex items-center py-3 text-[13px] tracking-wider uppercase transition-colors font-[Space_Grotesk] ${
                 activeSection === item.id
-                  ? "text-[#0A0A0A]"
-                  : "text-[#0A0A0A]/40 hover:text-[#0A0A0A]"
+                  ? "text-[#0A0A0A] font-bold"
+                  : "text-[#0A0A0A]/40 font-medium hover:text-[#0A0A0A]"
               }`}
             >
-              {activeSection === item.id && (
-                <span className="w-1.5 h-1.5 rounded-full bg-[#C9B99A]" />
-              )}
               {item.label}
             </a>
           ))}
