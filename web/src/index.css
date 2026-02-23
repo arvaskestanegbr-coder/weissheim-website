@@ -37,3 +37,55 @@
     min-height: 100vh;
   }
 }
+
+/* Shimmer sweep — premium shine effect */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+.animate-shimmer {
+  animation: shimmer 4s ease-in-out infinite;
+}
+
+/* Accent bar glow pulse */
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.animate-glow {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+/* Ring draw animation */
+@keyframes ring-draw {
+  from { stroke-dashoffset: 251; }
+}
+
+.animate-ring {
+  animation: ring-draw 2.2s ease-out forwards;
+}
+
+/* Icon ring draw on scroll */
+@keyframes icon-ring-draw {
+  from { stroke-dashoffset: 126; }
+  to { stroke-dashoffset: 0; }
+}
+
+.animate-icon-ring {
+  stroke-dashoffset: 126;
+  animation: icon-ring-draw 1.5s ease-out 0.5s forwards;
+}
+
+/* Ping for live dot */
+@keyframes ping {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.animate-ping {
+  animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}

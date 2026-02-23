@@ -1,4 +1,6 @@
+import { useEffect, useRef } from "react";
 import { Menu, X } from "lucide-react";
+import { gsap } from "gsap";
 import { AMAZON_PRODUCT_URL, NAV_ITEMS, type SectionId } from "../config/site";
 import weissheimLogo from "../assets/weissheim-logo.webp";
 
@@ -13,6 +15,50 @@ interface SiteHeaderProps {
   onAmazonClick: (source: string) => void;
 }
 
+/* ─── Nav link with underline indicators ─── */
+function NavLink({
+  href,
+  active,
+  onClick,
+  children,
+}: {
+  href?: string;
+  active?: boolean;
+  onClick?: () => void;
+  children: React.ReactNode;
+}) {
+  const className = `group/nav relative text-[13px] font-medium tracking-wider uppercase transition-colors duration-300 font-[Space_Grotesk] ${
+    active ? "text-[#0A0A0A]" : "text-[#0A0A0A]/40 hover:text-[#0A0A0A]"
+  }`;
+
+  const indicator = (
+    <>
+      {/* Hover underline — slides in from center */}
+      <span className="absolute -bottom-1 left-1/2 h-[1.5px] w-0 -translate-x-1/2 bg-[#C9B99A]/40 transition-all duration-300 ease-out group-hover/nav:w-full" />
+      {/* Active underline — gold, always visible */}
+      {active && (
+        <span className="absolute -bottom-1 left-0 h-[1.5px] w-full bg-gradient-to-r from-[#C9B99A] to-[#A09178]" />
+      )}
+    </>
+  );
+
+  if (href) {
+    return (
+      <a href={href} className={className} onClick={onClick}>
+        {children}
+        {indicator}
+      </a>
+    );
+  }
+
+  return (
+    <button type="button" className={className} onClick={onClick}>
+      {children}
+      {indicator}
+    </button>
+  );
+}
+
 export default function SiteHeader({
   scrolled,
   mobileMenuOpen,
@@ -22,59 +68,128 @@ export default function SiteHeader({
   onOpenContact,
   onAmazonClick,
 }: SiteHeaderProps) {
+  const navRef = useRef<HTMLElement>(null);
+  const logoRef = useRef<HTMLImageElement>(null);
+  const linksRef = useRef<HTMLDivElement>(null);
+  const ctaRef = useRef<HTMLAnchorElement>(null);
+  const mobileContentRef = useRef<HTMLDivElement>(null);
+  const prevMobileOpen = useRef(false);
+
+  /* ─── Entrance animation ─── */
+  useEffect(() => {
+    /* Set initial hidden states immediately via GSAP (no inline style needed) */
+    if (logoRef.current) gsap.set(logoRef.current, { opacity: 0, x: -12, filter: "blur(4px)" });
+    if (ctaRef.current) gsap.set(ctaRef.current, { opacity: 0, x: 12, filter: "blur(4px)" });
+
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ delay: 0.05 });
+
+      if (logoRef.current) {
+        tl.to(logoRef.current,
+          { opacity: 1, x: 0, filter: "blur(0px)", duration: 0.7, ease: "power2.out" },
+        );
+      }
+
+      if (linksRef.current) {
+        const links = linksRef.current.children;
+        tl.fromTo(links,
+          { opacity: 0, y: -8, filter: "blur(2px)" },
+          { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power2.out", stagger: 0.06 },
+          "-=0.4",
+        );
+      }
+
+      if (ctaRef.current) {
+        tl.to(ctaRef.current,
+          { opacity: 1, x: 0, filter: "blur(0px)", duration: 0.6, ease: "power2.out" },
+          "-=0.3",
+        );
+      }
+    });
+
+    return () => { ctx.revert(); };
+  }, []);
+
+  /* ─── Mobile menu stagger animation ─── */
+  useEffect(() => {
+    const content = mobileContentRef.current;
+    if (!content) return;
+
+    if (mobileMenuOpen && !prevMobileOpen.current) {
+      const items = content.querySelectorAll(".mobile-nav-item");
+      gsap.fromTo(items,
+        { opacity: 0, x: -16 },
+        { opacity: 1, x: 0, duration: 0.4, ease: "power2.out", stagger: 0.05, delay: 0.1 },
+      );
+    }
+
+    prevMobileOpen.current = mobileMenuOpen;
+  }, [mobileMenuOpen]);
+
   return (
     <nav
+      ref={navRef}
       className={`sticky top-0 z-50 transition-all duration-500 ${
         scrolled
-          ? "bg-[#FAF8F3]/95 backdrop-blur-md border-b border-[#0A0A0A]/8 py-0"
+          ? "bg-[#FAF8F3]/95 backdrop-blur-md py-0"
           : "bg-transparent py-0"
       }`}
     >
-      <div className="container mx-auto px-5 md:px-8 flex items-center justify-between h-16 md:h-20">
-        {/* Logo */}
-        <img
-          src={weissheimLogo}
-          alt="WEISSHEIM Logo"
-          className="h-12 md:h-14 w-auto"
-          width={400}
-          height={252}
-          decoding="async"
-        />
+      {/* Bottom border — fades in on scroll */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#0A0A0A]/8 to-transparent transition-opacity duration-500"
+        style={{ opacity: scrolled ? 1 : 0 }}
+      />
 
-        {/* Desktop nav */}
-        <div className="hidden md:flex items-center gap-8 ml-auto mr-10">
+      <div className="container mx-auto px-5 md:px-8 flex items-center justify-between h-16 md:h-20">
+        {/* Logo — klickbar, scrollt nach oben */}
+        <a
+          href="#"
+          onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+          className="flex-shrink-0"
+          aria-label="Zur Startseite"
+        >
+          <img
+            ref={logoRef}
+            src={weissheimLogo}
+            alt="WEISSHEIM Logo"
+            className="h-20 md:h-28 w-auto cursor-pointer"
+            width={400}
+            height={252}
+            decoding="async"
+          />
+        </a>
+
+        {/* Desktop nav — magnetic links with active indicator */}
+        <div ref={linksRef} className="hidden md:flex items-center gap-8 ml-auto mr-10">
           {NAV_ITEMS.map((item) => (
-            <a
+            <NavLink
               key={item.id}
               href={`#${item.id}`}
-              className={`text-[13px] font-medium tracking-wider uppercase transition-colors duration-200 ${
-                activeSection === item.id
-                  ? "text-[#0A0A0A]"
-                  : "text-[#0A0A0A]/45 hover:text-[#0A0A0A]"
-              }`}
+              active={activeSection === item.id}
             >
               {item.label}
-            </a>
+            </NavLink>
           ))}
-          <button
-            type="button"
-            onClick={onOpenContact}
-            className="text-[13px] font-medium tracking-wider uppercase text-[#0A0A0A]/45 hover:text-[#0A0A0A] transition-colors duration-200"
-          >
+          <NavLink onClick={onOpenContact} active={activeSection === "kontakt"}>
             Kontakt
-          </button>
+          </NavLink>
         </div>
 
-        {/* Desktop CTA */}
+        {/* Desktop CTA — with shimmer */}
         <a
+          ref={ctaRef}
           href={AMAZON_PRODUCT_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="hidden md:inline-flex items-center justify-center bg-[#0A0A0A] text-[#FAF8F3] px-6 py-2.5 text-[13px] font-semibold tracking-wider uppercase transition-all duration-200 hover:bg-[#0A0A0A]/80"
+          className="group hidden md:inline-flex items-center justify-center bg-[#0A0A0A] text-[#FAF8F3] px-6 py-2.5 text-[13px] font-semibold tracking-wider uppercase transition-all duration-300 hover:bg-[#0A0A0A]/80 overflow-hidden relative font-[Space_Grotesk]"
           onClick={() => onAmazonClick("header_desktop")}
           data-analytics-id="amazon-header-desktop"
         >
-          Jetzt kaufen
+          <span className="relative z-10">Jetzt kaufen</span>
+          <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+            <div className="absolute inset-0 animate-shimmer" style={{ background: "linear-gradient(105deg, transparent 30%, rgba(201,185,154,0.2) 50%, transparent 70%)" }} />
+          </div>
         </a>
 
         {/* Mobile hamburger */}
@@ -90,45 +205,51 @@ export default function SiteHeader({
         </button>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile menu — staggered reveal */}
       <div
         id="mobile-navigation"
-        className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+        className={`md:hidden overflow-hidden transition-all duration-400 ease-in-out ${
           mobileMenuOpen ? "max-h-96" : "max-h-0"
         }`}
       >
-        <div className="bg-[#FAF8F3] border-t border-[#0A0A0A]/8 px-5 py-5 space-y-1">
+        <div ref={mobileContentRef} className="bg-[#FAF8F3] border-t border-[#0A0A0A]/8 px-5 py-5 space-y-1">
           {NAV_ITEMS.map((item) => (
             <a
               key={item.id}
               href={`#${item.id}`}
               onClick={onCloseMobileMenu}
-              className={`block py-3 text-[13px] font-medium tracking-wider uppercase transition-colors ${
+              className={`mobile-nav-item flex items-center gap-3 py-3 text-[13px] font-medium tracking-wider uppercase transition-colors font-[Space_Grotesk] ${
                 activeSection === item.id
                   ? "text-[#0A0A0A]"
-                  : "text-[#0A0A0A]/45 hover:text-[#0A0A0A]"
+                  : "text-[#0A0A0A]/40 hover:text-[#0A0A0A]"
               }`}
             >
+              {activeSection === item.id && (
+                <span className="w-1.5 h-1.5 rounded-full bg-[#C9B99A]" />
+              )}
               {item.label}
             </a>
           ))}
           <button
             type="button"
             onClick={() => { onCloseMobileMenu(); onOpenContact(); }}
-            className="block w-full text-left py-3 text-[13px] font-medium tracking-wider uppercase text-[#0A0A0A]/45 hover:text-[#0A0A0A] transition-colors"
+            className="mobile-nav-item flex w-full text-left py-3 text-[13px] font-medium tracking-wider uppercase text-[#0A0A0A]/40 hover:text-[#0A0A0A] transition-colors font-[Space_Grotesk]"
           >
             Kontakt
           </button>
-          <div className="pt-3">
+          <div className="mobile-nav-item pt-3">
             <a
               href={AMAZON_PRODUCT_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex w-full items-center justify-center bg-[#0A0A0A] text-[#FAF8F3] py-3.5 text-[13px] font-semibold tracking-wider uppercase"
+              className="group relative flex w-full items-center justify-center bg-[#0A0A0A] text-[#FAF8F3] py-3.5 text-[13px] font-semibold tracking-wider uppercase overflow-hidden font-[Space_Grotesk]"
               onClick={() => onAmazonClick("header_mobile")}
               data-analytics-id="amazon-header-mobile"
             >
-              Jetzt kaufen
+              <span className="relative z-10">Jetzt kaufen</span>
+              <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+                <div className="absolute inset-0 animate-shimmer" style={{ background: "linear-gradient(105deg, transparent 30%, rgba(201,185,154,0.2) 50%, transparent 70%)" }} />
+              </div>
             </a>
           </div>
         </div>

@@ -194,27 +194,27 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
         aria-modal="true"
         aria-labelledby="contact-form-title"
         aria-describedby="contact-form-description"
-        className="relative w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl sm:p-8"
+        className="relative w-full max-w-2xl rounded-2xl bg-[#FAF8F3] p-4 shadow-xl sm:p-6 md:p-8"
       >
         <button
           onClick={close}
-          className="absolute right-4 top-4 text-sm text-slate-400 transition hover:text-slate-600"
+          className="absolute right-4 top-4 text-sm text-[#0A0A0A]/30 transition hover:text-[#0A0A0A]/60"
           aria-label="Fenster schließen"
           type="button"
         >
           ✕
         </button>
 
-        <h2 id="contact-form-title" className="mb-2 text-2xl font-semibold text-slate-900 sm:text-3xl">
+        <h2 id="contact-form-title" className="mb-2 text-2xl font-semibold text-[#0A0A0A] sm:text-3xl">
           Kontakt aufnehmen
         </h2>
-        <p id="contact-form-description" className="mb-6 text-sm text-slate-500 sm:text-base">
+        <p id="contact-form-description" className="mb-6 text-sm text-[#0A0A0A]/50 sm:text-base font-[Space_Grotesk]">
           Füll kurz das Formular aus und wir melden uns so schnell wie möglich bei dir.
         </p>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="space-y-1">
-            <label className="text-sm font-medium text-slate-800">
+            <label className="text-sm font-medium text-[#0A0A0A] font-[Space_Grotesk]">
               Name <span className="text-red-500">*</span>
             </label>
             <input
@@ -223,12 +223,12 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
               name="name"
               type="text"
               autoComplete="name"
-              className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition focus:border-slate-400 focus:bg-white"
+              className="w-full rounded-lg border border-[#0A0A0A]/10 bg-[#F0EBE3]/50 px-3 py-2 text-sm text-[#0A0A0A] outline-none transition focus:border-[#C9B99A]/50 focus:bg-white font-[Space_Grotesk]"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="text-sm font-medium text-slate-800">
+            <label className="text-sm font-medium text-[#0A0A0A] font-[Space_Grotesk]">
               E-Mail <span className="text-red-500">*</span>
             </label>
             <input
@@ -236,12 +236,12 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
               name="email"
               type="email"
               autoComplete="email"
-              className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition focus:border-slate-400 focus:bg-white"
+              className="w-full rounded-lg border border-[#0A0A0A]/10 bg-[#F0EBE3]/50 px-3 py-2 text-sm text-[#0A0A0A] outline-none transition focus:border-[#C9B99A]/50 focus:bg-white font-[Space_Grotesk]"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="text-sm font-medium text-slate-800">
+            <label className="text-sm font-medium text-[#0A0A0A] font-[Space_Grotesk]">
               Betreff <span className="text-red-500">*</span>
             </label>
             <input
@@ -249,31 +249,31 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
               name="subject"
               type="text"
               autoComplete="off"
-              className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition focus:border-slate-400 focus:bg-white"
+              className="w-full rounded-lg border border-[#0A0A0A]/10 bg-[#F0EBE3]/50 px-3 py-2 text-sm text-[#0A0A0A] outline-none transition focus:border-[#C9B99A]/50 focus:bg-white font-[Space_Grotesk]"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="text-sm font-medium text-slate-800">
-              Bestellnummer <span className="text-xs font-normal text-slate-400">(optional)</span>
+            <label className="text-sm font-medium text-[#0A0A0A] font-[Space_Grotesk]">
+              Bestellnummer <span className="text-xs font-normal text-[#0A0A0A]/30">(optional)</span>
             </label>
             <input
               name="order_number"
               type="text"
               autoComplete="off"
-              className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition focus:border-slate-400 focus:bg-white"
+              className="w-full rounded-lg border border-[#0A0A0A]/10 bg-[#F0EBE3]/50 px-3 py-2 text-sm text-[#0A0A0A] outline-none transition focus:border-[#C9B99A]/50 focus:bg-white font-[Space_Grotesk]"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="text-sm font-medium text-slate-800">
+            <label className="text-sm font-medium text-[#0A0A0A] font-[Space_Grotesk]">
               Nachricht <span className="text-red-500">*</span>
             </label>
             <textarea
               required
               name="message"
               rows={4}
-              className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition focus:border-slate-400 focus:bg-white"
+              className="w-full rounded-lg border border-[#0A0A0A]/10 bg-[#F0EBE3]/50 px-3 py-2 text-sm text-[#0A0A0A] outline-none transition focus:border-[#C9B99A]/50 focus:bg-white font-[Space_Grotesk]"
             />
           </div>
 
@@ -314,21 +314,21 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
             <button
               type="button"
               onClick={close}
-              className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
+              className="rounded-lg border border-[#0A0A0A]/10 px-4 py-2 text-sm font-medium text-[#0A0A0A]/50 transition hover:bg-[#F0EBE3]/50 font-[Space_Grotesk]"
             >
               Abbrechen
             </button>
             <button
               type="submit"
               disabled={disableSubmit}
-              className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
+              className="rounded-lg bg-[#0A0A0A] px-4 py-2 text-sm font-medium text-[#FAF8F3] transition hover:bg-[#0A0A0A]/80 disabled:cursor-not-allowed disabled:opacity-70 font-[Space_Grotesk]"
             >
               {isSubmitting ? "Wird gesendet …" : "Nachricht senden"}
             </button>
           </div>
 
           {!hasAccessKey && (
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-[#0A0A0A]/40 font-[Space_Grotesk]">
               Formular derzeit deaktiviert. Schreib uns bitte direkt an{" "}
               <a className="underline" href="mailto:info@weissheim.com">
                 info@weissheim.com

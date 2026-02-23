@@ -1,7 +1,7 @@
 export const AMAZON_PRODUCT_URL =
   "https://www.amazon.de/WEISSHEIM%C2%AE-W%C3%A4schesammler-abnehmbaren-W%C3%A4scheschrank-W%C3%A4schesortierer/dp/B0F3ZBN75C";
 
-export const SECTION_IDS = ["produkt", "vorteile", "ueber-uns"] as const;
+export const SECTION_IDS = ["produkt", "vorteile", "ueber-uns", "kontakt"] as const;
 
 export type SectionId = (typeof SECTION_IDS)[number];
 
@@ -20,13 +20,16 @@ export const PRODUCT_BENEFITS = [
   "Verfügbar in Schwarz und Beige",
 ];
 
+export const HERO_STATS = [
+  { number: "200", unit: "Liter", label: "Volumen", icon: "Package" },
+  { number: "4", unit: "Fächer", label: "Abnehmbare Taschen", icon: "LayoutGrid" },
+];
+
 export const SPECS = [
-  { label: "Volumen", value: "200 Liter", icon: "Package" },
-  { label: "Fächer", value: "4 abnehmbare Taschen", icon: "LayoutGrid" },
-  { label: "Material", value: "Oxford 600D", icon: "Layers" },
-  { label: "Rahmen", value: "Stabiler Stahlrahmen", icon: "Wrench" },
-  { label: "Mobilität", value: "Mit Rollen", icon: "Disc3" },
-  { label: "Ablage", value: "Holz-Ablagefläche", icon: "PanelTop" },
+  { label: "Material", value: "Oxford 600D", desc: "Hochdichtes, reißfestes Polyester", icon: "Layers" },
+  { label: "Rahmen", value: "Stabiler Stahlrahmen", desc: "Pulverbeschichtet & rostfrei", icon: "Wrench" },
+  { label: "Mobilität", value: "Mit Rollen", desc: "360° drehbar, bodenschonend", icon: "Disc3" },
+  { label: "Ablage", value: "Holz-Ablagefläche", desc: "Massives Bambus-Holz", icon: "PanelTop" },
 ];
 
 export const PRODUCT_COLORS = [
@@ -35,6 +38,17 @@ export const PRODUCT_COLORS = [
 ];
 
 export const HERO_HIGHLIGHTS = ["200 L Volumen", "4 Fächer", "Mit Rollen"];
+
+export const HERO_ROTATING_WORDS = ["spürt.", "liebt.", "sieht.", "lebt."];
+
+export const AMAZON_REVIEWS_URL =
+  "https://www.amazon.de/product-reviews/B0F3ZBN75C/ref=acr_dpx_hist_5?ie=UTF8&filterByStar=five_star&reviewerType=all_reviews#reviews-filter-bar";
+
+export const AMAZON_RATING = {
+  stars: 4.6,
+  count: 27,
+  label: "Amazon Bewertungen",
+};
 
 export const FAQS: Array<{ question: string; answer: string }> = [
   {
