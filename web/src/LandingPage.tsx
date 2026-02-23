@@ -65,8 +65,8 @@ const Index = () => {
       },
       {
         root: null,
-        threshold: [0.2, 0.35, 0.5, 0.65],
-        rootMargin: "-20% 0px -55% 0px",
+        threshold: [0, 0.1, 0.2, 0.35, 0.5],
+        rootMargin: "-15% 0px -45% 0px",
       },
     );
 
