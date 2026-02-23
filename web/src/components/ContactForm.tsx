@@ -126,8 +126,8 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
         trackContactSubmit("error");
         return;
       }
-    } catch (error) {
-      console.error("LocalStorage nicht verfügbar:", error);
+    } catch {
+      /* localStorage unavailable — continue anyway */
     }
 
     formData.set("access_key", WEB3FORMS_ACCESS_KEY);
@@ -144,15 +144,14 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
         setStatus("success");
         try {
           localStorage.setItem(LAST_SUBMIT_STORAGE_KEY, String(Date.now()));
-        } catch (error) {
-          console.error("LocalStorage nicht verfügbar:", error);
+        } catch {
+          /* localStorage unavailable */
         }
         form.reset();
         trackContactSubmit("success");
         return;
       }
 
-      console.error("Web3Forms Fehler:", data);
       setStatus("error");
       setErrorMessage(
         typeof data?.message === "string"
@@ -160,8 +159,7 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
           : "Upsi, da ist etwas schiefgelaufen. Bitte versuch es später noch einmal.",
       );
       trackContactSubmit("error");
-    } catch (error) {
-      console.error("Netzwerkfehler:", error);
+    } catch {
       setStatus("error");
       setErrorMessage("Netzwerkfehler. Bitte versuch es in ein paar Minuten erneut.");
       trackContactSubmit("error");
@@ -198,7 +196,7 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
       >
         <button
           onClick={close}
-          className="absolute right-4 top-4 text-sm text-[#0A0A0A]/30 transition hover:text-[#0A0A0A]/60"
+          className="absolute right-3 top-3 flex items-center justify-center w-10 h-10 text-sm text-[#0A0A0A]/30 transition hover:text-[#0A0A0A]/60"
           aria-label="Fenster schließen"
           type="button"
         >
@@ -214,70 +212,74 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="space-y-1">
-            <label className="text-sm font-medium text-[#0A0A0A] font-[Space_Grotesk]">
+            <label htmlFor="contact-name" className="text-sm font-medium text-[#0A0A0A] font-[Space_Grotesk]">
               Name <span className="text-red-500">*</span>
             </label>
             <input
+              id="contact-name"
               required
               ref={firstInputRef}
               name="name"
               type="text"
               autoComplete="name"
-              className="w-full rounded-lg border border-[#0A0A0A]/10 bg-[#F0EBE3]/50 px-3 py-2 text-sm text-[#0A0A0A] outline-none transition focus:border-[#C9B99A]/50 focus:bg-white font-[Space_Grotesk]"
+              className="w-full rounded-lg border border-[#0A0A0A]/10 bg-[#F0EBE3]/50 px-3 py-2.5 text-sm text-[#0A0A0A] outline-none transition focus:border-[#C9B99A]/50 focus:bg-white font-[Space_Grotesk]"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="text-sm font-medium text-[#0A0A0A] font-[Space_Grotesk]">
+            <label htmlFor="contact-email" className="text-sm font-medium text-[#0A0A0A] font-[Space_Grotesk]">
               E-Mail <span className="text-red-500">*</span>
             </label>
             <input
+              id="contact-email"
               required
               name="email"
               type="email"
               autoComplete="email"
-              className="w-full rounded-lg border border-[#0A0A0A]/10 bg-[#F0EBE3]/50 px-3 py-2 text-sm text-[#0A0A0A] outline-none transition focus:border-[#C9B99A]/50 focus:bg-white font-[Space_Grotesk]"
+              className="w-full rounded-lg border border-[#0A0A0A]/10 bg-[#F0EBE3]/50 px-3 py-2.5 text-sm text-[#0A0A0A] outline-none transition focus:border-[#C9B99A]/50 focus:bg-white font-[Space_Grotesk]"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="text-sm font-medium text-[#0A0A0A] font-[Space_Grotesk]">
+            <label htmlFor="contact-subject" className="text-sm font-medium text-[#0A0A0A] font-[Space_Grotesk]">
               Betreff <span className="text-red-500">*</span>
             </label>
             <input
+              id="contact-subject"
               required
               name="subject"
               type="text"
               autoComplete="off"
-              className="w-full rounded-lg border border-[#0A0A0A]/10 bg-[#F0EBE3]/50 px-3 py-2 text-sm text-[#0A0A0A] outline-none transition focus:border-[#C9B99A]/50 focus:bg-white font-[Space_Grotesk]"
+              className="w-full rounded-lg border border-[#0A0A0A]/10 bg-[#F0EBE3]/50 px-3 py-2.5 text-sm text-[#0A0A0A] outline-none transition focus:border-[#C9B99A]/50 focus:bg-white font-[Space_Grotesk]"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="text-sm font-medium text-[#0A0A0A] font-[Space_Grotesk]">
+            <label htmlFor="contact-order" className="text-sm font-medium text-[#0A0A0A] font-[Space_Grotesk]">
               Bestellnummer <span className="text-xs font-normal text-[#0A0A0A]/30">(optional)</span>
             </label>
             <input
+              id="contact-order"
               name="order_number"
               type="text"
               autoComplete="off"
-              className="w-full rounded-lg border border-[#0A0A0A]/10 bg-[#F0EBE3]/50 px-3 py-2 text-sm text-[#0A0A0A] outline-none transition focus:border-[#C9B99A]/50 focus:bg-white font-[Space_Grotesk]"
+              className="w-full rounded-lg border border-[#0A0A0A]/10 bg-[#F0EBE3]/50 px-3 py-2.5 text-sm text-[#0A0A0A] outline-none transition focus:border-[#C9B99A]/50 focus:bg-white font-[Space_Grotesk]"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="text-sm font-medium text-[#0A0A0A] font-[Space_Grotesk]">
+            <label htmlFor="contact-message" className="text-sm font-medium text-[#0A0A0A] font-[Space_Grotesk]">
               Nachricht <span className="text-red-500">*</span>
             </label>
             <textarea
+              id="contact-message"
               required
               name="message"
               rows={4}
-              className="w-full rounded-lg border border-[#0A0A0A]/10 bg-[#F0EBE3]/50 px-3 py-2 text-sm text-[#0A0A0A] outline-none transition focus:border-[#C9B99A]/50 focus:bg-white font-[Space_Grotesk]"
+              className="w-full rounded-lg border border-[#0A0A0A]/10 bg-[#F0EBE3]/50 px-3 py-2.5 text-sm text-[#0A0A0A] outline-none transition focus:border-[#C9B99A]/50 focus:bg-white font-[Space_Grotesk]"
             />
           </div>
 
-          <input type="hidden" name="access_key" value={WEB3FORMS_ACCESS_KEY} />
           <input type="hidden" name="from" value="Kontaktformular weissheim.com" />
           <div className="hidden" aria-hidden="true">
             <label htmlFor="company_name">Firmenname</label>
@@ -314,14 +316,14 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
             <button
               type="button"
               onClick={close}
-              className="rounded-lg border border-[#0A0A0A]/10 px-4 py-2 text-sm font-medium text-[#0A0A0A]/50 transition hover:bg-[#F0EBE3]/50 font-[Space_Grotesk]"
+              className="rounded-lg border border-[#0A0A0A]/10 px-4 py-2.5 text-sm font-medium text-[#0A0A0A]/50 transition hover:bg-[#F0EBE3]/50 font-[Space_Grotesk]"
             >
               Abbrechen
             </button>
             <button
               type="submit"
               disabled={disableSubmit}
-              className="rounded-lg bg-[#0A0A0A] px-4 py-2 text-sm font-medium text-[#FAF8F3] transition hover:bg-[#0A0A0A]/80 disabled:cursor-not-allowed disabled:opacity-70 font-[Space_Grotesk]"
+              className="rounded-lg bg-[#0A0A0A] px-4 py-2.5 text-sm font-medium text-[#FAF8F3] transition hover:bg-[#0A0A0A]/80 disabled:cursor-not-allowed disabled:opacity-70 font-[Space_Grotesk]"
             >
               {isSubmitting ? "Wird gesendet …" : "Nachricht senden"}
             </button>

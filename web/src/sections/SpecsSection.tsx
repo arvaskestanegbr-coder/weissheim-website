@@ -213,20 +213,25 @@ function MagneticCard({ children, className }: { children: React.ReactNode; clas
 }
 
 /* ─── Animated icon ring ─── */
+let iconRingCounter = 0;
+
 function IconRing({ children }: { children: React.ReactNode }) {
+  const idRef = useRef(`icon-ring-grad-${++iconRingCounter}`);
+  const gradId = idRef.current;
+
   return (
     <div className="relative mb-5 inline-flex items-center justify-center w-11 h-11">
       <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 44 44">
         <circle cx="22" cy="22" r="20" fill="none" stroke="#C9B99A" strokeWidth="1" strokeOpacity={0.15} />
         <circle
           cx="22" cy="22" r="20"
-          fill="none" stroke="url(#icon-ring-grad)" strokeWidth="1.5"
+          fill="none" stroke={`url(#${gradId})`} strokeWidth="1.5"
           strokeLinecap="round"
           strokeDasharray="126"
           className="animate-icon-ring"
         />
         <defs>
-          <linearGradient id="icon-ring-grad" x1="0" y1="0" x2="1" y2="1">
+          <linearGradient id={gradId} x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor="#C9B99A" />
             <stop offset="100%" stopColor="#A09178" />
           </linearGradient>
@@ -320,7 +325,7 @@ function ScrollDrawIcon({ icon: Icon }: { icon: LucideIcon }) {
 /* ─── Main section ─── */
 export default function SpecsSection() {
   return (
-    <section id="ueber-uns" className="bg-[#F0EBE3] py-24 md:py-32 px-5 md:px-8">
+    <section id="ueber-uns" className="bg-[#F0EBE3] py-24 md:py-32 px-5 md:px-8 overflow-hidden">
       <div className="container mx-auto max-w-5xl">
 
         <Reveal className="mb-16" from="up" distance={20}>

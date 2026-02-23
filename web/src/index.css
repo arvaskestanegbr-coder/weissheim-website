@@ -23,6 +23,12 @@
     color: var(--warm-black);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  /* Offset für sticky header bei Anchor-Links */
+  [id] {
+    scroll-margin-top: 5rem;
   }
 
   h1,

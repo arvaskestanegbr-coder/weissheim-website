@@ -6,7 +6,6 @@ import weissheimLogo from "../assets/weissheim-logo.webp";
 
 interface SiteHeaderProps {
   scrolled: boolean;
-  heroIsDark?: boolean;
   mobileMenuOpen: boolean;
   activeSection: SectionId;
   onToggleMobileMenu: () => void;
@@ -129,10 +128,11 @@ export default function SiteHeader({
   return (
     <nav
       ref={navRef}
+      aria-label="Hauptnavigation"
       className={`sticky top-0 z-50 transition-all duration-500 ${
         scrolled
-          ? "bg-[#FAF8F3]/95 backdrop-blur-md py-0"
-          : "bg-transparent py-0"
+          ? "bg-[#FAF8F3]/95 backdrop-blur-md"
+          : "bg-transparent"
       }`}
     >
       {/* Bottom border — fades in on scroll */}
@@ -196,7 +196,7 @@ export default function SiteHeader({
         <button
           type="button"
           onClick={onToggleMobileMenu}
-          className="md:hidden inline-flex h-9 w-9 items-center justify-center text-[#0A0A0A] hover:text-[#0A0A0A]/60 transition-colors"
+          className="md:hidden inline-flex h-11 w-11 items-center justify-center text-[#0A0A0A] hover:text-[#0A0A0A]/60 transition-colors"
           aria-label={mobileMenuOpen ? "Menü schließen" : "Menü öffnen"}
           aria-expanded={mobileMenuOpen}
           aria-controls="mobile-navigation"

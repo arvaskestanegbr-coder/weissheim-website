@@ -22,7 +22,7 @@ export default function SiteFooter({ onOpenContact }: SiteFooterProps) {
 
         <div className="grid md:grid-cols-4 gap-10 mb-14">
           <div className="md:col-span-2">
-            <img src={weissheimLogo} alt="WEISSHEIM Logo" className="h-20 md:h-28 w-auto mb-5 invert opacity-60" />
+            <img src={weissheimLogo} alt="WEISSHEIM Logo" className="h-20 md:h-28 w-auto mb-5 invert opacity-60" width={400} height={252} loading="lazy" decoding="async" />
             <p className="text-[14px] text-[#FAF8F3]/30 leading-6 max-w-xs font-[Space_Grotesk]">
               Premium Wäschesammler &amp; Wäschesortierer für mehr Ordnung bei dir zuhause.
             </p>

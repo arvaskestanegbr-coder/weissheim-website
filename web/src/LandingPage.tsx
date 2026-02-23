@@ -33,6 +33,9 @@ const Index = () => {
   useEffect(() => {
     if (!mobileMenuOpen) return;
 
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setMobileMenuOpen(false);
@@ -40,7 +43,10 @@ const Index = () => {
     };
 
     window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = previousOverflow;
+    };
   }, [mobileMenuOpen]);
 
   useEffect(() => {
@@ -84,6 +90,9 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-[#FAF8F3] pb-24 md:pb-0">
+      <a href="#vorteile" className="sr-only focus:not-sr-only focus:absolute focus:z-[60] focus:bg-[#0A0A0A] focus:text-[#FAF8F3] focus:px-4 focus:py-2">
+        Zum Inhalt springen
+      </a>
       <SiteHeader
         scrolled={scrolled}
         mobileMenuOpen={mobileMenuOpen}
@@ -94,26 +103,28 @@ const Index = () => {
         onAmazonClick={trackAmazonClick}
       />
 
-      <HeroSection onAmazonClick={trackAmazonClick} />
-      <FeaturesSection />
-      <ProductSection onAmazonClick={trackAmazonClick} />
-      <SpecsSection />
-      <ContactSection onOpenContact={() => openContactModal("contact_section")} />
-      <FaqSection />
-      <FinalCtaSection onAmazonClick={trackAmazonClick} />
+      <main>
+        <HeroSection onAmazonClick={trackAmazonClick} />
+        <FeaturesSection />
+        <ProductSection onAmazonClick={trackAmazonClick} />
+        <SpecsSection />
+        <ContactSection onOpenContact={() => openContactModal("contact_section")} />
+        <FaqSection />
+        <FinalCtaSection onAmazonClick={trackAmazonClick} />
+      </main>
 
       <ContactForm open={contactFormOpen} onOpenChange={setContactFormOpen} />
 
-      {scrolled && (
-        <button
-          type="button"
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-24 right-5 md:bottom-8 md:right-8 h-11 w-11 flex items-center justify-center border border-[#0A0A0A]/15 bg-[#FAF8F3] text-[#0A0A0A]/50 hover:border-[#0A0A0A]/30 hover:text-[#0A0A0A] transition-all transform-gpu z-40 shadow-sm"
-          aria-label="Nach oben scrollen"
-        >
-          <ChevronDown size={18} className="rotate-180" />
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        className={`fixed bottom-24 right-5 md:bottom-8 md:right-8 h-11 w-11 flex items-center justify-center border border-[#0A0A0A]/15 bg-[#FAF8F3] text-[#0A0A0A]/50 hover:border-[#0A0A0A]/30 hover:text-[#0A0A0A] transition-all duration-300 transform-gpu z-40 shadow-sm ${
+          scrolled ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
+        }`}
+        aria-label="Nach oben scrollen"
+      >
+        <ChevronDown size={18} className="rotate-180" />
+      </button>
 
       <MobileStickyCta
         onAmazonClick={trackAmazonClick}
