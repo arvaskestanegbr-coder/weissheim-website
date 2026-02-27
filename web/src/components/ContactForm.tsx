@@ -19,13 +19,12 @@ const SUBMIT_COOLDOWN_MS = 30_000;
 const MIN_OPEN_DURATION_MS = 1_200;
 
 export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(
-    "idle",
-  );
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const openedAtRef = useRef<number>(0);
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const firstInputRef = useRef<HTMLInputElement | null>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   const hasAccessKey =
     typeof WEB3FORMS_ACCESS_KEY === "string" && WEB3FORMS_ACCESS_KEY.trim() !== "";
@@ -37,11 +36,28 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
   }, [onOpenChange]);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      // Restore focus on close
+      const mainContent = document.getElementById("main-content");
+      if (mainContent) mainContent.removeAttribute("aria-hidden");
+
+      if (previousFocusRef.current) {
+        previousFocusRef.current.focus();
+        previousFocusRef.current = null;
+      }
+      return;
+    }
+
+    // Capture focus on open
+    previousFocusRef.current = document.activeElement as HTMLElement | null;
 
     openedAtRef.current = Date.now();
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+
+    // Hide main content from screen readers
+    const mainContent = document.getElementById("main-content");
+    if (mainContent) mainContent.setAttribute("aria-hidden", "true");
 
     const focusTimer = window.setTimeout(() => {
       firstInputRef.current?.focus();

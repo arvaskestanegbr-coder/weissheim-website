@@ -83,10 +83,29 @@ const Index = () => {
     setContactFormOpen(true);
   };
 
+  // Close mobile menu on scroll (Refined UX)
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const handleScrollClose = () => {
+      setMobileMenuOpen(false);
+    };
+
+    // Small delay to prevent immediate close if the user tapped something that slightly adjusted the view
+    const timer = setTimeout(() => {
+      window.addEventListener("scroll", handleScrollClose, { passive: true, once: true });
+    }, 150);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("scroll", handleScrollClose);
+    };
+  }, [mobileMenuOpen]);
+
   return (
     <>
       <Preloader />
-      <div className="min-h-screen bg-[#FAF8F3] pb-24 md:pb-0">
+      <div id="main-content" className="min-h-[100dvh] bg-[#FAF8F3] pb-24 md:pb-0">
         <a href="#vorteile" className="sr-only focus:not-sr-only focus:absolute focus:z-[60] focus:bg-[#0A0A0A] focus:text-[#FAF8F3] focus:px-4 focus:py-2">
           Zum Inhalt springen
         </a>
