@@ -255,43 +255,54 @@ export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
     return () => st.kill();
   }, []);
 
-  // Stagger entrance animation for hero text
+  // Stagger entrance animation for hero text (waits for Preloader)
   useEffect(() => {
-    const tl = gsap.timeline({ delay: 0.1 });
+    const triggerAnimations = () => {
+      const tl = gsap.timeline({ delay: 0.1 });
 
-    if (eyebrowRef.current) {
-      tl.fromTo(eyebrowRef.current,
-        { opacity: 0, y: 16 },
-        { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
-      );
-    }
+      if (eyebrowRef.current) {
+        tl.fromTo(eyebrowRef.current,
+          { opacity: 0, y: 16 },
+          { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
+        );
+      }
 
-    if (headlineRef.current) {
-      const lines = headlineRef.current.querySelectorAll(".hero-line");
-      tl.fromTo(lines,
-        { opacity: 0, y: 32, skewY: 2 },
-        { opacity: 1, y: 0, skewY: 0, duration: 1, ease: "power3.out", stagger: 0.12 },
-        "-=0.4",
-      );
-    }
+      if (headlineRef.current) {
+        const lines = headlineRef.current.querySelectorAll(".hero-line");
+        tl.fromTo(lines,
+          { opacity: 0, y: 32, skewY: 2 },
+          { opacity: 1, y: 0, skewY: 0, duration: 1, ease: "power3.out", stagger: 0.12 },
+          "-=0.4",
+        );
+      }
 
-    if (subtextRef.current) {
-      tl.fromTo(subtextRef.current,
-        { opacity: 0, y: 12 },
-        { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" },
-        "-=0.5",
-      );
-    }
+      if (subtextRef.current) {
+        tl.fromTo(subtextRef.current,
+          { opacity: 0, y: 12 },
+          { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" },
+          "-=0.5",
+        );
+      }
 
-    if (ctaRef.current) {
-      tl.fromTo(ctaRef.current,
-        { opacity: 0, y: 10 },
-        { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" },
-        "-=0.45",
-      );
-    }
+      if (ctaRef.current) {
+        tl.fromTo(ctaRef.current,
+          { opacity: 0, y: 10 },
+          { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" },
+          "-=0.45",
+        );
+      }
+    };
 
-    return () => { tl.kill(); };
+    // Listen for preloader finish event
+    window.addEventListener("preloader-finished", triggerAnimations);
+
+    // Fallback if event is missed (e.g. HMR)
+    const fallbackTimer = setTimeout(triggerAnimations, 1000);
+
+    return () => {
+      window.removeEventListener("preloader-finished", triggerAnimations);
+      clearTimeout(fallbackTimer);
+    };
   }, []);
 
   const colorTweenRef = useRef<gsap.core.Tween | null>(null);
@@ -399,13 +410,11 @@ export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
                         className="group/swatch flex items-center gap-2 cursor-pointer"
                       >
                         <span
-                          className={`w-3.5 h-3.5 rounded-full transition-all duration-300 group-hover/swatch:scale-125 ${color.bgClass} ${
-                            isActive ? "ring-2 ring-[#C9B99A] ring-offset-2 ring-offset-[#FAF8F3]" : "ring-1 ring-black/10"
-                          }`}
+                          className={`w-3.5 h-3.5 rounded-full transition-all duration-300 group-hover/swatch:scale-125 ${color.bgClass} ${isActive ? "ring-2 ring-[#C9B99A] ring-offset-2 ring-offset-[#FAF8F3]" : "ring-1 ring-black/10"
+                            }`}
                         />
-                        <span className={`text-[11px] font-medium transition-colors duration-300 ${
-                          isActive ? "text-[#0A0A0A]" : "text-[#0A0A0A]/40 group-hover/swatch:text-[#0A0A0A]/70"
-                        }`}>{color.name}</span>
+                        <span className={`text-[11px] font-medium transition-colors duration-300 ${isActive ? "text-[#0A0A0A]" : "text-[#0A0A0A]/40 group-hover/swatch:text-[#0A0A0A]/70"
+                          }`}>{color.name}</span>
                       </button>
                     );
                   })}
