@@ -4,8 +4,9 @@ Product landing page for the WEISSHEIM® laundry organizer. German language site
 
 ## Tech Stack
 
-- **Framework:** React 18 + TypeScript + Vite
+- **Framework:** React 19 + TypeScript + Vite
 - **Styling:** Tailwind CSS
+- **Fonts:** Self-hosted via Fontsource
 - **Hosting:** GitHub Pages (custom domain: weissheim.com)
 - **Forms:** Web3Forms (API key in `web/.env.local`)
 
@@ -17,7 +18,7 @@ web/                    # Source code (Vite project)
 │   ├── LandingPage.tsx        # Main page component (entry point)
 │   ├── main.tsx               # React root
 │   ├── config/site.ts         # All constants, URLs, nav items, specs
-│   ├── lib/analytics.ts       # Analytics helpers
+│   ├── lib/                   # Analytics and motion-preference helpers
 │   ├── sections/              # Page sections (Hero, Features, Product, etc.)
 │   ├── components/            # Reusable components (ContactForm, Reveal, ui/)
 │   └── assets/                # Images (WebP format)
@@ -47,7 +48,7 @@ features/               # Feature tracking
 ## Build & Deploy
 
 ```bash
-cd web && npm run build    # Builds to ../docs/
+npm run build    # Runs the web build and writes to docs/
 ```
 
 Deploy = push to `main`. GitHub Pages serves from `docs/`.

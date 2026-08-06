@@ -1,1 +1,10 @@
-{}
+{
+  "name": "weissheim-website",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix web run dev",
+    "build": "npm --prefix web run build",
+    "lint": "npm --prefix web run lint",
+    "smoke": "npm --prefix web run smoke"
+  }
+}

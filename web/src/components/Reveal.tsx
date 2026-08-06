@@ -31,7 +31,13 @@ export default function Reveal({
     const el = ref.current;
     if (!el) return;
 
-    const fromVars: gsap.TweenVars = { opacity: 0 };
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      gsap.set(el, { opacity: 1, x: 0, y: 0, clearProps: "transform,filter" });
+      return;
+    }
+
+    // Keep content readable/renderable before intersection; only position is animated.
+    const fromVars: gsap.TweenVars = {};
     if (from === "up") fromVars.y = distance;
     if (from === "down") fromVars.y = -distance;
     if (from === "left") fromVars.x = -distance;
@@ -45,7 +51,6 @@ export default function Reveal({
       once,
       onEnter: () => {
         gsap.to(el, {
-          opacity: 1,
           x: 0,
           y: 0,
           duration: durationMs / 1000,

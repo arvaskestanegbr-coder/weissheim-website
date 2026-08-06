@@ -2,6 +2,7 @@ import { useEffect, useRef, useCallback } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Reveal from "../components/Reveal";
+import { prefersReducedMotion } from "../lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -32,7 +33,7 @@ function GhostNumber({ number }: { number: string }) {
 
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || prefersReducedMotion()) return;
     const st = ScrollTrigger.create({
       trigger: el, start: "top bottom", end: "bottom top", scrub: 1.5,
       onUpdate: (self) => { gsap.set(el, { y: self.progress * -20 }); },
@@ -41,7 +42,7 @@ function GhostNumber({ number }: { number: string }) {
   }, []);
 
   return (
-    <span ref={ref} className="absolute -right-2 top-1/2 -translate-y-1/2 text-[60px] sm:text-[100px] md:text-[180px] font-bold leading-none select-none pointer-events-none will-change-transform text-white/[0.02]">
+    <span ref={ref} aria-hidden="true" className="absolute -right-2 top-1/2 -translate-y-1/2 text-[60px] sm:text-[100px] md:text-[180px] font-bold leading-none select-none pointer-events-none will-change-transform text-white/[0.02]">
       {number}
     </span>
   );
@@ -53,7 +54,7 @@ function FloatingParticles({ count = 5, opacity = 0.2 }: { count?: number; opaci
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container || prefersReducedMotion()) return;
 
     const particles: HTMLDivElement[] = [];
     const tweens: gsap.core.Tween[] = [];
@@ -94,12 +95,14 @@ function FeatureRow({ feature, index, isLast }: { feature: typeof FEATURES[numbe
   const numberRef = useRef<HTMLSpanElement>(null);
 
   const handleEnter = useCallback(() => {
+    if (prefersReducedMotion()) return;
     if (numberRef.current) {
       gsap.to(numberRef.current, { scale: 1.15, duration: 0.4, ease: "power2.out" });
     }
   }, []);
 
   const handleLeave = useCallback(() => {
+    if (prefersReducedMotion()) return;
     if (numberRef.current) {
       gsap.to(numberRef.current, { scale: 1, duration: 0.4, ease: "power2.out" });
     }
@@ -135,7 +138,7 @@ function FeatureRow({ feature, index, isLast }: { feature: typeof FEATURES[numbe
           <h3 className="text-2xl md:text-3xl text-[#FAF8F3] mb-4 leading-tight transition-transform duration-300 group-hover:translate-x-2">
             {feature.title}
           </h3>
-          <p className="text-[15px] leading-7 text-[#FAF8F3]/40 max-w-lg font-[Space_Grotesk] transition-colors duration-300 group-hover:text-[#FAF8F3]/55">
+          <p className="text-[15px] leading-7 text-[#FAF8F3]/60 max-w-lg font-[Space_Grotesk] transition-colors duration-300 group-hover:text-[#FAF8F3]/75">
             {feature.description}
           </p>
         </div>
@@ -174,7 +177,7 @@ export default function FeaturesSection() {
               <div className="absolute -left-5 top-2 bottom-2 w-[3px] rounded-full bg-[#C9B99A]/40" />
               <div className="absolute -left-5 top-2 bottom-2 w-[3px] rounded-full bg-[#C9B99A]/40 blur-sm animate-glow" />
             </div>
-            <p className="text-sm text-[#FAF8F3]/35 max-w-56 md:text-right leading-6 font-[Space_Grotesk]">
+            <p className="text-sm text-[#FAF8F3]/60 max-w-56 md:text-right leading-6 font-[Space_Grotesk]">
               Die perfekte Lösung für deine organisierte Wäscheverwaltung.
             </p>
           </div>

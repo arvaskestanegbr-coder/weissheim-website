@@ -1,4 +1,4 @@
-import { useRef, type ReactNode } from "react";
+import { useRef, type ElementType, type ReactNode } from "react";
 
 interface MagneticButtonProps {
   children: ReactNode;
@@ -19,11 +19,15 @@ export default function MagneticButton({
   ...props
 }: MagneticButtonProps) {
   const ref = useRef<HTMLElement>(null);
+  const Component = Tag as ElementType;
 
   return (
-    // @ts-expect-error dynamic tag typing
-    <Tag ref={ref} className={className} {...props}>
+    <Component
+      ref={ref}
+      className={`${className} focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#78684F]`}
+      {...props}
+    >
       {children}
-    </Tag>
+    </Component>
   );
 }

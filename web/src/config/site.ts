@@ -1,13 +1,13 @@
 export const AMAZON_PRODUCT_URL =
   "https://www.amazon.de/WEISSHEIM%C2%AE-W%C3%A4schesammler-abnehmbaren-W%C3%A4scheschrank-W%C3%A4schesortierer/dp/B0F3ZBN75C";
 
-export const SECTION_IDS = ["produkt", "vorteile", "ueber-uns", "kontakt"] as const;
+export const SECTION_IDS = ["vorteile", "produkt", "ueber-uns", "kontakt"] as const;
 
 export type SectionId = (typeof SECTION_IDS)[number];
 
 export const NAV_ITEMS: Array<{ id: SectionId; label: string }> = [
-  { id: "produkt", label: "Produkt" },
   { id: "vorteile", label: "Vorteile" },
+  { id: "produkt", label: "Produkt" },
   { id: "ueber-uns", label: "Details" },
 ];
 
@@ -45,8 +45,8 @@ export const AMAZON_REVIEWS_URL =
   "https://www.amazon.de/product-reviews/B0F3ZBN75C/ref=acr_dpx_hist_5?ie=UTF8&filterByStar=five_star&reviewerType=all_reviews#reviews-filter-bar";
 
 export const AMAZON_RATING = {
-  stars: 4.6,
-  count: 27,
+  stars: 4.7,
+  count: 38,
   label: "Amazon Bewertungen",
 };
 

@@ -3,6 +3,7 @@ import { Mail } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Reveal from "../components/Reveal";
+import { prefersReducedMotion } from "../lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -17,6 +18,10 @@ function IconRing() {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    if (prefersReducedMotion()) {
+      gsap.set(el, { strokeDashoffset: 0 });
+      return;
+    }
     gsap.set(el, { strokeDashoffset: 282 });
     const st = ScrollTrigger.create({
       trigger: el, start: "top 85%", once: true,
@@ -73,14 +78,14 @@ export default function ContactSection({ onOpenContact }: ContactSectionProps) {
               Hast du<br />
               <em>Fragen?</em>
             </h2>
-            <p className="text-base text-[#FAF8F3]/35 mb-12 leading-7 max-w-md mx-auto font-[Space_Grotesk]">
+            <p className="text-base text-[#FAF8F3]/60 mb-12 leading-7 max-w-md mx-auto font-[Space_Grotesk]">
               Wir sind für dich da. Kontaktiere uns gern bei Fragen zu unseren Produkten oder
               deiner Bestellung.
             </p>
             <button
               type="button"
               onClick={onOpenContact}
-              className="group relative inline-flex items-center justify-center border border-[#FAF8F3]/20 text-[#FAF8F3]/70 px-8 py-4 text-[13px] font-semibold tracking-wider uppercase transition-all duration-300 hover:border-[#C9B99A]/40 hover:text-[#FAF8F3] overflow-hidden"
+              className="group relative inline-flex items-center justify-center border border-[#FAF8F3]/40 text-[#FAF8F3]/80 px-8 py-4 text-[13px] font-semibold tracking-wider uppercase transition-all duration-300 hover:border-[#C9B99A] hover:text-[#FAF8F3] overflow-hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#FAF8F3]"
             >
               <span className="relative z-10">Kontakt aufnehmen</span>
               {/* Shimmer on hover */}

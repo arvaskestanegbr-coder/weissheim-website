@@ -4,6 +4,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Layers, Wrench, Disc3, PanelTop, type LucideIcon } from "lucide-react";
 import Reveal from "../components/Reveal";
 import { HERO_STATS, SPECS } from "../config/site";
+import { prefersReducedMotion } from "../lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -21,13 +22,24 @@ function CountUp({ target }: { target: number }) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    if (prefersReducedMotion()) {
+      el.textContent = target.toString();
+      return;
+    }
     const obj = { val: 0 };
+    let tween: gsap.core.Tween | undefined;
+    const showFinalValue = () => {
+      tween?.kill();
+      el.textContent = target.toString();
+      gsap.set(el, { scale: 1 });
+    };
     const st = ScrollTrigger.create({
       trigger: el,
       start: "top 85%",
-      once: true,
       onEnter: () => {
-        gsap.to(obj, {
+        obj.val = 0;
+        el.textContent = "0";
+        tween = gsap.to(obj, {
           val: target,
           duration: 2.2,
           ease: "power2.out",
@@ -37,11 +49,20 @@ function CountUp({ target }: { target: number }) {
           },
         });
       },
+      onLeave: showFinalValue,
     });
-    return () => st.kill();
+    return () => {
+      tween?.kill();
+      st.kill();
+    };
   }, [target]);
 
-  return <span ref={ref} className="inline-block">0</span>;
+  return (
+    <>
+      <span ref={ref} aria-hidden="true" className="inline-block">{target}</span>
+      <span className="sr-only">{target}</span>
+    </>
+  );
 }
 
 /* ─── Parallax ghost number ─── */
@@ -50,7 +71,7 @@ function ParallaxNumber({ number, isDark }: { number: string; isDark: boolean })
 
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || prefersReducedMotion()) return;
     const st = ScrollTrigger.create({
       trigger: el, start: "top bottom", end: "bottom top", scrub: 1.5,
       onUpdate: (self) => { gsap.set(el, { y: self.progress * -30 }); },
@@ -59,7 +80,7 @@ function ParallaxNumber({ number, isDark }: { number: string; isDark: boolean })
   }, []);
 
   return (
-    <span ref={ref} className={`absolute -right-4 -top-6 text-[80px] sm:text-[140px] md:text-[220px] font-bold leading-none select-none pointer-events-none will-change-transform ${isDark ? "text-white/[0.04]" : "text-[#0A0A0A]/[0.03]"}`}>
+    <span ref={ref} aria-hidden="true" className={`absolute -right-4 -top-6 text-[80px] sm:text-[140px] md:text-[220px] font-bold leading-none select-none pointer-events-none will-change-transform ${isDark ? "text-white/[0.04]" : "text-[#0A0A0A]/[0.03]"}`}>
       {number}
     </span>
   );
@@ -71,7 +92,7 @@ function FloatingParticles() {
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container || prefersReducedMotion()) return;
 
     const particles: HTMLDivElement[] = [];
     const tweens: gsap.core.Tween[] = [];
@@ -125,6 +146,7 @@ function TiltCard({ children, className, isDark }: { children: React.ReactNode; 
   const spotlightRef = useRef<HTMLDivElement>(null);
 
   const handleMove = useCallback((e: ReactMouseEvent<HTMLDivElement>) => {
+    if (prefersReducedMotion()) return;
     const el = ref.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
@@ -147,6 +169,7 @@ function TiltCard({ children, className, isDark }: { children: React.ReactNode; 
   }, [isDark]);
 
   const handleLeave = useCallback(() => {
+    if (prefersReducedMotion()) return;
     const el = ref.current;
     if (!el) return;
     gsap.to(el, { rotateY: 0, rotateX: 0, duration: 0.6, ease: "power2.out" });
@@ -176,6 +199,7 @@ function MagneticCard({ children, className }: { children: React.ReactNode; clas
   const ref = useRef<HTMLDivElement>(null);
 
   const handleMove = useCallback((e: ReactMouseEvent<HTMLDivElement>) => {
+    if (prefersReducedMotion()) return;
     const el = ref.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
@@ -192,6 +216,7 @@ function MagneticCard({ children, className }: { children: React.ReactNode; clas
   }, []);
 
   const handleLeave = useCallback(() => {
+    if (prefersReducedMotion()) return;
     const el = ref.current;
     if (!el) return;
     gsap.to(el, { x: 0, y: 0, rotateX: 0, rotateY: 0, duration: 0.6, ease: "elastic.out(1, 0.5)" });
@@ -268,6 +293,10 @@ function GoldDivider() {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    if (prefersReducedMotion()) {
+      gsap.set(el, { scaleX: 1 });
+      return;
+    }
     gsap.set(el, { scaleX: 0, transformOrigin: "center center" });
     const st = ScrollTrigger.create({
       trigger: el, start: "top 90%", once: true,
@@ -292,6 +321,7 @@ function ScrollDrawIcon({ icon: Icon }: { icon: LucideIcon }) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    if (prefersReducedMotion()) return;
     const paths = el.querySelectorAll("path, line, polyline, circle, rect");
     paths.forEach((path) => {
       const svgPath = path as SVGGeometryElement;
@@ -334,14 +364,14 @@ export default function SpecsSection() {
               Technische<br />
               <em>Details.</em>
             </h2>
-            <p className="text-sm text-[#0A0A0A]/45 max-w-56 md:text-right leading-6 font-[Space_Grotesk]">
+            <p className="text-sm text-[#0A0A0A]/65 max-w-56 md:text-right leading-6 font-[Space_Grotesk]">
               Hochwertige Materialien und durchdachte Konstruktion
             </p>
           </div>
         </Reveal>
 
         {/* Hero stats — 3D tilt, asymmetric */}
-        <div className="grid grid-cols-2 gap-4 md:gap-5 mb-0">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5 mb-0">
           {HERO_STATS.map((stat, i) => {
             const isDark = i === 0;
             return (
@@ -388,16 +418,16 @@ export default function SpecsSection() {
                       <span className={`text-5xl sm:text-7xl md:text-[104px] font-bold leading-none tracking-tighter ${isDark ? "text-[#FAF8F3]" : "text-[#0A0A0A]"}`}>
                         <CountUp target={Number(stat.number)} />
                       </span>
-                      <span className="text-xl md:text-2xl font-medium text-[#C9B99A] font-[Space_Grotesk]">
+                      <span className={`text-xl md:text-2xl font-medium font-[Space_Grotesk] ${isDark ? "text-[#C9B99A]" : "text-[#78684F]"}`}>
                         {stat.unit}
                       </span>
                     </div>
-                    <p className={`text-[11px] font-semibold uppercase tracking-[0.18em] font-[Space_Grotesk] mb-1 ${isDark ? "text-[#FAF8F3]/40" : "text-[#0A0A0A]/40"}`}>
+                    <p className={`text-[11px] font-semibold uppercase tracking-[0.18em] font-[Space_Grotesk] mb-1 ${isDark ? "text-[#FAF8F3]/60" : "text-[#0A0A0A]/60"}`}>
                       {stat.label}
                     </p>
                     {/* Context hint */}
                     {STAT_CONTEXT[stat.number] && (
-                      <p className={`text-[12px] italic font-[Space_Grotesk] ${isDark ? "text-[#C9B99A]/50" : "text-[#C9B99A]/70"}`}>
+                      <p className={`text-[12px] italic font-[Space_Grotesk] ${isDark ? "text-[#C9B99A]" : "text-[#78684F]"}`}>
                         {STAT_CONTEXT[stat.number]}
                       </p>
                     )}
@@ -412,7 +442,7 @@ export default function SpecsSection() {
         <GoldDivider />
 
         {/* Detail specs */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
           {SPECS.map((spec, index) => {
             const Icon = spec.icon ? ICON_MAP[spec.icon] : null;
             return (
@@ -439,14 +469,14 @@ export default function SpecsSection() {
                     </IconRing>
                   )}
 
-                  <p className="relative text-[11px] font-semibold uppercase tracking-[0.18em] text-[#0A0A0A]/35 mb-1.5 font-[Space_Grotesk]">{spec.label}</p>
+                  <p className="relative text-[11px] font-semibold uppercase tracking-[0.18em] text-[#0A0A0A]/60 mb-1.5 font-[Space_Grotesk]">{spec.label}</p>
                   <p className="relative text-base md:text-lg font-bold text-[#0A0A0A] leading-snug font-[Space_Grotesk]">{spec.value}</p>
                   {spec.desc && (
-                    <p className="relative mt-2 text-[12px] text-[#0A0A0A]/35 leading-relaxed font-[Space_Grotesk] transition-colors duration-300 group-hover:text-[#0A0A0A]/50">{spec.desc}</p>
+                    <p className="relative mt-2 text-[12px] text-[#0A0A0A]/60 leading-relaxed font-[Space_Grotesk] transition-colors duration-300 group-hover:text-[#0A0A0A]/75">{spec.desc}</p>
                   )}
 
                   {/* Index number watermark */}
-                  <span className="absolute -bottom-2 -right-1 text-[64px] font-bold leading-none text-[#0A0A0A]/[0.02] select-none pointer-events-none font-[Space_Grotesk] transition-all duration-500 group-hover:text-[#C9B99A]/[0.06]">
+                  <span aria-hidden="true" className="absolute -bottom-2 -right-1 text-[64px] font-bold leading-none text-[#0A0A0A]/[0.02] select-none pointer-events-none font-[Space_Grotesk] transition-all duration-500 group-hover:text-[#C9B99A]/[0.06]">
                     0{index + 1}
                   </span>
                 </MagneticCard>

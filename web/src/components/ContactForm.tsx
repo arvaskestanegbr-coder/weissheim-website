@@ -4,8 +4,8 @@ import {
   useRef,
   useState,
   type FormEvent,
-  type KeyboardEvent as ReactKeyboardEvent,
 } from "react";
+import { createPortal } from "react-dom";
 import { trackContactSubmit } from "../lib/analytics";
 
 interface ContactFormProps {
@@ -17,6 +17,7 @@ const WEB3FORMS_ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY;
 const LAST_SUBMIT_STORAGE_KEY = "weissheim_contact_last_submit_at";
 const SUBMIT_COOLDOWN_MS = 30_000;
 const MIN_OPEN_DURATION_MS = 1_200;
+const REQUEST_TIMEOUT_MS = 15_000;
 
 export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
@@ -25,39 +26,43 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const firstInputRef = useRef<HTMLInputElement | null>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
+  const requestControllerRef = useRef<AbortController | null>(null);
+  const requestVersionRef = useRef(0);
 
   const hasAccessKey =
     typeof WEB3FORMS_ACCESS_KEY === "string" && WEB3FORMS_ACCESS_KEY.trim() !== "";
 
+  const cancelPendingRequest = useCallback(() => {
+    requestVersionRef.current += 1;
+    requestControllerRef.current?.abort();
+    requestControllerRef.current = null;
+  }, []);
+
   const close = useCallback(() => {
+    cancelPendingRequest();
     setStatus("idle");
     setErrorMessage("");
     onOpenChange(false);
-  }, [onOpenChange]);
+  }, [cancelPendingRequest, onOpenChange]);
 
   useEffect(() => {
-    if (!open) {
-      // Restore focus on close
-      const mainContent = document.getElementById("main-content");
-      if (mainContent) mainContent.removeAttribute("aria-hidden");
+    if (!open) return;
 
-      if (previousFocusRef.current) {
-        previousFocusRef.current.focus();
-        previousFocusRef.current = null;
-      }
-      return;
-    }
-
-    // Capture focus on open
-    previousFocusRef.current = document.activeElement as HTMLElement | null;
+    previousFocusRef.current =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
 
     openedAtRef.current = Date.now();
     const previousOverflow = document.body.style.overflow;
+    const pageShell = document.getElementById("page-shell");
+    const previousAriaHidden = pageShell?.getAttribute("aria-hidden") ?? null;
+    const previousInert = pageShell?.inert ?? false;
+
     document.body.style.overflow = "hidden";
 
-    // Hide main content from screen readers
-    const mainContent = document.getElementById("main-content");
-    if (mainContent) mainContent.setAttribute("aria-hidden", "true");
+    if (pageShell) {
+      pageShell.inert = true;
+      pageShell.setAttribute("aria-hidden", "true");
+    }
 
     const focusTimer = window.setTimeout(() => {
       firstInputRef.current?.focus();
@@ -72,7 +77,7 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
       if (event.key !== "Tab") return;
 
       const focusable = dialogRef.current?.querySelectorAll<HTMLElement>(
-        'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])',
+        'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]):not([type="hidden"]):not([tabindex="-1"]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
       );
 
       if (!focusable || focusable.length === 0) return;
@@ -95,11 +100,26 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
     window.addEventListener("keydown", onKeyDown);
 
     return () => {
+      cancelPendingRequest();
       window.clearTimeout(focusTimer);
       window.removeEventListener("keydown", onKeyDown);
       document.body.style.overflow = previousOverflow;
+
+      if (pageShell) {
+        pageShell.inert = previousInert;
+        if (previousAriaHidden === null) {
+          pageShell.removeAttribute("aria-hidden");
+        } else {
+          pageShell.setAttribute("aria-hidden", previousAriaHidden);
+        }
+      }
+
+      if (previousFocusRef.current?.isConnected) {
+        previousFocusRef.current.focus({ preventScroll: true });
+      }
+      previousFocusRef.current = null;
     };
-  }, [close, open]);
+  }, [cancelPendingRequest, close, open]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -148,13 +168,47 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
 
     formData.set("access_key", WEB3FORMS_ACCESS_KEY);
 
+    requestControllerRef.current?.abort();
+    const controller = new AbortController();
+    const requestVersion = requestVersionRef.current + 1;
+    requestVersionRef.current = requestVersion;
+    requestControllerRef.current = controller;
+
+    let didTimeout = false;
+    const timeout = window.setTimeout(() => {
+      didTimeout = true;
+      controller.abort();
+    }, REQUEST_TIMEOUT_MS);
+
+    const isCurrentRequest = () =>
+      requestControllerRef.current === controller &&
+      requestVersionRef.current === requestVersion;
+
+    const showTimeoutError = () => {
+      setStatus("error");
+      setErrorMessage(
+        "Das Senden dauert gerade zu lange. Bitte prüfe deine Verbindung und versuche es erneut.",
+      );
+      trackContactSubmit("error");
+    };
+
     try {
       const res = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         body: formData,
+        signal: controller.signal,
       });
 
-      const data = await res.json().catch(() => null);
+      const data = await res.json().catch((error: unknown) => {
+        if (controller.signal.aborted) throw error;
+        return null;
+      });
+
+      if (!isCurrentRequest()) return;
+      if (controller.signal.aborted) {
+        if (didTimeout) showTimeoutError();
+        return;
+      }
 
       if (res.ok && data?.success === true) {
         setStatus("success");
@@ -176,30 +230,35 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
       );
       trackContactSubmit("error");
     } catch {
+      if (!isCurrentRequest()) return;
+
+      if (controller.signal.aborted) {
+        if (didTimeout) showTimeoutError();
+        return;
+      }
+
       setStatus("error");
       setErrorMessage("Netzwerkfehler. Bitte versuch es in ein paar Minuten erneut.");
       trackContactSubmit("error");
+    } finally {
+      window.clearTimeout(timeout);
+      if (requestControllerRef.current === controller) {
+        requestControllerRef.current = null;
+      }
     }
   };
 
   const isSubmitting = status === "loading";
   const disableSubmit = isSubmitting || !hasAccessKey;
 
-  if (!open) return null;
+  if (!open || typeof document === "undefined") return null;
 
-  const handleBackdropKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
-    if (event.key === "Escape") {
-      close();
-    }
-  };
-
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overscroll-contain bg-black/40 p-4"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) close();
       }}
-      onKeyDown={handleBackdropKeyDown}
     >
       <div
         ref={dialogRef}
@@ -207,11 +266,11 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
         aria-modal="true"
         aria-labelledby="contact-form-title"
         aria-describedby="contact-form-description"
-        className="relative w-full max-w-2xl rounded-2xl bg-[#FAF8F3] p-4 shadow-xl sm:p-6 md:p-8"
+        className="relative max-h-[calc(100dvh-2rem)] w-full max-w-2xl overflow-y-auto overscroll-contain rounded-2xl bg-[#FAF8F3] p-4 shadow-xl sm:p-6 md:p-8"
       >
         <button
           onClick={close}
-          className="absolute right-3 top-3 flex items-center justify-center w-10 h-10 text-sm text-[#0A0A0A]/30 transition hover:text-[#0A0A0A]/60"
+          className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-md text-sm text-[#0A0A0A]/70 transition hover:text-[#0A0A0A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#78684F] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FAF8F3]"
           aria-label="Fenster schließen"
           type="button"
         >
@@ -221,11 +280,11 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
         <h2 id="contact-form-title" className="mb-2 text-2xl font-semibold text-[#0A0A0A] sm:text-3xl">
           Kontakt aufnehmen
         </h2>
-        <p id="contact-form-description" className="mb-6 text-sm text-[#0A0A0A]/50 sm:text-base font-[Space_Grotesk]">
+        <p id="contact-form-description" className="mb-6 text-sm text-[#0A0A0A]/65 sm:text-base font-[Space_Grotesk]">
           Füll kurz das Formular aus und wir melden uns so schnell wie möglich bei dir.
         </p>
 
-        <form className="space-y-4" onSubmit={handleSubmit}>
+        <form className="space-y-4" onSubmit={handleSubmit} aria-busy={isSubmitting}>
           <div className="space-y-1">
             <label htmlFor="contact-name" className="text-sm font-medium text-[#0A0A0A] font-[Space_Grotesk]">
               Name <span className="text-red-500">*</span>
@@ -237,7 +296,7 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
               name="name"
               type="text"
               autoComplete="name"
-              className="w-full rounded-lg border border-[#0A0A0A]/10 bg-[#F0EBE3]/50 px-3 py-2.5 text-sm text-[#0A0A0A] outline-none transition focus:border-[#C9B99A]/50 focus:bg-white font-[Space_Grotesk]"
+              className="w-full rounded-lg border border-[#0A0A0A]/20 bg-[#F0EBE3]/50 px-3 py-2.5 text-sm text-[#0A0A0A] outline-none transition focus:border-[#78684F] focus:bg-white focus-visible:ring-2 focus-visible:ring-[#78684F] focus-visible:ring-offset-1 font-[Space_Grotesk]"
             />
           </div>
 
@@ -251,7 +310,7 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
               name="email"
               type="email"
               autoComplete="email"
-              className="w-full rounded-lg border border-[#0A0A0A]/10 bg-[#F0EBE3]/50 px-3 py-2.5 text-sm text-[#0A0A0A] outline-none transition focus:border-[#C9B99A]/50 focus:bg-white font-[Space_Grotesk]"
+              className="w-full rounded-lg border border-[#0A0A0A]/20 bg-[#F0EBE3]/50 px-3 py-2.5 text-sm text-[#0A0A0A] outline-none transition focus:border-[#78684F] focus:bg-white focus-visible:ring-2 focus-visible:ring-[#78684F] focus-visible:ring-offset-1 font-[Space_Grotesk]"
             />
           </div>
 
@@ -265,20 +324,20 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
               name="subject"
               type="text"
               autoComplete="off"
-              className="w-full rounded-lg border border-[#0A0A0A]/10 bg-[#F0EBE3]/50 px-3 py-2.5 text-sm text-[#0A0A0A] outline-none transition focus:border-[#C9B99A]/50 focus:bg-white font-[Space_Grotesk]"
+              className="w-full rounded-lg border border-[#0A0A0A]/20 bg-[#F0EBE3]/50 px-3 py-2.5 text-sm text-[#0A0A0A] outline-none transition focus:border-[#78684F] focus:bg-white focus-visible:ring-2 focus-visible:ring-[#78684F] focus-visible:ring-offset-1 font-[Space_Grotesk]"
             />
           </div>
 
           <div className="space-y-1">
             <label htmlFor="contact-order" className="text-sm font-medium text-[#0A0A0A] font-[Space_Grotesk]">
-              Bestellnummer <span className="text-xs font-normal text-[#0A0A0A]/30">(optional)</span>
+              Bestellnummer <span className="text-xs font-normal text-[#0A0A0A]/60">(optional)</span>
             </label>
             <input
               id="contact-order"
               name="order_number"
               type="text"
               autoComplete="off"
-              className="w-full rounded-lg border border-[#0A0A0A]/10 bg-[#F0EBE3]/50 px-3 py-2.5 text-sm text-[#0A0A0A] outline-none transition focus:border-[#C9B99A]/50 focus:bg-white font-[Space_Grotesk]"
+              className="w-full rounded-lg border border-[#0A0A0A]/20 bg-[#F0EBE3]/50 px-3 py-2.5 text-sm text-[#0A0A0A] outline-none transition focus:border-[#78684F] focus:bg-white focus-visible:ring-2 focus-visible:ring-[#78684F] focus-visible:ring-offset-1 font-[Space_Grotesk]"
             />
           </div>
 
@@ -291,7 +350,7 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
               required
               name="message"
               rows={4}
-              className="w-full rounded-lg border border-[#0A0A0A]/10 bg-[#F0EBE3]/50 px-3 py-2.5 text-sm text-[#0A0A0A] outline-none transition focus:border-[#C9B99A]/50 focus:bg-white font-[Space_Grotesk]"
+              className="w-full rounded-lg border border-[#0A0A0A]/20 bg-[#F0EBE3]/50 px-3 py-2.5 text-sm text-[#0A0A0A] outline-none transition focus:border-[#78684F] focus:bg-white focus-visible:ring-2 focus-visible:ring-[#78684F] focus-visible:ring-offset-1 font-[Space_Grotesk]"
             />
           </div>
 
@@ -331,23 +390,26 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
             <button
               type="button"
               onClick={close}
-              className="rounded-lg border border-[#0A0A0A]/10 px-4 py-2.5 text-sm font-medium text-[#0A0A0A]/50 transition hover:bg-[#F0EBE3]/50 font-[Space_Grotesk]"
+              className="rounded-lg border border-[#0A0A0A]/30 px-4 py-2.5 text-sm font-medium text-[#0A0A0A]/70 transition hover:bg-[#F0EBE3]/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#78684F] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FAF8F3] font-[Space_Grotesk]"
             >
               Abbrechen
             </button>
             <button
               type="submit"
               disabled={disableSubmit}
-              className="rounded-lg bg-[#0A0A0A] px-4 py-2.5 text-sm font-medium text-[#FAF8F3] transition hover:bg-[#0A0A0A]/80 disabled:cursor-not-allowed disabled:opacity-70 font-[Space_Grotesk]"
+              className="rounded-lg bg-[#0A0A0A] px-4 py-2.5 text-sm font-medium text-[#FAF8F3] transition hover:bg-[#0A0A0A]/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#78684F] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FAF8F3] disabled:cursor-not-allowed disabled:opacity-70 font-[Space_Grotesk]"
             >
               {isSubmitting ? "Wird gesendet …" : "Nachricht senden"}
             </button>
           </div>
 
           {!hasAccessKey && (
-            <p className="text-xs text-[#0A0A0A]/40 font-[Space_Grotesk]">
+            <p className="text-xs text-[#0A0A0A]/60 font-[Space_Grotesk]">
               Formular derzeit deaktiviert. Schreib uns bitte direkt an{" "}
-              <a className="underline" href="mailto:info@weissheim.com">
+              <a
+                className="rounded-sm underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#78684F] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FAF8F3]"
+                href="mailto:info@weissheim.com"
+              >
                 info@weissheim.com
               </a>
               .
@@ -355,6 +417,7 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
           )}
         </form>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

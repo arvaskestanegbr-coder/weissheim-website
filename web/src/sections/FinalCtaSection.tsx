@@ -5,6 +5,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Reveal from "../components/Reveal";
 import MagneticButton from "../components/MagneticButton";
 import { AMAZON_PRODUCT_URL } from "../config/site";
+import { prefersReducedMotion } from "../lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,7 +19,7 @@ function FloatingParticles() {
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container || prefersReducedMotion()) return;
 
     const particles: HTMLDivElement[] = [];
     const tweens: gsap.core.Tween[] = [];
@@ -61,6 +62,10 @@ function AnimatedEyebrowLine({ direction }: { direction: "left" | "right" }) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    if (prefersReducedMotion()) {
+      gsap.set(el, { scaleX: 1 });
+      return;
+    }
     gsap.set(el, { scaleX: 0, transformOrigin: direction === "left" ? "right center" : "left center" });
     const st = ScrollTrigger.create({
       trigger: el, start: "top 90%", once: true,
@@ -106,7 +111,7 @@ export default function FinalCtaSection({ onAmazonClick }: FinalCtaSectionProps)
               <em className="text-[#C9B99A]">Ordnung?</em>
             </h2>
 
-            <p className="text-[15px] text-[#FAF8F3]/35 mb-14 leading-7 max-w-md mx-auto font-[Space_Grotesk]">
+            <p className="text-[15px] text-[#FAF8F3]/60 mb-14 leading-7 max-w-md mx-auto font-[Space_Grotesk]">
               Bestell jetzt deinen WEISSHEIM Wäschesammler und erlebe den Unterschied.
               Direkt über Amazon — schnelle Lieferung, 30 Tage Rückgabe.
             </p>

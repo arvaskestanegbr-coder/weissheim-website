@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import ContactForm from "./components/ContactForm";
-import Preloader from "./components/Preloader";
 import { SECTION_IDS, type SectionId } from "./config/site";
 import { trackAmazonClick, trackContactOpen } from "./lib/analytics";
+import { prefersReducedMotion } from "./lib/motion";
 import ContactSection from "./sections/ContactSection";
 import FaqSection from "./sections/FaqSection";
 import FeaturesSection from "./sections/FeaturesSection";
@@ -104,9 +104,8 @@ const Index = () => {
 
   return (
     <>
-      <Preloader />
-      <div id="main-content" className="min-h-[100dvh] bg-[#FAF8F3] pb-24 md:pb-0">
-        <a href="#vorteile" className="sr-only focus:not-sr-only focus:absolute focus:z-[60] focus:bg-[#0A0A0A] focus:text-[#FAF8F3] focus:px-4 focus:py-2">
+      <div id="page-shell" className="min-h-[100dvh] bg-[#FAF8F3] pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-0">
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-[60] focus:bg-[#0A0A0A] focus:text-[#FAF8F3] focus:px-4 focus:py-2">
           Zum Inhalt springen
         </a>
         <SiteHeader
@@ -119,7 +118,7 @@ const Index = () => {
           onAmazonClick={trackAmazonClick}
         />
 
-        <main>
+        <main id="main-content" tabIndex={-1}>
           <HeroSection onAmazonClick={trackAmazonClick} />
           <FeaturesSection />
           <ProductSection onAmazonClick={trackAmazonClick} />
@@ -129,12 +128,12 @@ const Index = () => {
           <FinalCtaSection onAmazonClick={trackAmazonClick} />
         </main>
 
-        <ContactForm open={contactFormOpen} onOpenChange={setContactFormOpen} />
-
         <button
           type="button"
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className={`fixed bottom-24 right-5 md:bottom-8 md:right-8 h-11 w-11 flex items-center justify-center border border-[#0A0A0A]/15 bg-[#FAF8F3] text-[#0A0A0A]/50 hover:border-[#0A0A0A]/30 hover:text-[#0A0A0A] transition-all duration-300 transform-gpu z-40 shadow-sm ${scrolled ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
+          disabled={!scrolled}
+          aria-hidden={!scrolled}
+          onClick={() => window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? "auto" : "smooth" })}
+          className={`fixed bottom-[calc(6rem+env(safe-area-inset-bottom))] right-5 md:bottom-8 md:right-8 h-11 w-11 flex items-center justify-center border border-[#0A0A0A]/30 bg-[#FAF8F3] text-[#0A0A0A]/70 hover:border-[#0A0A0A]/50 hover:text-[#0A0A0A] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A0A0A] transition-all duration-300 transform-gpu z-40 shadow-sm ${scrolled ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
             }`}
           aria-label="Nach oben scrollen"
         >
@@ -148,6 +147,7 @@ const Index = () => {
 
         <SiteFooter onOpenContact={() => openContactModal("footer")} />
       </div>
+      <ContactForm open={contactFormOpen} onOpenChange={setContactFormOpen} />
     </>
   );
 };

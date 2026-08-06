@@ -4,6 +4,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import MagneticButton from "../components/MagneticButton";
 import { AMAZON_PRODUCT_URL, AMAZON_REVIEWS_URL, AMAZON_RATING, PRODUCT_COLORS, HERO_ROTATING_WORDS } from "../config/site";
+import { prefersReducedMotion } from "../lib/motion";
 import produktWeiss from "../assets/produkt-weiss.webp";
 import produktSchwarz from "../assets/produkt-schwarz.webp";
 
@@ -63,12 +64,7 @@ function RotatingWord({ words }: { words: string[] }) {
       layerA.textContent = words[0];
       gsap.set(layerA, { opacity: 1 });
       gsap.set(layerB, { opacity: 0 });
-      let idx = 0;
-      const timer = setInterval(() => {
-        idx = (idx + 1) % words.length;
-        layerA.textContent = words[idx];
-      }, 4000);
-      return () => { clearInterval(timer); ro.disconnect(); };
+      return () => { ro.disconnect(); };
     }
 
     /* ── Animation constants ── */
@@ -150,7 +146,9 @@ function RotatingWord({ words }: { words: string[] }) {
   };
 
   return (
-    <span ref={wrapRef} className="relative inline-block align-baseline">
+    <>
+      <span className="sr-only">{words[0]}</span>
+      <span ref={wrapRef} aria-hidden="true" className="relative inline-block align-baseline">
       {/* Hidden measurement span — inherits parent serif font */}
       <span
         ref={measureRef}
@@ -162,8 +160,9 @@ function RotatingWord({ words }: { words: string[] }) {
       {/* Layer A */}
       <span ref={layerARef} className="absolute left-0 top-0 whitespace-nowrap" style={layerStyle} />
       {/* Layer B */}
-      <span ref={layerBRef} className="absolute left-0 top-0 whitespace-nowrap" style={layerStyle} />
-    </span>
+        <span ref={layerBRef} className="absolute left-0 top-0 whitespace-nowrap" style={layerStyle} />
+      </span>
+    </>
   );
 }
 
@@ -173,7 +172,7 @@ function FloatingParticles() {
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container || prefersReducedMotion()) return;
 
     const particles: HTMLDivElement[] = [];
     const tweens: gsap.core.Tween[] = [];
@@ -218,6 +217,10 @@ function AnimatedEyebrowLine() {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    if (prefersReducedMotion()) {
+      gsap.set(el, { scaleX: 1 });
+      return;
+    }
     gsap.fromTo(el,
       { scaleX: 0, transformOrigin: "left center" },
       { scaleX: 1, duration: 0.8, ease: "power3.out", delay: 0.2 },
@@ -241,7 +244,7 @@ export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
   useEffect(() => {
     const wrapper = parallaxRef.current;
     const section = sectionRef.current;
-    if (!wrapper || !section) return;
+    if (!wrapper || !section || prefersReducedMotion()) return;
 
     const st = ScrollTrigger.create({
       trigger: section,
@@ -255,60 +258,69 @@ export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
     return () => st.kill();
   }, []);
 
-  // Stagger entrance animation for hero text (waits for Preloader)
+  // Stagger entrance animation for hero text.
   useEffect(() => {
-    const triggerAnimations = () => {
+    if (prefersReducedMotion()) {
+      gsap.set(
+        [eyebrowRef.current, subtextRef.current, ctaRef.current].filter(Boolean),
+        { opacity: 1, clearProps: "transform,filter" },
+      );
+      if (headlineRef.current) {
+        gsap.set(headlineRef.current.querySelectorAll(".hero-line"), {
+          opacity: 1,
+          clearProps: "transform,filter",
+        });
+      }
+      return;
+    }
+
+    const ctx = gsap.context(() => {
       const tl = gsap.timeline({ delay: 0.1 });
 
       if (eyebrowRef.current) {
         tl.fromTo(eyebrowRef.current,
-          { opacity: 0, y: 16 },
-          { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
+          { y: 16 },
+          { y: 0, duration: 0.7, ease: "power3.out" },
         );
       }
 
       if (headlineRef.current) {
         const lines = headlineRef.current.querySelectorAll(".hero-line");
         tl.fromTo(lines,
-          { opacity: 0, y: 32, skewY: 2 },
-          { opacity: 1, y: 0, skewY: 0, duration: 1, ease: "power3.out", stagger: 0.12 },
+          { y: 32, skewY: 2 },
+          { y: 0, skewY: 0, duration: 1, ease: "power3.out", stagger: 0.12 },
           "-=0.4",
         );
       }
 
       if (subtextRef.current) {
         tl.fromTo(subtextRef.current,
-          { opacity: 0, y: 12 },
-          { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" },
+          { y: 12 },
+          { y: 0, duration: 0.7, ease: "power2.out" },
           "-=0.5",
         );
       }
 
       if (ctaRef.current) {
         tl.fromTo(ctaRef.current,
-          { opacity: 0, y: 10 },
-          { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" },
+          { y: 10 },
+          { y: 0, duration: 0.7, ease: "power2.out" },
           "-=0.45",
         );
       }
-    };
+    }, sectionRef);
 
-    // Listen for preloader finish event
-    window.addEventListener("preloader-finished", triggerAnimations);
-
-    // Fallback if event is missed (e.g. HMR)
-    const fallbackTimer = setTimeout(triggerAnimations, 1000);
-
-    return () => {
-      window.removeEventListener("preloader-finished", triggerAnimations);
-      clearTimeout(fallbackTimer);
-    };
+    return () => ctx.revert();
   }, []);
 
   const colorTweenRef = useRef<gsap.core.Tween | null>(null);
 
   const handleColorSwitch = useCallback((colorName: string) => {
     if (colorName === selectedColor) return;
+    if (prefersReducedMotion()) {
+      setSelectedColor(colorName);
+      return;
+    }
     const img = productImgRef.current;
     if (!img) {
       setSelectedColor(colorName);
@@ -365,9 +377,9 @@ export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
           {/* Text: headline, subtext, color swatches — row 1 left on desktop, order 1 on mobile */}
           <div className="order-1 lg:col-start-1 lg:row-start-1 lg:pr-16">
             {/* Eyebrow — animated line draw-in */}
-            <div ref={eyebrowRef} className="mb-8 flex items-center gap-3" style={{ opacity: 0 }}>
+            <div ref={eyebrowRef} className="mb-8 flex items-center gap-3">
               <AnimatedEyebrowLine />
-              <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#C9B99A]">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#78684F]">
                 Premium Wäscheorganizer
               </span>
             </div>
@@ -377,29 +389,29 @@ export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
               ref={headlineRef}
               className="text-[36px] sm:text-[48px] md:text-[88px] lg:text-[96px] leading-[0.92] mb-8 text-[#0A0A0A]"
             >
+              <span className="sr-only">WEISSHEIM Wäschesammler: </span>
               <span className="hero-line block">Ordnung,</span>
               <span className="hero-line block">die man</span>
-              <span className="hero-line block text-[#0A0A0A]/30">
+              <span className="hero-line block text-[#0A0A0A]/50">
                 <RotatingWord words={HERO_ROTATING_WORDS} />
               </span>
             </h1>
 
             <p
               ref={subtextRef}
-              className="text-base md:text-lg text-[#0A0A0A]/50 mb-10 leading-7 max-w-sm font-[Space_Grotesk]"
-              style={{ opacity: 0 }}
+              className="text-base md:text-lg text-[#0A0A0A]/65 mb-10 leading-7 max-w-sm font-[Space_Grotesk]"
             >
               200 Liter, 4 abnehmbare Fächer, Rollen — und eine elegante Holzablage.
               Für Haushalte, die Ordnung ernst nehmen.
             </p>
 
             {/* Color swatches — clickable, switches product image */}
-            <div ref={ctaRef} style={{ opacity: 0 }}>
+            <div ref={ctaRef}>
               <div className="flex items-center gap-5">
-                <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#0A0A0A]/30">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#0A0A0A]/60">
                   Farben
                 </span>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2" role="group" aria-label="Produktfarbe auswählen">
                   {PRODUCT_COLORS.map((color) => {
                     const isActive = selectedColor === color.name;
                     return (
@@ -407,13 +419,14 @@ export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
                         key={color.name}
                         type="button"
                         onClick={() => handleColorSwitch(color.name)}
-                        className="group/swatch flex items-center gap-2 cursor-pointer"
+                        aria-pressed={isActive}
+                        className="group/swatch flex min-h-11 items-center gap-2 rounded px-2 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A0A0A]"
                       >
                         <span
-                          className={`w-3.5 h-3.5 rounded-full transition-all duration-300 group-hover/swatch:scale-125 ${color.bgClass} ${isActive ? "ring-2 ring-[#C9B99A] ring-offset-2 ring-offset-[#FAF8F3]" : "ring-1 ring-black/10"
+                          className={`w-3.5 h-3.5 rounded-full transition-all duration-300 group-hover/swatch:scale-125 ${color.bgClass} ${isActive ? "ring-2 ring-[#78684F] ring-offset-2 ring-offset-[#FAF8F3]" : "ring-1 ring-black/30"
                             }`}
                         />
-                        <span className={`text-[11px] font-medium transition-colors duration-300 ${isActive ? "text-[#0A0A0A]" : "text-[#0A0A0A]/40 group-hover/swatch:text-[#0A0A0A]/70"
+                        <span className={`text-[11px] font-medium transition-colors duration-300 ${isActive ? "text-[#0A0A0A]" : "text-[#0A0A0A]/60 group-hover/swatch:text-[#0A0A0A]/80"
                           }`}>{color.name}</span>
                       </button>
                     );
@@ -460,7 +473,7 @@ export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
               <MagneticButton
                 as="a"
                 href="#produkt"
-                className="group relative inline-flex items-center justify-center gap-2 border border-[#0A0A0A]/20 text-[#0A0A0A]/60 px-8 py-4 text-[13px] font-semibold tracking-wider uppercase transition-all duration-300 hover:border-[#C9B99A]/50 hover:text-[#0A0A0A] overflow-hidden"
+                className="group relative inline-flex items-center justify-center gap-2 border border-[#0A0A0A]/30 text-[#0A0A0A]/70 px-8 py-4 text-[13px] font-semibold tracking-wider uppercase transition-all duration-300 hover:border-[#78684F] hover:text-[#0A0A0A] overflow-hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A0A0A]"
               >
                 <span className="relative z-10">Mehr erfahren</span>
                 <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-0 transition-opacity duration-500 group-hover:opacity-100">
@@ -474,7 +487,7 @@ export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
               href={AMAZON_REVIEWS_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-6 inline-flex items-center justify-center sm:justify-start gap-2 transition-opacity duration-300 hover:opacity-75"
+              className="mt-6 inline-flex items-center justify-center sm:justify-start gap-2 rounded-sm transition-opacity duration-300 hover:opacity-75 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#78684F]"
               onClick={() => onAmazonClick("hero_rating")}
             >
               <div className="flex items-center gap-0.5">
@@ -495,7 +508,7 @@ export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
               <span className="text-[13px] font-medium text-[#0A0A0A]/70 font-[Space_Grotesk]">
                 {AMAZON_RATING.stars.toLocaleString("de-DE")}
               </span>
-              <span className="text-[13px] text-[#0A0A0A]/40 font-[Space_Grotesk]">
+              <span className="text-[13px] text-[#0A0A0A]/60 font-[Space_Grotesk]">
                 ({AMAZON_RATING.count} Bewertungen)
               </span>
             </a>

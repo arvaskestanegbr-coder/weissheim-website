@@ -11,13 +11,20 @@ export default function MobileStickyCta({
   onOpenContact,
 }: MobileStickyCtaProps) {
   return (
-    <div className="md:hidden fixed inset-x-0 bottom-0 z-40 border-t border-[#0A0A0A]/10 bg-[#FAF8F3]/95 backdrop-blur supports-[backdrop-filter]:bg-[#FAF8F3]/85 px-4 py-3">
+    <div
+      className="md:hidden fixed inset-x-0 bottom-0 z-40 border-t border-[#0A0A0A]/10 bg-[#FAF8F3]/95 backdrop-blur supports-[backdrop-filter]:bg-[#FAF8F3]/85 px-4 py-3"
+      style={{
+        paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))",
+        paddingLeft: "calc(1rem + env(safe-area-inset-left))",
+        paddingRight: "calc(1rem + env(safe-area-inset-right))",
+      }}
+    >
       <div className="mx-auto flex max-w-md items-center gap-2.5">
         <a
           href={AMAZON_PRODUCT_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex h-12 flex-1 items-center justify-center gap-2 bg-[#0A0A0A] text-[#FAF8F3] px-4 text-[13px] font-semibold tracking-wider uppercase transition-colors hover:bg-[#0A0A0A]/80"
+          className="inline-flex h-12 flex-1 items-center justify-center gap-2 bg-[#0A0A0A] text-[#FAF8F3] px-4 text-[13px] font-semibold tracking-wider uppercase transition-colors hover:bg-[#0A0A0A]/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A0A0A]"
           onClick={() => onAmazonClick("sticky_mobile")}
           data-analytics-id="amazon-sticky-mobile"
         >
@@ -27,7 +34,7 @@ export default function MobileStickyCta({
         <button
           type="button"
           onClick={onOpenContact}
-          className="inline-flex h-12 items-center justify-center gap-2 border border-[#0A0A0A]/20 bg-transparent text-[#0A0A0A]/60 px-4 text-[13px] font-semibold tracking-wider uppercase transition-colors hover:border-[#0A0A0A]/40 hover:text-[#0A0A0A]"
+          className="inline-flex h-12 items-center justify-center gap-2 border border-[#0A0A0A]/30 bg-transparent text-[#0A0A0A]/70 px-4 text-[13px] font-semibold tracking-wider uppercase transition-colors hover:border-[#0A0A0A]/50 hover:text-[#0A0A0A] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A0A0A]"
         >
           <MessageCircleQuestion size={15} />
           Fragen?
