@@ -46,7 +46,7 @@ export const AMAZON_REVIEWS_URL =
 
 export const AMAZON_RATING = {
   stars: 4.7,
-  count: 38,
+  count: 41,
   label: "Amazon Bewertungen",
 };
 
