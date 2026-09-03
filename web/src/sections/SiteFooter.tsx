@@ -6,6 +6,8 @@ interface SiteFooterProps {
 }
 
 export default function SiteFooter({ onOpenContact }: SiteFooterProps) {
+  const currentYear = new Date().getFullYear();
+
   return (
     <footer className="relative bg-[#0A0A0A] px-5 md:px-8 pt-16 pb-10 overflow-hidden">
       {/* Dot texture */}
@@ -70,7 +72,7 @@ export default function SiteFooter({ onOpenContact }: SiteFooterProps) {
           </div>
         </div>
         <div className="pt-8 border-t border-[#FAF8F3]/8 text-center">
-          <p className="text-[13px] text-[#FAF8F3]/50 font-[Space_Grotesk]">© 2026 WEISSHEIM. Alle Rechte vorbehalten.</p>
+          <p className="text-[13px] text-[#FAF8F3]/50 font-[Space_Grotesk]">© {currentYear} WEISSHEIM. Alle Rechte vorbehalten.</p>
         </div>
       </div>
     </footer>
