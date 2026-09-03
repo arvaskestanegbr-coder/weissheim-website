@@ -77,3 +77,6 @@ export const FAQS: Array<{ question: string; answer: string }> = [
       "Ganz einfach: Haken aus den Schlaufen entnehmen, Bodenplatte herausnehmen, Tasche in die Waschmaschine oder per Hand waschen. Das Oxford 600D-Material ist hochdichtes, reißfestes Polyester mit wasserabweisender PU-Beschichtung – robust, leicht und pflegeleicht.",
   },
 ];
+
+/** Rechteinhaber im Footer. Das Jahr wird zur Laufzeit ergänzt. */
+export const COPYRIGHT_HOLDER = "WEISSHEIM. Alle Rechte vorbehalten.";

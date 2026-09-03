@@ -1,5 +1,5 @@
 import weissheimLogo from "../assets/weissheim-logo.webp";
-import { NAV_ITEMS } from "../config/site";
+import { COPYRIGHT_HOLDER, NAV_ITEMS } from "../config/site";
 
 interface SiteFooterProps {
   onOpenContact: () => void;
@@ -72,7 +72,7 @@ export default function SiteFooter({ onOpenContact }: SiteFooterProps) {
           </div>
         </div>
         <div className="pt-8 border-t border-[#FAF8F3]/8 text-center">
-          <p className="text-[13px] text-[#FAF8F3]/50 font-[Space_Grotesk]">© {currentYear} WEISSHEIM. Alle Rechte vorbehalten.</p>
+          <p className="text-[13px] text-[#FAF8F3]/50 font-[Space_Grotesk]">© {currentYear} {COPYRIGHT_HOLDER}</p>
         </div>
       </div>
     </footer>
