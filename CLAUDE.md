@@ -26,7 +26,7 @@ web/                    # Source code (Vite project)
 ├── scripts/smoke-check.mjs   # Post-build verification
 └── index.html                 # HTML template
 
-docs/                   # Build output (served by GitHub Pages)
+docs/                   # Build output (git-ignored, built by CI)
 _figma_export/          # Design reference (git-ignored, local only)
 
 .claude/                # AI session configuration
@@ -48,10 +48,18 @@ features/               # Feature tracking
 ## Build & Deploy
 
 ```bash
-npm run build    # Runs the web build and writes to docs/
+npm run build    # Local build into docs/ (for checking only)
+npm run smoke    # Builds, then verifies the output
 ```
 
-Deploy = push to `main`. GitHub Pages serves from `docs/`.
+Deploy = push to `main`. GitHub Actions
+([.github/workflows/deploy.yml](.github/workflows/deploy.yml)) lints, builds and
+smoke-checks, then publishes to Pages. `docs/` is **not** committed — the build
+happens on CI, so the live site cannot drift from the source.
+
+The contact form needs `VITE_WEB3FORMS_ACCESS_KEY`: locally from
+`web/.env.local`, on CI from the repository secret of the same name. Without it
+the form fails silently, so the smoke check asserts the key is in the bundle.
 
 ## Key Decisions
 
@@ -67,13 +75,13 @@ Deploy = push to `main`. GitHub Pages serves from `docs/`.
 | `web/src/config/site.ts` | Central config (URLs, content, nav) |
 | `web/src/LandingPage.tsx` | Main page layout + state |
 | `web/src/components/ContactForm.tsx` | Web3Forms contact modal |
-| `docs/index.html` | Live site entry (built, don't edit manually) |
+| `.github/workflows/deploy.yml` | Build + deploy pipeline |
 | `web/public/favicon.ico` | Site favicon |
 
 ## Rules
 
-- Always run `npm run build` in `web/` after source changes before pushing
-- Never edit files in `docs/` manually — they get overwritten by build
+- Run `npm run lint` and `npm run smoke` in `web/` before pushing
+- Never edit files in `docs/` — it is git-ignored build output
 - Keep `CLAUDE.md` updated when making structural changes
 
 ## Feature Overview

@@ -7,3 +7,6 @@ web/.env.*
 !web/.env.example
 npm-debug.log*
 _figma_export/
+
+# Build-Output — wird von GitHub Actions erzeugt, nicht versioniert
+/docs/

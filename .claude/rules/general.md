@@ -30,13 +30,17 @@ chore: bump tailwind to v4
 ## Build & Deploy
 
 1. Änderungen in `web/src/` machen
-2. `cd web && npm run build` ausführen
-3. Build-Output landet in `docs/` (automatisch)
-4. Commit + Push auf `main` → GitHub Pages deployed automatisch
+2. `cd web && npm run lint && npm run smoke` ausführen (smoke baut selbst)
+3. Commit + Push auf `main`
+4. GitHub Actions baut und veröffentlicht → `gh run watch --exit-status`
+5. Live verifizieren: Origin mit Cache-Buster zuerst, dann ohne
+   (Cloudflare cached 404er vier Stunden lang)
+
+Der Build-Output `docs/` ist git-ignoriert und wird von CI erzeugt.
 
 ## Allgemeine Regeln
 
-- `docs/` **niemals manuell bearbeiten** — wird vom Build überschrieben
+- `docs/` **niemals manuell bearbeiten und nicht committen** — git-ignorierter Build-Output
 - Keine neuen npm-Pakete ohne Absprache installieren
 - Keine Änderungen an `.env.local` committen
 - `CLAUDE.md` aktuell halten bei strukturellen Änderungen
