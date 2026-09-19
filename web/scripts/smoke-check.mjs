@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
-import { readFile } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
@@ -68,11 +68,28 @@ async function checkContactSubmitContract() {
   assert.match(form, /trackContactSubmit\("error"\)/, "Error-Tracking fehlt.");
 }
 
+async function checkContactKeyBundled() {
+  const assetsDir = path.join(docsDir, "assets");
+  const bundleName = (await readdir(assetsDir)).find(
+    (file) => file.startsWith("index-") && file.endsWith(".js"),
+  );
+  assert.ok(bundleName, "Gebündelte JS-Datei fehlt in docs/assets.");
+
+  const bundle = await readFile(path.join(assetsDir, bundleName), "utf8");
+  assert.match(
+    bundle,
+    /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/,
+    "Web3Forms-Key fehlt im Bundle — VITE_WEB3FORMS_ACCESS_KEY war beim Build nicht gesetzt. " +
+      "Das Kontaktformular waere live funktionslos.",
+  );
+}
+
 async function main() {
   runBuild();
   await checkRenderOutput();
   await checkNavigationAndCta();
   await checkContactSubmitContract();
+  await checkContactKeyBundled();
   console.log("Smoke-Checks erfolgreich.");
 }
 

@@ -1,0 +1,66 @@
+name: Build & Deploy
+
+# Baut die Seite bei GitHub und veroeffentlicht sie auf GitHub Pages.
+# Der Build-Output (docs/) liegt deshalb nicht mehr im Repository.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Laufende Deployments nicht abbrechen - sonst kann eine halb
+# veroeffentlichte Version stehen bleiben.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Abhaengigkeiten installieren
+        run: npm ci
+        working-directory: web
+
+      - name: Lint
+        run: npm run lint
+        working-directory: web
+
+      - name: Build + Smoke-Checks
+        # smoke ruft den Build selbst auf und prueft danach das Ergebnis,
+        # unter anderem, ob der Web3Forms-Key im Bundle gelandet ist.
+        run: npm run smoke
+        working-directory: web
+        env:
+          VITE_WEB3FORMS_ACCESS_KEY: ${{ secrets.VITE_WEB3FORMS_ACCESS_KEY }}
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+  deploy:
+    # Vorschau-Builds aus Pull Requests werden geprueft, aber nicht veroeffentlicht.
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
