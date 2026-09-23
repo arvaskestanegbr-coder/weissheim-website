@@ -29,6 +29,44 @@ async function checkRenderOutput() {
   assert.match(html, /assets\/index-[^"]+\.css/, "Gebündelte CSS-Datei fehlt.");
 }
 
+async function checkProductionOutput() {
+  const html = await readFile(path.join(docsDir, "index.html"), "utf8");
+  assert.match(html, /<link\s+rel="canonical"\s+href="https:\/\/weissheim\.com\/"/, "Produktions-Canonical fehlt.");
+  assert.doesNotMatch(html, /noindex|netlify\.app|Designvorschau/i, "Vorschau-Metadaten sind im Produktions-HTML enthalten.");
+  assert.equal((await readFile(path.join(docsDir, "CNAME"), "utf8")).trim(), "weissheim.com", "Produktions-Domain fehlt.");
+
+  const robots = await readFile(path.join(docsDir, "robots.txt"), "utf8");
+  assert.match(robots, /^Allow:\s*\/\s*$/m, "robots.txt erlaubt die Produktionsseite nicht.");
+  assert.doesNotMatch(robots, /^Disallow:\s*\/\s*$/m, "robots.txt sperrt die Produktionsseite.");
+  assert.match(robots, /Sitemap:\s*https:\/\/weissheim\.com\/sitemap\.xml/, "Produktions-Sitemap fehlt in robots.txt.");
+  assert.ok(existsSync(path.join(docsDir, "sitemap.xml")), "Produktions-Sitemap wurde nicht gebaut.");
+
+  const assetNames = await readdir(path.join(docsDir, "assets"));
+  assert.ok(!assetNames.some((name) => /^(?:PreviewPage|PreviewProduct|PreviewStory|interior-preview-2026)-/.test(name)), "2026-Designvorschau ist im Produktions-Build enthalten.");
+  for (const name of assetNames.filter((asset) => asset.endsWith(".js"))) {
+    const bundle = await readFile(path.join(docsDir, "assets", name), "utf8");
+    assert.doesNotMatch(bundle, /Designvorschau 2026|weissheim-designvorschau-2026\.netlify\.app|interior-preview-2026/, "Vorschau-Inhalte sind im Produktions-Bundle enthalten.");
+  }
+}
+
+async function checkLegalAssets() {
+  for (const filename of ["impressum.html", "datenschutz.html", "agb.html"]) {
+    const html = await readFile(path.join(docsDir, filename), "utf8");
+    assert.match(html, /<link\s+rel="stylesheet"\s+href="\/legal\.css"/, `Rechteseiten-Stylesheet fehlt in ${filename}.`);
+    assert.match(html, /src="\/legal-assets\/weissheim-logo\.webp"/, `Markenlogo fehlt in ${filename}.`);
+  }
+
+  const stylesheet = await readFile(path.join(docsDir, "legal.css"), "utf8");
+  const fontUrls = Array.from(stylesheet.matchAll(/url\(["']?([^"')]+)["']?\)/g), (match) => match[1]);
+  assert.ok(fontUrls.length >= 3, "Die lokalen Rechteseiten-Schriften fehlen im Stylesheet.");
+  for (const assetUrl of ["/legal-assets/weissheim-logo.webp", ...fontUrls]) {
+    const pathname = new URL(assetUrl, "https://weissheim.com/legal.css").pathname;
+    const assetPath = path.join(docsDir, pathname);
+    assert.ok(existsSync(assetPath), `Referenziertes Rechteseiten-Asset fehlt: ${pathname}`);
+    assert.ok((await readFile(assetPath)).length > 0, `Rechteseiten-Asset ist leer: ${pathname}`);
+  }
+}
+
 async function checkNavigationAndCta() {
   const headerPath = path.join(webDir, "src/sections/SiteHeader.tsx");
   const configPath = path.join(webDir, "src/config/site.ts");
@@ -87,6 +125,8 @@ async function checkContactKeyBundled() {
 async function main() {
   runBuild();
   await checkRenderOutput();
+  await checkProductionOutput();
+  await checkLegalAssets();
   await checkNavigationAndCta();
   await checkContactSubmitContract();
   await checkContactKeyBundled();

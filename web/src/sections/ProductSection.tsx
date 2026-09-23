@@ -1,14 +1,19 @@
 import { ShoppingCart } from "lucide-react";
 import Reveal from "../components/Reveal";
 import MagneticButton from "../components/MagneticButton";
-import { AMAZON_PRODUCT_URL, PRODUCT_BENEFITS } from "../config/site";
+import { AMAZON_PRODUCT_URL, PRODUCT_COLORS, PRODUCT_BENEFITS, type ProductColor } from "../config/site";
 import produktSchwarz from "../assets/produkt-schwarz.webp";
+import produktBeige from "../assets/produkt-weiss.webp";
 
 interface ProductSectionProps {
   onAmazonClick: (source: string) => void;
+  amazonUrl?: string;
+  color: ProductColor;
 }
 
-export default function ProductSection({ onAmazonClick }: ProductSectionProps) {
+export default function ProductSection({ onAmazonClick, amazonUrl = AMAZON_PRODUCT_URL, color }: ProductSectionProps) {
+  const selectedVariant = PRODUCT_COLORS.find((variant) => variant.name === color);
+
   return (
     <section id="produkt" className="relative bg-[#FAF8F3] py-24 md:py-32 px-5 md:px-8 overflow-hidden">
       {/* Subtle dot texture */}
@@ -33,8 +38,8 @@ export default function ProductSection({ onAmazonClick }: ProductSectionProps) {
           <Reveal from="left" distance={24}>
             <div className="group relative flex justify-center bg-[#FAF8F3] border-0 ring-0 outline-none shadow-none overflow-visible p-6 before:content-[''] before:pointer-events-none before:absolute before:inset-[-16%] before:rounded-[999px] before:bg-[radial-gradient(circle_at_center,rgba(10,10,10,0.12),transparent_62%)] before:blur-3xl before:opacity-0 before:transition-opacity before:duration-500 hover:before:opacity-100">
               <img
-                src={produktSchwarz}
-                alt="WEISSHEIM Wäschesammler – Schwarze Variante"
+                src={color === "Beige" ? produktBeige : produktSchwarz}
+                alt={selectedVariant?.alt ?? "WEISSHEIM Wäschesammler – Schwarze Variante"}
                 className="relative z-10 w-full max-w-[560px] h-auto object-contain mix-blend-multiply transform-gpu transition-transform duration-500 ease-out will-change-transform group-hover:-translate-y-2 group-hover:scale-[1.03]"
                 width={2000}
                 height={2500}
@@ -85,7 +90,7 @@ export default function ProductSection({ onAmazonClick }: ProductSectionProps) {
 
               <MagneticButton
                 as="a"
-                href={AMAZON_PRODUCT_URL}
+                href={amazonUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group relative inline-flex items-center gap-2.5 bg-[#0A0A0A] text-[#FAF8F3] px-8 py-4 text-[13px] font-semibold tracking-wider uppercase transition-all duration-300 hover:bg-[#0A0A0A]/80 overflow-hidden"

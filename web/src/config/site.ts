@@ -1,6 +1,14 @@
 export const AMAZON_PRODUCT_URL =
   "https://www.amazon.de/WEISSHEIM%C2%AE-W%C3%A4schesammler-abnehmbaren-W%C3%A4scheschrank-W%C3%A4schesortierer/dp/B0F3ZBN75C";
 
+// Verified color variants, both with four bags.
+export const AMAZON_PRODUCT_URLS = {
+  Beige: "https://www.amazon.de/dp/B0F3YS8JHV?th=1",
+  Schwarz: "https://www.amazon.de/dp/B0F3ZBN75C?th=1",
+} as const;
+
+export type ProductColor = keyof typeof AMAZON_PRODUCT_URLS;
+
 export const SECTION_IDS = ["vorteile", "produkt", "ueber-uns", "kontakt"] as const;
 
 export type SectionId = (typeof SECTION_IDS)[number];
@@ -33,21 +41,22 @@ export const SPECS = [
 ];
 
 export const PRODUCT_COLORS = [
-  { name: "Beige", bgClass: "bg-[#C8B99A]" },
-  { name: "Schwarz", bgClass: "bg-[#1C1C1E]" },
-];
+  { name: "Beige", bgClass: "bg-[#C8B99A]", alt: "WEISSHEIM Wäschesortierer mit vier beigen Taschen und Holzablage" },
+  { name: "Schwarz", bgClass: "bg-[#1C1C1E]", alt: "WEISSHEIM Wäschesortierer mit vier schwarzen Taschen und Holzablage" },
+] as const;
 
 export const HERO_HIGHLIGHTS = ["200 L Volumen", "4 Fächer", "Mit Rollen"];
 
 export const HERO_ROTATING_WORDS = ["spürt.", "liebt.", "sieht.", "lebt."];
 
 export const AMAZON_REVIEWS_URL =
-  "https://www.amazon.de/product-reviews/B0F3ZBN75C/ref=acr_dpx_hist_5?ie=UTF8&filterByStar=five_star&reviewerType=all_reviews#reviews-filter-bar";
+  "https://www.amazon.de/product-reviews/B0F3ZBN75C?reviewerType=all_reviews";
 
 export const AMAZON_RATING = {
   stars: 4.7,
-  count: 41,
+  count: 44,
   label: "Amazon Bewertungen",
+  asOf: "Stand: 23. September 2026",
 };
 
 export const FAQS: Array<{ question: string; answer: string }> = [
@@ -80,3 +89,16 @@ export const FAQS: Array<{ question: string; answer: string }> = [
 
 /** Rechteinhaber im Footer. Das Jahr wird zur Laufzeit ergänzt. */
 export const COPYRIGHT_HOLDER = "WEISSHEIM. Alle Rechte vorbehalten.";
+
+export const PRODUCT_IMAGE_VIEWER_CONTENT = {
+  controlsLabel: "Produktansicht wählen",
+  productLabel: "Produkt",
+  dimensionsLabel: "Maße",
+  heightLabel: "144,5 cm",
+  widthLabel: "70 cm",
+  depthLabel: "30 cm",
+  dimensionsSummary: "H 144,5 × B 70 × T 30 cm",
+  dimensionsNote: "Illustrative Maßlinien, nicht maßstabsgetreu.",
+  dimensionsAnnouncement:
+    "Produktmaße: Höhe 144,5 Zentimeter, Breite 70 Zentimeter, Tiefe 30 Zentimeter. Die Maßlinien dienen zur Orientierung und sind nicht maßstabsgetreu.",
+} as const;

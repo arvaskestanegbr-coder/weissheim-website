@@ -23,6 +23,7 @@ web/                    # Source code (Vite project)
 │   ├── components/            # Reusable components (ContactForm, Reveal, ui/)
 │   └── assets/                # Images (WebP format)
 ├── public/                    # Static files (favicon, CNAME, legal pages)
+├── plugins/legal-assets.ts   # Local fonts/logo for legal pages in dev and build
 ├── scripts/smoke-check.mjs   # Post-build verification
 └── index.html                 # HTML template
 
@@ -63,6 +64,10 @@ the form fails silently, so the smoke check asserts the key is in the bundle.
 
 ## Key Decisions
 
+- **Product image and color selection:** `ProductImageViewer.tsx` provides Product/Maße modes in the hero. `LandingPage` owns the selected color and synchronizes both product images and all Amazon purchase links through `AMAZON_PRODUCT_URLS`. `PRODUCT_IMAGE_VIEWER_CONTENT` holds the dimension labels. See `features/WEISS-8-massansicht.md`.
+- **Mobile navigation and purchase bar:** The mobile menu overlays the page without changing section positions. The compact purchase bar appears after the hero and hides when an in-content purchase link, contact section or footer is visible.
+- **Legal styling:** Static legal HTML uses `public/legal.css`; `plugins/legal-assets.ts` serves/emits the existing logo and Fontsource fonts. Legal text is unchanged. These assets are built by CI, not committed as copied binaries.
+- **Design study:** The separate 2026 redesign remains on its preview branch/Netlify site. Production has no preview query routing, preview metadata or redesign assets.
 - **Favicon:** ICO format (`web/public/favicon.ico`). SVG variant was removed.
 - **Images:** All product/logo images in WebP format for performance.
 - **Config:** All constants centralized in `web/src/config/site.ts` (Amazon URL, nav items, specs, features).

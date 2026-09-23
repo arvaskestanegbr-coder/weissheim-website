@@ -11,6 +11,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 interface FinalCtaSectionProps {
   onAmazonClick: (source: string) => void;
+  amazonUrl?: string;
 }
 
 /* ─── Floating gold particles ─── */
@@ -77,7 +78,7 @@ function AnimatedEyebrowLine({ direction }: { direction: "left" | "right" }) {
   return <span ref={ref} className="h-px w-10 bg-[#C9B99A]/40 block" />;
 }
 
-export default function FinalCtaSection({ onAmazonClick }: FinalCtaSectionProps) {
+export default function FinalCtaSection({ onAmazonClick, amazonUrl = AMAZON_PRODUCT_URL }: FinalCtaSectionProps) {
   return (
     <section className="relative bg-[#0A0A0A] py-28 md:py-40 px-5 md:px-8 overflow-hidden">
       {/* Dot texture */}
@@ -118,7 +119,7 @@ export default function FinalCtaSection({ onAmazonClick }: FinalCtaSectionProps)
 
             <MagneticButton
               as="a"
-              href={AMAZON_PRODUCT_URL}
+              href={amazonUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="group relative inline-flex items-center justify-center gap-2.5 bg-[#FAF8F3] text-[#0A0A0A] px-10 py-5 text-[13px] font-semibold tracking-wider uppercase transition-all duration-300 hover:bg-[#FAF8F3]/85 font-[Space_Grotesk] overflow-hidden"

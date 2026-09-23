@@ -3,12 +3,13 @@ import { ShoppingCart, Star } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import MagneticButton from "../components/MagneticButton";
-import { AMAZON_PRODUCT_URL, AMAZON_REVIEWS_URL, AMAZON_RATING, PRODUCT_COLORS, HERO_ROTATING_WORDS } from "../config/site";
+import ProductImageViewer from "../components/ProductImageViewer";
+import { AMAZON_REVIEWS_URL, AMAZON_RATING, PRODUCT_COLORS, HERO_ROTATING_WORDS, type ProductColor } from "../config/site";
 import { prefersReducedMotion } from "../lib/motion";
 import produktWeiss from "../assets/produkt-weiss.webp";
 import produktSchwarz from "../assets/produkt-schwarz.webp";
 
-const PRODUCT_IMAGES: Record<string, string> = {
+const PRODUCT_IMAGES: Record<ProductColor, string> = {
   Beige: produktWeiss,
   Schwarz: produktSchwarz,
 };
@@ -17,6 +18,9 @@ gsap.registerPlugin(ScrollTrigger);
 
 interface HeroSectionProps {
   onAmazonClick: (source: string) => void;
+  color: ProductColor;
+  onColorChange: (color: ProductColor) => void;
+  amazonUrl: string;
 }
 
 /* ─── Rotating words — luxury two-layer crossfade ─── */
@@ -230,9 +234,9 @@ function AnimatedEyebrowLine() {
   return <span ref={ref} className="h-px w-10 bg-[#C9B99A] block" />;
 }
 
-export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
+export default function HeroSection({ onAmazonClick, color: selectedColor, onColorChange, amazonUrl }: HeroSectionProps) {
   const parallaxRef = useRef<HTMLDivElement>(null);
-  const [selectedColor, setSelectedColor] = useState("Beige");
+  const [displayedColor, setDisplayedColor] = useState<ProductColor>(selectedColor);
   const sectionRef = useRef<HTMLElement>(null);
   const headlineRef = useRef<HTMLHeadingElement>(null);
   const eyebrowRef = useRef<HTMLDivElement>(null);
@@ -315,20 +319,22 @@ export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
 
   const colorTweenRef = useRef<gsap.core.Tween | null>(null);
 
-  const handleColorSwitch = useCallback((colorName: string) => {
+  useEffect(() => () => { colorTweenRef.current?.kill(); }, []);
+
+  const handleColorSwitch = useCallback((colorName: ProductColor) => {
     if (colorName === selectedColor) return;
+    onColorChange(colorName);
+    colorTweenRef.current?.kill();
     if (prefersReducedMotion()) {
-      setSelectedColor(colorName);
+      setDisplayedColor(colorName);
+      if (productImgRef.current) gsap.set(productImgRef.current, { clearProps: "transform,opacity,filter" });
       return;
     }
     const img = productImgRef.current;
     if (!img) {
-      setSelectedColor(colorName);
+      setDisplayedColor(colorName);
       return;
     }
-    // Kill any running crossfade to prevent overlapping animations
-    if (colorTweenRef.current) colorTweenRef.current.kill();
-
     // Crossfade: fade out → swap → fade in, then clear inline styles for CSS hover
     colorTweenRef.current = gsap.to(img, {
       opacity: 0,
@@ -337,7 +343,7 @@ export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
       duration: 0.3,
       ease: "power2.in",
       onComplete: () => {
-        setSelectedColor(colorName);
+        setDisplayedColor(colorName);
         colorTweenRef.current = gsap.fromTo(img,
           { opacity: 0, scale: 1.03, filter: "blur(4px)" },
           {
@@ -350,11 +356,12 @@ export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
         );
       },
     });
-  }, [selectedColor]);
+  }, [selectedColor, onColorChange]);
 
   return (
     <section
       ref={sectionRef}
+      data-sticky-cta-hero
       className="relative bg-[#FAF8F3] overflow-hidden min-h-[90vh] flex items-center"
     >
       {/* Subtle warm dot texture */}
@@ -438,17 +445,10 @@ export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
 
           {/* Product image — right column spanning both rows on desktop, order 2 on mobile */}
           <div ref={parallaxRef} className="order-2 lg:col-start-2 lg:row-start-1 lg:row-span-2 group relative flex justify-center lg:justify-end bg-[#FAF8F3] border-0 ring-0 outline-none shadow-none overflow-visible p-6 before:content-[''] before:pointer-events-none before:absolute before:inset-[-16%] before:rounded-[999px] before:bg-[radial-gradient(circle_at_center,rgba(10,10,10,0.12),transparent_62%)] before:blur-3xl before:opacity-0 before:transition-opacity before:duration-500 hover:before:opacity-100">
-            <img
-              ref={productImgRef}
-              src={PRODUCT_IMAGES[selectedColor] ?? produktWeiss}
-              alt={`WEISSHEIM Wäschesammler – ${selectedColor} Variante`}
-              className="relative z-10 w-full max-w-[620px] h-auto object-contain mix-blend-multiply transform-gpu transition-transform duration-500 ease-out will-change-transform group-hover:-translate-y-2 group-hover:scale-[1.03]"
-              width={2000}
-              height={2500}
-              loading="eager"
-              fetchPriority="high"
-              decoding="async"
-              sizes="(min-width: 1280px) 620px, (min-width: 1024px) 45vw, 92vw"
+            <ProductImageViewer
+              imageRef={productImgRef}
+              src={PRODUCT_IMAGES[displayedColor]}
+              alt={`WEISSHEIM Wäschesammler – ${displayedColor} Variante`}
             />
           </div>
 
@@ -457,7 +457,7 @@ export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
             <div className="flex flex-col sm:flex-row gap-4">
               <MagneticButton
                 as="a"
-                href={AMAZON_PRODUCT_URL}
+                href={amazonUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group relative inline-flex items-center justify-center gap-2.5 bg-[#0A0A0A] text-[#FAF8F3] px-8 py-4 text-[13px] font-semibold tracking-wider uppercase transition-colors duration-300 hover:bg-[#0A0A0A]/80 overflow-hidden"
@@ -485,6 +485,7 @@ export default function HeroSection({ onAmazonClick }: HeroSectionProps) {
             {/* Amazon star rating — social proof (entire area clickable) */}
             <a
               href={AMAZON_REVIEWS_URL}
+              title={AMAZON_RATING.asOf}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-6 inline-flex items-center justify-center sm:justify-start gap-2 rounded-sm transition-opacity duration-300 hover:opacity-75 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#78684F]"

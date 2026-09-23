@@ -9,8 +9,9 @@
 | WEISS-5 | Legal Pages (Impressum, Datenschutz, AGB) | Deployed | — | 2024 |
 | WEISS-6 | Adaptives Favicon (dark/light SVG + ICO) | Deployed | — | 2024 |
 | WEISS-7 | FAQ-Sektion | Deployed | [WEISS-7-faq-sektion.md](WEISS-7-faq-sektion.md) | 2026-02-22 |
+| WEISS-8 | Produkt-/Maßansicht und Bedienungsverbesserungen | Deployed | [WEISS-8-massansicht.md](WEISS-8-massansicht.md) | 2026-09-23 |
 
-## Nächste verfügbare ID: WEISS-8
+## Nächste verfügbare ID: WEISS-9
 
 ## Status-Legende
 | Status | Bedeutung |

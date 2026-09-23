@@ -6,6 +6,7 @@ import { prefersReducedMotion } from "../lib/motion";
 import weissheimLogo from "../assets/weissheim-logo.webp";
 
 interface SiteHeaderProps {
+  amazonUrl?: string;
   scrolled: boolean;
   mobileMenuOpen: boolean;
   activeSection: SectionId;
@@ -60,6 +61,7 @@ function NavLink({
 }
 
 export default function SiteHeader({
+  amazonUrl = AMAZON_PRODUCT_URL,
   scrolled,
   mobileMenuOpen,
   activeSection,
@@ -151,12 +153,33 @@ export default function SiteHeader({
     };
   }, [mobileMenuOpen]);
 
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const closeOnOutsideClick = (event: PointerEvent) => {
+      if (event.target instanceof Node && !navRef.current?.contains(event.target)) {
+        onCloseMobileMenu();
+      }
+    };
+    const desktopMedia = window.matchMedia("(min-width: 768px)");
+    const closeOnDesktop = () => {
+      if (desktopMedia.matches) onCloseMobileMenu();
+    };
+
+    document.addEventListener("pointerdown", closeOnOutsideClick);
+    desktopMedia.addEventListener("change", closeOnDesktop);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsideClick);
+      desktopMedia.removeEventListener("change", closeOnDesktop);
+    };
+  }, [mobileMenuOpen, onCloseMobileMenu]);
+
   return (
     <nav
       ref={navRef}
       aria-label="Hauptnavigation"
       className={`sticky top-0 z-50 transition-all duration-500 ${
-        scrolled
+        scrolled || mobileMenuOpen
           ? "bg-[#FAF8F3]/95 backdrop-blur-md"
           : "bg-transparent"
       }`}
@@ -171,7 +194,11 @@ export default function SiteHeader({
         {/* Logo — klickbar, scrollt nach oben */}
         <a
           href="#"
-          onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? "auto" : "smooth" }); }}
+          onClick={(e) => {
+            e.preventDefault();
+            onCloseMobileMenu();
+            window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? "auto" : "smooth" });
+          }}
           className="flex-shrink-0 rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A0A0A]"
           aria-label="Zur Startseite"
         >
@@ -205,7 +232,7 @@ export default function SiteHeader({
         {/* Desktop CTA — with shimmer */}
         <a
           ref={ctaRef}
-          href={AMAZON_PRODUCT_URL}
+          href={amazonUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="group hidden md:inline-flex items-center justify-center bg-[#0A0A0A] text-[#FAF8F3] px-6 py-2.5 text-[13px] font-semibold tracking-wider uppercase transition-all duration-300 hover:bg-[#0A0A0A]/80 overflow-hidden relative font-[Space_Grotesk] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A0A0A]"
@@ -237,7 +264,7 @@ export default function SiteHeader({
         id="mobile-navigation"
         aria-hidden={!mobileMenuOpen}
         inert={!mobileMenuOpen}
-        className={`md:hidden transition-[max-height,opacity] duration-300 ease-in-out motion-reduce:transition-none ${
+        className={`md:hidden absolute left-0 right-0 top-full bg-[#FAF8F3] shadow-[0_16px_24px_-16px_rgba(10,10,10,0.25)] transition-[max-height,opacity] duration-300 ease-in-out motion-reduce:transition-none ${
           mobileMenuOpen
             ? "max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain opacity-100"
             : "max-h-0 overflow-hidden opacity-0"
@@ -261,14 +288,18 @@ export default function SiteHeader({
           ))}
           <button
             type="button"
-            onClick={() => { onCloseMobileMenu(); onOpenContact(); }}
+            onClick={() => {
+              mobileToggleRef.current?.focus({ preventScroll: true });
+              onCloseMobileMenu();
+              onOpenContact();
+            }}
             className="mobile-nav-item flex w-full rounded-sm text-left py-3 text-[13px] font-medium tracking-wider uppercase text-[#0A0A0A]/60 hover:text-[#0A0A0A] transition-colors font-[Space_Grotesk] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A0A0A]"
           >
             Kontakt
           </button>
           <div className="mobile-nav-item pt-3">
             <a
-              href={AMAZON_PRODUCT_URL}
+              href={amazonUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="group relative flex w-full items-center justify-center bg-[#0A0A0A] text-[#FAF8F3] py-3.5 text-[13px] font-semibold tracking-wider uppercase overflow-hidden font-[Space_Grotesk] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A0A0A]"
