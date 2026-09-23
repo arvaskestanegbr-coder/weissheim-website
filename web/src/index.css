@@ -92,6 +92,12 @@
   }
 }
 
+@media (max-width: 767px) {
+  html {
+    scroll-padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+  }
+}
+
 /* Shimmer sweep — premium shine effect */
 @keyframes shimmer {
   0% { transform: translateX(-100%); }

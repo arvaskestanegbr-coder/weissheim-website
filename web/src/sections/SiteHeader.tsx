@@ -77,6 +77,8 @@ export default function SiteHeader({
   const mobileToggleRef = useRef<HTMLButtonElement>(null);
   const mobileContentRef = useRef<HTMLDivElement>(null);
   const prevMobileOpen = useRef(false);
+  const tabNavigationRef = useRef(false);
+  const restoreMobileFocusRef = useRef(true);
 
   /* ─── Entrance animation ─── */
   useEffect(() => {
@@ -126,6 +128,8 @@ export default function SiteHeader({
     let focusTimer: number | undefined;
 
     if (mobileMenuOpen && content) {
+      restoreMobileFocusRef.current = true;
+      tabNavigationRef.current = false;
       const items = content.querySelectorAll(".mobile-nav-item");
       const reduceMotion = prefersReducedMotion();
 
@@ -141,7 +145,7 @@ export default function SiteHeader({
       focusTimer = window.setTimeout(() => {
         content.querySelector<HTMLElement>(".mobile-nav-item")?.focus({ preventScroll: true });
       }, reduceMotion ? 0 : 120);
-    } else if (prevMobileOpen.current) {
+    } else if (prevMobileOpen.current && restoreMobileFocusRef.current) {
       mobileToggleRef.current?.focus({ preventScroll: true });
     }
 
@@ -157,6 +161,7 @@ export default function SiteHeader({
     if (!mobileMenuOpen) return;
 
     const closeOnOutsideClick = (event: PointerEvent) => {
+      tabNavigationRef.current = false;
       if (event.target instanceof Node && !navRef.current?.contains(event.target)) {
         onCloseMobileMenu();
       }
@@ -178,6 +183,20 @@ export default function SiteHeader({
     <nav
       ref={navRef}
       aria-label="Hauptnavigation"
+      onKeyDownCapture={(event) => {
+        tabNavigationRef.current = event.key === "Tab";
+      }}
+      onBlur={(event) => {
+        if (
+          mobileMenuOpen &&
+          tabNavigationRef.current &&
+          event.relatedTarget instanceof Node &&
+          !event.currentTarget.contains(event.relatedTarget)
+        ) {
+          restoreMobileFocusRef.current = false;
+          onCloseMobileMenu();
+        }
+      }}
       className={`sticky top-0 z-50 transition-all duration-500 ${
         scrolled || mobileMenuOpen
           ? "bg-[#FAF8F3]/95 backdrop-blur-md"
@@ -214,7 +233,7 @@ export default function SiteHeader({
         </a>
 
         {/* Desktop nav — magnetic links with active indicator */}
-        <div ref={linksRef} className="hidden md:flex items-center gap-8 ml-auto mr-10">
+        <div ref={linksRef} className="hidden md:flex items-center gap-5 lg:gap-8 ml-auto mr-6 lg:mr-10">
           {NAV_ITEMS.map((item) => (
             <NavLink
               key={item.id}
@@ -235,7 +254,7 @@ export default function SiteHeader({
           href={amazonUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="group hidden md:inline-flex items-center justify-center bg-[#0A0A0A] text-[#FAF8F3] px-6 py-2.5 text-[13px] font-semibold tracking-wider uppercase transition-all duration-300 hover:bg-[#0A0A0A]/80 overflow-hidden relative font-[Space_Grotesk] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A0A0A]"
+          className="group hidden md:inline-flex shrink-0 items-center justify-center whitespace-nowrap bg-[#0A0A0A] text-[#FAF8F3] px-6 py-2.5 text-[13px] font-semibold tracking-wider uppercase transition-all duration-300 hover:bg-[#0A0A0A]/80 overflow-hidden relative font-[Space_Grotesk] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A0A0A]"
           onClick={() => onAmazonClick("header_desktop")}
           data-analytics-id="amazon-header-desktop"
         >

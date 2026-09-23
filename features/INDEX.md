@@ -10,8 +10,9 @@
 | WEISS-6 | Adaptives Favicon (dark/light SVG + ICO) | Deployed | — | 2024 |
 | WEISS-7 | FAQ-Sektion | Deployed | [WEISS-7-faq-sektion.md](WEISS-7-faq-sektion.md) | 2026-02-22 |
 | WEISS-8 | Produkt-/Maßansicht und Bedienungsverbesserungen | Deployed | [WEISS-8-massansicht.md](WEISS-8-massansicht.md) | 2026-09-23 |
+| WEISS-9 | Mobiler Feinschliff und gemeinsame Aktionsleiste | Deployed | [WEISS-9-mobiler-feinschliff.md](WEISS-9-mobiler-feinschliff.md) | 2026-09-23 |
 
-## Nächste verfügbare ID: WEISS-9
+## Nächste verfügbare ID: WEISS-10
 
 ## Status-Legende
 | Status | Bedeutung |

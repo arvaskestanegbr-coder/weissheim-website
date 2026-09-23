@@ -296,7 +296,7 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
               name="name"
               type="text"
               autoComplete="name"
-              className="w-full rounded-lg border border-[#0A0A0A]/20 bg-[#F0EBE3]/50 px-3 py-2.5 text-sm text-[#0A0A0A] outline-none transition focus:border-[#78684F] focus:bg-white focus-visible:ring-2 focus-visible:ring-[#78684F] focus-visible:ring-offset-1 font-[Space_Grotesk]"
+              className="w-full rounded-lg border border-[#0A0A0A]/20 bg-[#F0EBE3]/50 px-3 py-2.5 text-base sm:text-sm text-[#0A0A0A] outline-none transition focus:border-[#78684F] focus:bg-white focus-visible:ring-2 focus-visible:ring-[#78684F] focus-visible:ring-offset-1 font-[Space_Grotesk]"
             />
           </div>
 
@@ -310,7 +310,7 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
               name="email"
               type="email"
               autoComplete="email"
-              className="w-full rounded-lg border border-[#0A0A0A]/20 bg-[#F0EBE3]/50 px-3 py-2.5 text-sm text-[#0A0A0A] outline-none transition focus:border-[#78684F] focus:bg-white focus-visible:ring-2 focus-visible:ring-[#78684F] focus-visible:ring-offset-1 font-[Space_Grotesk]"
+              className="w-full rounded-lg border border-[#0A0A0A]/20 bg-[#F0EBE3]/50 px-3 py-2.5 text-base sm:text-sm text-[#0A0A0A] outline-none transition focus:border-[#78684F] focus:bg-white focus-visible:ring-2 focus-visible:ring-[#78684F] focus-visible:ring-offset-1 font-[Space_Grotesk]"
             />
           </div>
 
@@ -324,7 +324,7 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
               name="subject"
               type="text"
               autoComplete="off"
-              className="w-full rounded-lg border border-[#0A0A0A]/20 bg-[#F0EBE3]/50 px-3 py-2.5 text-sm text-[#0A0A0A] outline-none transition focus:border-[#78684F] focus:bg-white focus-visible:ring-2 focus-visible:ring-[#78684F] focus-visible:ring-offset-1 font-[Space_Grotesk]"
+              className="w-full rounded-lg border border-[#0A0A0A]/20 bg-[#F0EBE3]/50 px-3 py-2.5 text-base sm:text-sm text-[#0A0A0A] outline-none transition focus:border-[#78684F] focus:bg-white focus-visible:ring-2 focus-visible:ring-[#78684F] focus-visible:ring-offset-1 font-[Space_Grotesk]"
             />
           </div>
 
@@ -337,7 +337,7 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
               name="order_number"
               type="text"
               autoComplete="off"
-              className="w-full rounded-lg border border-[#0A0A0A]/20 bg-[#F0EBE3]/50 px-3 py-2.5 text-sm text-[#0A0A0A] outline-none transition focus:border-[#78684F] focus:bg-white focus-visible:ring-2 focus-visible:ring-[#78684F] focus-visible:ring-offset-1 font-[Space_Grotesk]"
+              className="w-full rounded-lg border border-[#0A0A0A]/20 bg-[#F0EBE3]/50 px-3 py-2.5 text-base sm:text-sm text-[#0A0A0A] outline-none transition focus:border-[#78684F] focus:bg-white focus-visible:ring-2 focus-visible:ring-[#78684F] focus-visible:ring-offset-1 font-[Space_Grotesk]"
             />
           </div>
 
@@ -350,7 +350,7 @@ export default function ContactForm({ open, onOpenChange }: ContactFormProps) {
               required
               name="message"
               rows={4}
-              className="w-full rounded-lg border border-[#0A0A0A]/20 bg-[#F0EBE3]/50 px-3 py-2.5 text-sm text-[#0A0A0A] outline-none transition focus:border-[#78684F] focus:bg-white focus-visible:ring-2 focus-visible:ring-[#78684F] focus-visible:ring-offset-1 font-[Space_Grotesk]"
+              className="w-full rounded-lg border border-[#0A0A0A]/20 bg-[#F0EBE3]/50 px-3 py-2.5 text-base sm:text-sm text-[#0A0A0A] outline-none transition focus:border-[#78684F] focus:bg-white focus-visible:ring-2 focus-visible:ring-[#78684F] focus-visible:ring-offset-1 font-[Space_Grotesk]"
             />
           </div>
 

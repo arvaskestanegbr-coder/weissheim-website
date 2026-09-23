@@ -111,7 +111,7 @@ function FeatureRow({ feature, index, isLast }: { feature: typeof FEATURES[numbe
   return (
     <Reveal from="up" distance={16} delayMs={index * 80}>
       <div
-        className={`group relative flex gap-8 md:gap-16 py-10 transition-all duration-300 ${!isLast ? "border-b border-[#FAF8F3]/8" : ""}`}
+        className={`group relative flex gap-4 md:gap-16 py-8 md:py-10 transition-all duration-300 ${!isLast ? "border-b border-[#FAF8F3]/8" : ""}`}
         onMouseEnter={handleEnter}
         onMouseLeave={handleLeave}
       >
@@ -138,7 +138,7 @@ function FeatureRow({ feature, index, isLast }: { feature: typeof FEATURES[numbe
           <h3 className="text-2xl md:text-3xl text-[#FAF8F3] mb-4 leading-tight transition-transform duration-300 group-hover:translate-x-2">
             {feature.title}
           </h3>
-          <p className="text-[15px] leading-7 text-[#FAF8F3]/60 max-w-lg font-[Space_Grotesk] transition-colors duration-300 group-hover:text-[#FAF8F3]/75">
+          <p className="text-[15px] leading-7 text-[#FAF8F3]/75 md:text-[#FAF8F3]/60 max-w-lg font-[Space_Grotesk] transition-colors duration-300 group-hover:text-[#FAF8F3]/75">
             {feature.description}
           </p>
         </div>
@@ -166,7 +166,7 @@ export default function FeaturesSection() {
 
       <div className="container relative mx-auto max-w-5xl">
 
-        <Reveal className="mb-20" from="up" distance={20}>
+        <Reveal className="mb-10 md:mb-20" from="up" distance={20}>
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
             <div className="relative">
               <h2 className="text-4xl md:text-6xl text-[#FAF8F3] leading-[1.0]">
@@ -177,7 +177,7 @@ export default function FeaturesSection() {
               <div className="absolute -left-5 top-2 bottom-2 w-[3px] rounded-full bg-[#C9B99A]/40" />
               <div className="absolute -left-5 top-2 bottom-2 w-[3px] rounded-full bg-[#C9B99A]/40 blur-sm animate-glow" />
             </div>
-            <p className="text-sm text-[#FAF8F3]/60 max-w-56 md:text-right leading-6 font-[Space_Grotesk]">
+            <p className="text-sm text-[#FAF8F3]/75 md:text-[#FAF8F3]/60 max-w-56 md:text-right leading-6 font-[Space_Grotesk]">
               Die perfekte Lösung für deine organisierte Wäscheverwaltung.
             </p>
           </div>

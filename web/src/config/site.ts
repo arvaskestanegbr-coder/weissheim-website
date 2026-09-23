@@ -90,6 +90,15 @@ export const FAQS: Array<{ question: string; answer: string }> = [
 /** Rechteinhaber im Footer. Das Jahr wird zur Laufzeit ergänzt. */
 export const COPYRIGHT_HOLDER = "WEISSHEIM. Alle Rechte vorbehalten.";
 
+export const MOBILE_ACTIONS_CONTENT = {
+  label: "Schnellzugriff",
+  buyLabel: "Jetzt kaufen",
+  contactLabel: "Fragen",
+  contactAccessibleLabel: "Fragen? Kontakt öffnen",
+  backToTopLabel: "Nach oben",
+  backToTopAccessibleLabel: "Nach oben scrollen",
+} as const;
+
 export const PRODUCT_IMAGE_VIEWER_CONTENT = {
   controlsLabel: "Produktansicht wählen",
   productLabel: "Produkt",

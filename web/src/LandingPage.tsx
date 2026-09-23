@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import ContactForm from "./components/ContactForm";
-import { AMAZON_PRODUCT_URLS, SECTION_IDS, type ProductColor, type SectionId } from "./config/site";
+import { AMAZON_PRODUCT_URLS, MOBILE_ACTIONS_CONTENT, SECTION_IDS, type ProductColor, type SectionId } from "./config/site";
 import { trackAmazonClick, trackContactOpen } from "./lib/analytics";
 import { prefersReducedMotion } from "./lib/motion";
 import ContactSection from "./sections/ContactSection";
@@ -85,6 +85,11 @@ const Index = () => {
     setContactFormOpen(true);
   };
 
+  const scrollToTop = () => {
+    document.getElementById("main-content")?.focus({ preventScroll: true });
+    window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? "auto" : "smooth" });
+  };
+
   // Close mobile menu on scroll (Refined UX)
   useEffect(() => {
     if (!mobileMenuOpen) return;
@@ -135,10 +140,10 @@ const Index = () => {
           type="button"
           disabled={!scrolled}
           aria-hidden={!scrolled}
-          onClick={() => window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? "auto" : "smooth" })}
-          className={`fixed bottom-[calc(1.375rem+env(safe-area-inset-bottom))] right-4 md:bottom-8 md:right-8 h-11 w-11 flex items-center justify-center border border-[#0A0A0A]/30 bg-[#FAF8F3] text-[#0A0A0A]/70 hover:border-[#0A0A0A]/50 hover:text-[#0A0A0A] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A0A0A] transition-all duration-300 transform-gpu z-40 shadow-sm ${scrolled ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
+          onClick={scrollToTop}
+          className={`fixed bottom-8 right-8 h-11 w-11 hidden md:flex items-center justify-center border border-[#0A0A0A]/30 bg-[#FAF8F3] text-[#0A0A0A]/70 hover:border-[#0A0A0A]/50 hover:text-[#0A0A0A] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A0A0A] transition-all duration-300 transform-gpu z-40 shadow-sm ${scrolled ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
             }`}
-          aria-label="Nach oben scrollen"
+          aria-label={MOBILE_ACTIONS_CONTENT.backToTopAccessibleLabel}
         >
           <ChevronDown size={18} className="rotate-180" />
         </button>
@@ -148,9 +153,10 @@ const Index = () => {
           amazonUrl={amazonUrl}
           onAmazonClick={trackAmazonClick}
           onOpenContact={() => openContactModal("sticky_mobile")}
+          onScrollToTop={scrollToTop}
         />
 
-        <SiteFooter onOpenContact={() => openContactModal("footer")} />
+        <SiteFooter onOpenContact={() => openContactModal("footer")} onScrollToTop={scrollToTop} />
       </div>
       <ContactForm open={contactFormOpen} onOpenChange={setContactFormOpen} />
     </>

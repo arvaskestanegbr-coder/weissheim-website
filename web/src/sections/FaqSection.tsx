@@ -60,14 +60,14 @@ function FaqItem({ faq, index, isOpen, isLast, onToggle }: {
           id={triggerId}
           type="button"
           onClick={onToggle}
-          className="w-full flex items-center justify-between gap-6 py-6 pl-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#0A0A0A]/70"
+          className="w-full flex items-center justify-between gap-3 md:gap-6 py-6 pl-3 md:pl-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#0A0A0A]/70"
           aria-expanded={isOpen}
           aria-controls={panelId}
         >
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 md:gap-4">
             <span
               aria-hidden="true"
-              className={`text-[12px] font-semibold tabular-nums font-[Space_Grotesk] transition-colors duration-300 ${isOpen ? "text-[#C9B99A]" : "text-[#0A0A0A]/20"}`}
+              className={`text-[12px] font-semibold tabular-nums font-[Space_Grotesk] transition-colors duration-300 ${isOpen ? "text-[#78684F] md:text-[#C9B99A]" : "text-[#0A0A0A]/45 md:text-[#0A0A0A]/20"}`}
             >
               0{index + 1}
             </span>
@@ -94,7 +94,7 @@ function FaqItem({ faq, index, isOpen, isLast, onToggle }: {
         hidden={!isOpen}
         className="pb-6"
       >
-        <p className="text-[14px] leading-7 text-[#0A0A0A]/65 font-[Space_Grotesk] pl-4 ml-8">
+        <p className="text-[14px] leading-7 text-[#0A0A0A]/75 md:text-[#0A0A0A]/65 font-[Space_Grotesk] px-3 md:pl-4 md:pr-0 md:ml-8">
           {faq.answer}
         </p>
       </div>
@@ -121,7 +121,7 @@ export default function FaqSection() {
 
       <div className="container relative mx-auto max-w-3xl">
 
-        <Reveal className="mb-16" from="up" distance={20}>
+        <Reveal className="mb-10 md:mb-16" from="up" distance={20}>
           <div className="relative">
             <h2 className="text-4xl md:text-6xl text-[#0A0A0A] leading-[1.0] mb-4">
               Häufige<br />

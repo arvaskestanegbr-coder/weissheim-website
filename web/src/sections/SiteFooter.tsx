@@ -1,11 +1,13 @@
 import weissheimLogo from "../assets/weissheim-logo.webp";
-import { COPYRIGHT_HOLDER, NAV_ITEMS } from "../config/site";
+import { ArrowUp } from "lucide-react";
+import { COPYRIGHT_HOLDER, MOBILE_ACTIONS_CONTENT, NAV_ITEMS } from "../config/site";
 
 interface SiteFooterProps {
   onOpenContact: () => void;
+  onScrollToTop: () => void;
 }
 
-export default function SiteFooter({ onOpenContact }: SiteFooterProps) {
+export default function SiteFooter({ onOpenContact, onScrollToTop }: SiteFooterProps) {
   const currentYear = new Date().getFullYear();
 
   return (
@@ -72,6 +74,14 @@ export default function SiteFooter({ onOpenContact }: SiteFooterProps) {
           </div>
         </div>
         <div className="pt-8 border-t border-[#FAF8F3]/8 text-center">
+          <button
+            type="button"
+            onClick={onScrollToTop}
+            className="mx-auto mb-5 inline-flex min-h-11 items-center gap-2 rounded-sm px-3 text-[13px] text-[#C9B99A] transition-colors hover:text-[#FAF8F3] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C9B99A] md:hidden"
+          >
+            {MOBILE_ACTIONS_CONTENT.backToTopLabel}
+            <ArrowUp size={16} aria-hidden="true" />
+          </button>
           <p className="text-[13px] text-[#FAF8F3]/50 font-[Space_Grotesk]">© {currentYear} {COPYRIGHT_HOLDER}</p>
         </div>
       </div>
