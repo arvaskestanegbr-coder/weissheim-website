@@ -282,7 +282,7 @@ function CornerAccents({ isDark }: { isDark: boolean }) {
 
 /* ─── Context hints ─── */
 const STAT_CONTEXT: Record<string, string> = {
-  "200": "= ca. 8 volle Wäschekörbe",
+  "200": "= 4 Fächer à 50 L",
   "4": "Sortiere nach Farbe, Temperatur & mehr",
 };
 

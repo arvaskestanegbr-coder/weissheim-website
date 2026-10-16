@@ -35,8 +35,8 @@ export const HERO_STATS = [
 
 export const SPECS = [
   { label: "Material", value: "Oxford 600D", desc: "Hochdichtes, reißfestes Polyester", icon: "Layers" },
-  { label: "Rahmen", value: "Stabiler Stahlrahmen", desc: "Pulverbeschichtet & rostfrei", icon: "Wrench" },
-  { label: "Mobilität", value: "Mit Rollen", desc: "360° drehbar, bodenschonend", icon: "Disc3" },
+  { label: "Rahmen", value: "Stabiler Stahlrahmen", desc: "Pulverbeschichtet & rostgeschützt", icon: "Wrench" },
+  { label: "Mobilität", value: "Mit Rollen", desc: "360° drehbar, mit Bremse", icon: "Disc3" },
   { label: "Ablage", value: "Holz-Ablagefläche", desc: "Holzplatte als zusätzliche Ablage", icon: "PanelTop" },
 ];
 
