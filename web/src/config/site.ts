@@ -53,10 +53,10 @@ export const AMAZON_REVIEWS_URL =
   "https://www.amazon.de/product-reviews/B0F3ZBN75C?reviewerType=all_reviews";
 
 export const AMAZON_RATING = {
-  stars: 4.7,
-  count: 44,
+  stars: 4.5,
+  count: 37,
   label: "Amazon Bewertungen",
-  asOf: "Stand: 23. September 2026",
+  asOf: "Stand: 16. Oktober 2026",
 };
 
 export const FAQS: Array<{ question: string; answer: string }> = [

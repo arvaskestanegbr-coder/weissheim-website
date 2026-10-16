@@ -488,7 +488,7 @@ export default function HeroSection({ onAmazonClick, color: selectedColor, onCol
               title={AMAZON_RATING.asOf}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-6 inline-flex items-center justify-center sm:justify-start gap-2 rounded-sm transition-opacity duration-300 hover:opacity-75 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#78684F]"
+              className="mt-6 inline-flex min-h-6 items-center justify-center sm:justify-start gap-2 rounded-sm transition-opacity duration-300 hover:opacity-75 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#78684F]"
               onClick={() => onAmazonClick("hero_rating")}
             >
               <div className="flex items-center gap-0.5">

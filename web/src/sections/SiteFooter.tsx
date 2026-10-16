@@ -36,7 +36,7 @@ export default function SiteFooter({ onOpenContact, onScrollToTop }: SiteFooterP
             <ul className="space-y-3 text-[14px] text-[#FAF8F3]/60 font-[Space_Grotesk]">
               {NAV_ITEMS.map((item) => (
                 <li key={item.id}>
-                  <a href={`#${item.id}`} className="rounded-sm hover:text-[#C9B99A] transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C9B99A]">
+                  <a href={`#${item.id}`} className="inline-flex min-h-6 items-center rounded-sm hover:text-[#C9B99A] transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C9B99A]">
                     {item.label}
                   </a>
                 </li>
@@ -45,7 +45,7 @@ export default function SiteFooter({ onOpenContact, onScrollToTop }: SiteFooterP
                 <button
                   type="button"
                   onClick={onOpenContact}
-                  className="rounded-sm hover:text-[#C9B99A] transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C9B99A]"
+                  className="inline-flex min-h-6 items-center rounded-sm hover:text-[#C9B99A] transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C9B99A]"
                 >
                   Kontakt
                 </button>
@@ -56,17 +56,17 @@ export default function SiteFooter({ onOpenContact, onScrollToTop }: SiteFooterP
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#FAF8F3]/60 mb-5 font-[Space_Grotesk]">Rechtliches</p>
             <ul className="space-y-3 text-[14px] text-[#FAF8F3]/60 font-[Space_Grotesk]">
               <li>
-                <a href="/impressum.html" className="rounded-sm hover:text-[#C9B99A] transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C9B99A]">
+                <a href="/impressum.html" className="inline-flex min-h-6 items-center rounded-sm hover:text-[#C9B99A] transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C9B99A]">
                   Impressum
                 </a>
               </li>
               <li>
-                <a href="/datenschutz.html" className="rounded-sm hover:text-[#C9B99A] transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C9B99A]">
+                <a href="/datenschutz.html" className="inline-flex min-h-6 items-center rounded-sm hover:text-[#C9B99A] transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C9B99A]">
                   Datenschutzerklärung
                 </a>
               </li>
               <li>
-                <a href="/agb.html" className="rounded-sm hover:text-[#C9B99A] transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C9B99A]">
+                <a href="/agb.html" className="inline-flex min-h-6 items-center rounded-sm hover:text-[#C9B99A] transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C9B99A]">
                   AGB / Hinweise
                 </a>
               </li>
