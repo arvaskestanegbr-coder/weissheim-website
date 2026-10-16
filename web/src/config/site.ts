@@ -49,8 +49,8 @@ export const HERO_HIGHLIGHTS = ["200 L Volumen", "4 Fächer", "Mit Rollen"];
 
 export const HERO_ROTATING_WORDS = ["spürt.", "liebt.", "sieht.", "lebt."];
 
-export const AMAZON_REVIEWS_URL =
-  "https://www.amazon.de/product-reviews/B0F3ZBN75C?reviewerType=all_reviews";
+// Produktseite statt /product-reviews/: Amazon verlangt dort inzwischen einen Login.
+export const AMAZON_REVIEWS_URL = "https://www.amazon.de/dp/B0F3YS8JHV?th=1#customerReviews";
 
 export const AMAZON_RATING = {
   stars: 4.5,
@@ -58,6 +58,59 @@ export const AMAZON_RATING = {
   label: "Amazon Bewertungen",
   asOf: "Stand: 16. Oktober 2026",
 };
+
+export interface CustomerReview {
+  author: string;
+  stars: number;
+  date: string;
+  variant: string;
+  /** Unveränderter Auszug aus der Rezension. Leer = Karte wird nicht angezeigt. */
+  quote: string;
+  url: string;
+}
+
+/**
+ * Nur echte Rezensionen mit „Verifizierter Kauf“. Auszüge wörtlich übernehmen,
+ * Kürzungen nur mit „…“ markieren, nichts umformulieren (UWG § 5b Abs. 3).
+ */
+export const CUSTOMER_REVIEWS: CustomerReview[] = [
+  {
+    author: "Johanna H.",
+    stars: 5,
+    date: "2. September 2026",
+    variant: "Beige, 4 Taschen",
+    quote: "",
+    url: AMAZON_REVIEWS_URL,
+  },
+  {
+    author: "Steffi",
+    stars: 5,
+    date: "9. September 2026",
+    variant: "Schwarz, 4 Taschen",
+    quote: "",
+    url: AMAZON_REVIEWS_URL,
+  },
+  {
+    author: "didik",
+    stars: 5,
+    date: "18. August 2026",
+    variant: "Beige, 4 Taschen",
+    quote: "",
+    url: AMAZON_REVIEWS_URL,
+  },
+];
+
+export const REVIEWS_CONTENT = {
+  eyebrow: "Kundenstimmen",
+  headingTop: "Echte",
+  headingEmphasis: "Stimmen.",
+  intro: "Was Käuferinnen und Käufer auf Amazon über ihren WEISSHEIM schreiben.",
+  verifiedLabel: "Verifizierter Kauf",
+  readMoreLabel: "Ganze Rezension auf Amazon",
+  allReviewsLabel: "Alle Bewertungen auf Amazon lesen",
+  sourceNote:
+    "Wir zeigen ausschließlich Rezensionen mit dem Amazon-Kennzeichen „Verifizierter Kauf“. Damit bestätigt Amazon, dass die Person das Produkt dort gekauft hat. Die Auszüge sind wörtlich übernommen.",
+} as const;
 
 export const FAQS: Array<{ question: string; answer: string }> = [
   {

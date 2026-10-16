@@ -11,6 +11,7 @@ import FinalCtaSection from "./sections/FinalCtaSection";
 import HeroSection from "./sections/HeroSection";
 import MobileStickyCta from "./sections/MobileStickyCta";
 import ProductSection from "./sections/ProductSection";
+import ReviewsSection from "./sections/ReviewsSection";
 import SiteFooter from "./sections/SiteFooter";
 import SiteHeader from "./sections/SiteHeader";
 import SpecsSection from "./sections/SpecsSection";
@@ -129,6 +130,7 @@ const Index = () => {
         <main id="main-content" tabIndex={-1}>
           <HeroSection onAmazonClick={trackAmazonClick} color={selectedColor} onColorChange={setSelectedColor} amazonUrl={amazonUrl} />
           <FeaturesSection />
+          <ReviewsSection onAmazonClick={trackAmazonClick} />
           <ProductSection onAmazonClick={trackAmazonClick} amazonUrl={amazonUrl} color={selectedColor} />
           <SpecsSection />
           <ContactSection onOpenContact={() => openContactModal("contact_section")} />
