@@ -79,7 +79,8 @@ export const CUSTOMER_REVIEWS: CustomerReview[] = [
     stars: 5,
     date: "2. September 2026",
     variant: "Beige, 4 Taschen",
-    quote: "",
+    quote:
+      "Ist nun schon ein halbes Jahr in gebrauch und hilft mir, mein wäschechaos im Zaum zu halten. Wir sind eine vierköpfige Familie.",
     url: AMAZON_REVIEWS_URL,
   },
   {
@@ -87,7 +88,8 @@ export const CUSTOMER_REVIEWS: CustomerReview[] = [
     stars: 5,
     date: "9. September 2026",
     variant: "Schwarz, 4 Taschen",
-    quote: "",
+    quote:
+      "Viele Besucher die es bei mir gesehen haben waren begeistert und wollen es sich auch anschaffen, da es viel stauraum hat aber nur wenig Platz einnimmt. Perfekt für kleinere HWR.",
     url: AMAZON_REVIEWS_URL,
   },
   {
@@ -95,7 +97,8 @@ export const CUSTOMER_REVIEWS: CustomerReview[] = [
     stars: 5,
     date: "18. August 2026",
     variant: "Beige, 4 Taschen",
-    quote: "",
+    quote:
+      "Gut ist auch das obere Ablagebrett. Macht das ganze noch stabiler.",
     url: AMAZON_REVIEWS_URL,
   },
 ];
