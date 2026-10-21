@@ -49,6 +49,11 @@ export const HERO_HIGHLIGHTS = ["200 L Volumen", "4 Fächer", "Mit Rollen"];
 
 export const HERO_ROTATING_WORDS = ["spürt.", "liebt.", "sieht.", "lebt."];
 
+export const HERO_ROTATION_LABELS = {
+  pause: "Wortwechsel anhalten",
+  resume: "Wortwechsel fortsetzen",
+};
+
 // Produktseite statt /product-reviews/: Amazon verlangt dort inzwischen einen Login.
 export const AMAZON_REVIEWS_URL = "https://www.amazon.de/dp/B0F3YS8JHV?th=1#customerReviews";
 

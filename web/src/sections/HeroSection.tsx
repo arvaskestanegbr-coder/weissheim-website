@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { ShoppingCart, Star } from "lucide-react";
+import { Pause, Play, ShoppingCart, Star } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import MagneticButton from "../components/MagneticButton";
 import ProductImageViewer from "../components/ProductImageViewer";
-import { AMAZON_REVIEWS_URL, AMAZON_RATING, PRODUCT_COLORS, HERO_ROTATING_WORDS, type ProductColor } from "../config/site";
+import { AMAZON_REVIEWS_URL, AMAZON_RATING, PRODUCT_COLORS, HERO_ROTATING_WORDS, HERO_ROTATION_LABELS, type ProductColor } from "../config/site";
 import { prefersReducedMotion } from "../lib/motion";
 import produktWeiss from "../assets/produkt-weiss.webp";
 import produktSchwarz from "../assets/produkt-schwarz.webp";
@@ -32,13 +32,21 @@ interface HeroSectionProps {
  *   - Width is measured at runtime via a hidden measurement span + ResizeObserver
  *     to prevent any layout shift when words have different pixel widths.
  *   - prefers-reduced-motion: skips all animation, swaps text instantly.
- *   - GSAP context ensures all timelines + delayed calls are killed on unmount.
+ *   - `paused` (WCAG 2.2.2): a running crossfade finishes, then the word holds
+ *     until resumed. Pending calls are tracked so unmount kills them.
  */
-function RotatingWord({ words }: { words: string[] }) {
+interface RotatingWordControls {
+  pause: () => void;
+  resume: () => void;
+}
+
+function RotatingWord({ words, paused }: { words: string[]; paused: boolean }) {
   const wrapRef = useRef<HTMLSpanElement>(null);
   const measureRef = useRef<HTMLSpanElement>(null);
   const layerARef = useRef<HTMLSpanElement>(null);
   const layerBRef = useRef<HTMLSpanElement>(null);
+  const pausedRef = useRef(paused);
+  const controlsRef = useRef<RotatingWordControls | null>(null);
 
   useEffect(() => {
     const wrap = wrapRef.current;
@@ -84,11 +92,19 @@ function RotatingWord({ words }: { words: string[] }) {
 
     let currentIndex = 0;
     let aIsCurrent = true;
+    let pending: gsap.core.Tween | null = null;
+    let running: gsap.core.Timeline | null = null;
+    let idle = false;
 
     /* ── GSAP context for clean teardown ── */
     const ctx = gsap.context(() => {
       function scheduleNext() {
-        gsap.delayedCall(HOLD, () => {
+        if (pausedRef.current) {
+          idle = true;
+          return;
+        }
+        pending = gsap.delayedCall(HOLD, () => {
+          pending = null;
           const nextIndex = (currentIndex + 1) % words.length;
           const outLayer = (aIsCurrent ? layerA : layerB)!;
           const inLayer = (aIsCurrent ? layerB : layerA)!;
@@ -98,11 +114,13 @@ function RotatingWord({ words }: { words: string[] }) {
 
           const tl = gsap.timeline({
             onComplete: () => {
+              running = null;
               currentIndex = nextIndex;
               aIsCurrent = !aIsCurrent;
               scheduleNext();
             },
           });
+          running = tl;
 
           // Out: drift up + blur + fade + micro-scale + clip from bottom
           tl.to(outLayer, {
@@ -139,10 +157,36 @@ function RotatingWord({ words }: { words: string[] }) {
       }
 
       scheduleNext();
+
+      controlsRef.current = {
+        pause: () => {
+          if (!pending) return;
+          pending.kill();
+          pending = null;
+          idle = true;
+        },
+        resume: () => {
+          if (!idle) return;
+          idle = false;
+          scheduleNext();
+        },
+      };
     });
 
-    return () => { ctx.revert(); ro.disconnect(); };
+    return () => {
+      controlsRef.current = null;
+      pending?.kill();
+      running?.kill();
+      ctx.revert();
+      ro.disconnect();
+    };
   }, [words]);
+
+  useEffect(() => {
+    pausedRef.current = paused;
+    if (paused) controlsRef.current?.pause();
+    else controlsRef.current?.resume();
+  }, [paused]);
 
   const layerStyle: React.CSSProperties = {
     willChange: "transform, opacity, filter",
@@ -237,6 +281,8 @@ function AnimatedEyebrowLine() {
 export default function HeroSection({ onAmazonClick, color: selectedColor, onColorChange, amazonUrl }: HeroSectionProps) {
   const parallaxRef = useRef<HTMLDivElement>(null);
   const [displayedColor, setDisplayedColor] = useState<ProductColor>(selectedColor);
+  const [wordsPaused, setWordsPaused] = useState(false);
+  const [wordsAnimate] = useState(() => !prefersReducedMotion());
   const sectionRef = useRef<HTMLElement>(null);
   const headlineRef = useRef<HTMLHeadingElement>(null);
   const eyebrowRef = useRef<HTMLDivElement>(null);
@@ -392,17 +438,30 @@ export default function HeroSection({ onAmazonClick, color: selectedColor, onCol
             </div>
 
             {/* Headline — rotating last word with clip */}
-            <h1
-              ref={headlineRef}
-              className="text-[36px] sm:text-[48px] md:text-[88px] lg:text-[96px] leading-[0.92] mb-8 text-[#0A0A0A]"
-            >
-              <span className="sr-only">WEISSHEIM Wäschesammler: </span>
-              <span className="hero-line block">Ordnung,</span>
-              <span className="hero-line block">die man</span>
-              <span className="hero-line block text-[#0A0A0A]/50">
-                <RotatingWord words={HERO_ROTATING_WORDS} />
-              </span>
-            </h1>
+            <div className="relative mb-8 inline-block">
+              <h1
+                ref={headlineRef}
+                className="text-[36px] sm:text-[48px] md:text-[88px] lg:text-[96px] leading-[0.92] text-[#0A0A0A]"
+              >
+                <span className="sr-only">WEISSHEIM Wäschesammler: </span>
+                <span className="hero-line block">Ordnung,</span>
+                <span className="hero-line block">die man</span>
+                <span className="hero-line block text-[#0A0A0A]/50">
+                  <RotatingWord words={HERO_ROTATING_WORDS} paused={wordsPaused} />
+                </span>
+              </h1>
+              {wordsAnimate && (
+                <button
+                  type="button"
+                  onClick={() => setWordsPaused((p) => !p)}
+                  aria-label={wordsPaused ? HERO_ROTATION_LABELS.resume : HERO_ROTATION_LABELS.pause}
+                  title={wordsPaused ? HERO_ROTATION_LABELS.resume : HERO_ROTATION_LABELS.pause}
+                  className="absolute bottom-0 left-full ml-1 inline-flex h-11 w-11 items-center justify-center rounded-sm text-[#0A0A0A]/55 transition-colors hover:text-[#0A0A0A] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A0A0A]"
+                >
+                  {wordsPaused ? <Play size={16} aria-hidden="true" /> : <Pause size={16} aria-hidden="true" />}
+                </button>
+              )}
+            </div>
 
             <p
               ref={subtextRef}

@@ -116,7 +116,7 @@ export default function ReviewsSection({ onAmazonClick }: ReviewsSectionProps) {
                 <ExternalLink size={14} aria-hidden="true" />
               </a>
             </div>
-            <p className="max-w-md text-[12px] leading-5 text-[#0A0A0A]/55 md:text-right">
+            <p className="max-w-md text-[12px] leading-5 text-[#0A0A0A]/65 md:text-right">
               {REVIEWS_CONTENT.sourceNote}
             </p>
           </div>
