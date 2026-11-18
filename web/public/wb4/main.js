@@ -283,7 +283,6 @@
     gsap.fromTo('.abschluss__bild img', { y: 60, scale: 0.94, opacity: 0.2 }, {
       y: 0, scale: 1, opacity: 1, ease: 'none', scrollTrigger: { trigger: '#abschluss', start: 'top 92%', end: 'top 26%', scrub: 0.6 }
     });
-    gsap.from('.abschluss__text > *', { y: 26, opacity: 0, duration: 0.9, stagger: 0.12, ease: 'power2.out', scrollTrigger: { trigger: '#abschluss', start: 'top 52%', once: true } });
 
     // ------------------------------------------------------------ Fenstergröße
     var warten;
