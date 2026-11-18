@@ -1,0 +1,63 @@
+.kundendialog {
+  --dialog-abstand: clamp(18px, 4vw, 32px);
+  position: fixed; inset: 0; box-sizing: border-box;
+  width: min(36rem, calc(100% - 2rem)); max-width: none;
+  max-height: calc(100vh - 2rem); max-height: calc(100dvh - 2rem);
+  margin: auto; padding: 0; overflow: hidden;
+  border: 1px solid #525254; border-radius: 18px;
+  background: #151516; color: #f5f5f7; font: inherit; text-align: left;
+}
+.kundendialog[open] { display: flex; flex-direction: column; }
+.kundendialog::backdrop { background: rgba(0, 0, 0, .78); }
+html:has(.kundendialog[open]) { overflow: hidden; }
+.kundendialog__inhalt { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 0 var(--dialog-abstand) var(--dialog-abstand); }
+.kundendialog__kopf {
+  display: flex; flex-shrink: 0; justify-content: space-between; align-items: center; gap: 8px;
+  padding: var(--dialog-abstand) var(--dialog-abstand) 4px;
+}
+.kundendialog h2 { margin: 0; font-size: clamp(23px, 4vw, 32px); line-height: 1.15; }
+.kundendialog h3 { margin: 0; font-size: 21px; line-height: 1.2; }
+.kundendialog__schliessen {
+  display: grid; place-items: center; flex: 0 0 44px; width: 44px; height: 44px; padding: 0;
+  border: 1px solid #606064; border-radius: 50%; background: transparent; color: inherit; cursor: pointer;
+}
+.kundendialog__schliessen::before, .kundendialog__schliessen::after {
+  content: ""; grid-area: 1 / 1; width: 18px; border-top: 2px solid currentColor;
+  transform: rotate(45deg);
+}
+.kundendialog__schliessen::after { transform: rotate(-45deg); }
+@media (hover: hover) {
+  .kundendialog__schliessen:hover { border-color: #b2b2b5; background: #29292b; }
+}
+.kundendialog #anfrage-hinweis { margin: 8px 0 4px; color: #c0c0c2; font-size: 15px; }
+.kundendialog__formular:not([hidden]) { display: grid; grid-template-columns: 1fr 1fr; gap: 13px 16px; }
+.kundendialog__formular label { display: block; min-width: 0; font-size: 14px; }
+.kundendialog__breit { grid-column: 1 / -1; }
+.kundendialog__formular input:not([type="hidden"]), .kundendialog__formular textarea {
+  display: block; width: 100%; margin-top: 4px; padding: 9px 11px;
+  background: #080808; border: 1px solid #646467; border-radius: 7px;
+  font: 400 16px/1.45 var(--schrift, sans-serif); color: inherit;
+}
+.kundendialog__formular textarea { resize: vertical; min-height: 6rem; }
+.kundendialog__aktion {
+  justify-self: start; min-height: 44px; padding: 9px 20px;
+  border: 0; border-radius: 100px; background: var(--text, #f5f5f7);
+  color: #080808; font: 600 15px/1.35 var(--schrift, sans-serif); cursor: pointer;
+}
+.kundendialog__vorschau dl { margin: 16px 0 22px; }
+.kundendialog__vorschau dl > div { border-top: 1px solid #414143; padding: 9px 0; }
+.kundendialog__vorschau dt { margin-bottom: 2px; color: #b2b2b5; font-size: 13px; }
+.kundendialog__vorschau dd { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 16px; }
+@media (max-width: 460px) {
+  .kundendialog__formular:not([hidden]) { grid-template-columns: 1fr; }
+}
+
+.kundendialog [hidden] { display: none !important; }
+.kundendialog__aktionen { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 18px; }
+.kundendialog__bearbeiten { border: 1px solid #737378; background: transparent; color: #f5f5f7; }
+.kundendialog__aktion:disabled { opacity: .65; cursor: wait; }
+.kundendialog__status { margin: 16px 0; font-weight: 600; }
+.kundendialog__mail { margin: 20px 0 0; font-size: 14px; color: #c0c0c2; }
+.kundendialog__vorschau > p { font-size: 15px; color: #c0c0c2; }
+.kundendialog__inhalt a { text-decoration: underline; text-underline-offset: .18em; }
+.kundendialog :focus-visible { outline: 2px solid #dac3a0; outline-offset: 2px; }

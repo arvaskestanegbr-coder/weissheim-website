@@ -1,10 +1,6 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import "./index.css";
-import Index from "./LandingPage";
+import "./kontakt-startseite";
+import { trackAmazonClick } from "./lib/analytics";
 
-ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
-    <Index />
-  </React.StrictMode>
-);
+for (const link of document.querySelectorAll<HTMLAnchorElement>("[data-amazon-klick]")) {
+  link.addEventListener("click", () => trackAmazonClick(link.dataset.amazonKlick!));
+}

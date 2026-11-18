@@ -24,9 +24,22 @@ async function checkRenderOutput() {
   assert.ok(existsSync(indexPath), "docs/index.html fehlt nach dem Build.");
 
   const html = await readFile(indexPath, "utf8");
-  assert.match(html, /<div id="root"><\/div>/, "Root-Container fehlt.");
-  assert.match(html, /assets\/index-[^"]+\.js/, "Gebündelte JS-Datei fehlt.");
-  assert.match(html, /assets\/index-[^"]+\.css/, "Gebündelte CSS-Datei fehlt.");
+  assert.match(html, /<main id="main-content"/, "Statischer Seiteninhalt fehlt.");
+  assert.match(html, /<h1>Mehr Struktur\.<br>Weniger Chaos\.<\/h1>/, "Startseite enthält die Produktgeschichte nicht.");
+  assert.match(html, /assets\/index-[^"]+\.js/, "Gebündelter Moduleinstieg fehlt.");
+  assert.match(html, /wb4\/style\.css/, "Stylesheet der Startseite fehlt.");
+
+  for (const media of ["einhaengen.mp4", "aufbau-quer.mp4", "aufbau-hoch.mp4"]) {
+    const file = await readFile(path.join(docsDir, "wb4/assets", media));
+    assert.equal(file.toString("ascii", 4, 8), "ftyp", `Film fehlt oder ist keine MP4-Datei: ${media}`);
+  }
+  for (const size of ["d", "m"]) {
+    const frames = await readdir(path.join(docsDir, "wb4/assets/seq", size));
+    for (let i = 0; i < 140; i++) {
+      const name = `${String(i).padStart(4, "0")}.webp`;
+      assert.ok(frames.includes(name), `Bildfolge ${size}: ${name} fehlt.`);
+    }
+  }
 }
 
 async function checkProductionOutput() {
@@ -68,39 +81,29 @@ async function checkLegalAssets() {
 }
 
 async function checkNavigationAndCta() {
-  const headerPath = path.join(webDir, "src/sections/SiteHeader.tsx");
-  const configPath = path.join(webDir, "src/config/site.ts");
-
-  const header = await readFile(headerPath, "utf8");
-  const config = await readFile(configPath, "utf8");
-
-  assert.match(
-    header,
-    /href=\{`#\$\{item\.id\}`\}/,
-    "Navigation nutzt keine dynamischen Section-Links.",
-  );
-
-  for (const sectionId of ["produkt", "vorteile", "ueber-uns"]) {
-    assert.match(
-      config,
-      new RegExp(`id: "${sectionId}"`),
-      `Section-Konfiguration für ${sectionId} fehlt.`,
-    );
+  const html = await readFile(path.join(docsDir, "index.html"), "utf8");
+  for (const target of ["produkt", "vorteile", "ueber-uns", "stimmen", "kontakt", "zahl", "farben", "hilfe"]) {
+    assert.ok(html.includes(`id="${target}"`), `Sprungziel #${target} fehlt im HTML.`);
   }
-
-  assert.match(
-    config,
-    /AMAZON_PRODUCT_URL[\s\S]*https:\/\/www\.amazon\.de\//,
-    "Amazon-CTA-URL fehlt oder ist ungültig.",
-  );
+  for (const asin of ["B0F3ZBN75C", "B0F3YS8JHV"]) {
+    const url = `https://www.amazon.de/dp/${asin}?th=1`;
+    assert.ok(html.includes(`href="${url}"`), `Amazon-Angebot fehlt: ${asin}`);
+    assert.ok(html.includes(`href="${url}#customerReviews"`), `Amazon-Bewertungen fehlen: ${asin}`);
+  }
+  assert.match(html, /href="mailto:info@weissheim\.com" data-kontakt-oeffnen/, "Kontaktalternative fehlt.");
 }
 
 async function checkContactSubmitContract() {
-  const formPath = path.join(webDir, "src/components/ContactForm.tsx");
+  const formPath = path.join(webDir, "src/kontakt-startseite.ts");
   const form = await readFile(formPath, "utf8");
+  const markup = await readFile(path.join(webDir, "src/kontakt-dialog.html"), "utf8");
 
   assert.match(form, /api\.web3forms\.com\/submit/, "Web3Forms-Endpunkt fehlt.");
-  assert.match(form, /company_name/, "Honeypot-Feld fehlt.");
+  for (const field of ["name", "email", "subject", "order_number", "message", "from", "company_name"]) {
+    assert.ok(markup.includes(`name="${field}"`), `Formularfeld ${field} fehlt.`);
+  }
+  assert.match(markup, /name="from" value="Kontaktformular weissheim\.com"/, "Gmail-Filterkennung fehlt.");
+  assert.match(markup, /href="\/datenschutz\.html#kontakt"/, "Datenschutzhinweis vor dem Senden fehlt.");
   assert.match(form, /SUBMIT_COOLDOWN_MS/, "Cooldown-Logik fehlt.");
   assert.match(form, /trackContactSubmit\("success"\)/, "Success-Tracking fehlt.");
   assert.match(form, /trackContactSubmit\("error"\)/, "Error-Tracking fehlt.");
@@ -114,6 +117,7 @@ async function checkContactKeyBundled() {
   assert.ok(bundleName, "Gebündelte JS-Datei fehlt in docs/assets.");
 
   const bundle = await readFile(path.join(assetsDir, bundleName), "utf8");
+  assert.ok(bundle.includes("https://api.web3forms.com/submit"), "Kontaktversand fehlt im gebauten Einstieg.");
   assert.match(
     bundle,
     /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/,

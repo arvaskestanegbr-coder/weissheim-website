@@ -4,9 +4,8 @@ Product landing page for the WEISSHEIM® laundry organizer. German language site
 
 ## Tech Stack
 
-- **Framework:** React 19 + TypeScript + Vite
-- **Styling:** Tailwind CSS
-- **Fonts:** Self-hosted via Fontsource
+- **Homepage:** Static HTML with progressive enhancement, TypeScript and Vite
+- **Styling:** Local CSS; system fonts on the product page
 - **Hosting:** GitHub Pages (custom domain: weissheim.com)
 - **Forms:** Web3Forms (API key in `web/.env.local`)
 
@@ -15,17 +14,15 @@ Product landing page for the WEISSHEIM® laundry organizer. German language site
 ```
 web/                    # Source code (Vite project)
 ├── src/
-│   ├── LandingPage.tsx        # Main page component (entry point)
-│   ├── main.tsx               # React root
-│   ├── config/site.ts         # All constants, URLs, nav items, specs
-│   ├── lib/                   # Analytics and motion-preference helpers
-│   ├── sections/              # Page sections (Hero, Features, Product, etc.)
-│   ├── components/            # Reusable components (ContactForm, Reveal, ui/)
-│   └── assets/                # Images (WebP format)
-├── public/                    # Static files (favicon, CNAME, legal pages)
+│   ├── main.tsx               # Production module entry (contact and Amazon-click events)
+│   ├── kontakt-startseite.ts  # Accessible contact form and Web3Forms submission
+│   └── lib/analytics.ts       # Existing local website events
+├── public/
+│   ├── wb4/                  # Homepage CSS, JS, libraries, WebP frames and product films
+│   └── ...                   # Favicon, CNAME, social image and legal pages
 ├── plugins/legal-assets.ts   # Local fonts/logo for legal pages in dev and build
 ├── scripts/smoke-check.mjs   # Post-build verification
-└── index.html                 # HTML template
+└── index.html                 # Product content, navigation and metadata
 
 docs/                   # Build output (git-ignored, built by CI)
 _figma_export/          # Design reference (git-ignored, local only)
@@ -59,27 +56,24 @@ smoke-checks, then publishes to Pages. `docs/` is **not** committed — the buil
 happens on CI, so the live site cannot drift from the source.
 
 The contact form needs `VITE_WEB3FORMS_ACCESS_KEY`: locally from
-`web/.env.local`, on CI from the repository secret of the same name. Without it
-the form fails silently, so the smoke check asserts the key is in the bundle.
+`web/.env.local`, on CI from the repository secret of the same name. The finished production bundle is checked for the configured key.
 
 ## Key Decisions
 
-- **Product image and color selection:** `ProductImageViewer.tsx` provides Product/Maße modes in the hero. `LandingPage` owns the selected color and synchronizes both product images and all Amazon purchase links through `AMAZON_PRODUCT_URLS`. `PRODUCT_IMAGE_VIEWER_CONTENT` holds the dimension labels. See `features/WEISS-8-massansicht.md`.
-- **Mobile navigation and purchase bar:** The mobile menu overlays the page without changing section positions and closes when keyboard focus leaves it. The unified dark purchase bar groups buying, contact and back-to-top actions; it appears after the hero and hides when an in-content purchase link, contact section or footer is visible. Desktop retains the separate back-to-top button. Mobile contact fields use 16 px text. See `features/WEISS-9-mobiler-feinschliff.md`.
-- **Legal styling:** Static legal HTML uses `public/legal.css`; `plugins/legal-assets.ts` serves/emits the existing logo and Fontsource fonts. Legal text is unchanged. These assets are built by CI, not committed as copied binaries.
-- **Design study:** The separate 2026 redesign remains on its preview branch/Netlify site. Production has no preview query routing, preview metadata or redesign assets.
-- **Favicon:** ICO format (`web/public/favicon.ico`). SVG variant was removed.
-- **Images:** All product/logo images in WebP format for performance.
-- **Config:** All constants centralized in `web/src/config/site.ts` (Amazon URL, nav items, specs, features).
+- **WB4 product page:** The opening sequence uses 140 locally rendered WebP frames per format. Standbilder, reduced motion and data saving use the static product view. Both films start on demand; the assembly film has portrait and landscape versions and seven chapter links.
+- **Color selection and purchase:** Each color card has its own Amazon offer and review link. The offer next to the size selector follows the selected color. Both offers remain accessible without JavaScript.
+- **Navigation:** Contact and color choices are directly accessible. The mobile menu contains dimensions, help and the optional motion switch. Existing fragment links include `#produkt`, `#vorteile`, `#stimmen`, `#ueber-uns` and `#kontakt`.
+- **Separate preview:** The older Netlify preview remains on its separate branch. The local study, its pipeline and its internal PDF are maintained in the company repository.
+- **Favicon:** ICO format (`web/public/favicon.ico`).
 - **No router:** Single-page landing page. Legal pages (impressum, datenschutz, agb) are static HTML in `public/`.
 
 ## Important Files
 
 | File | Purpose |
 |---|---|
-| `web/src/config/site.ts` | Central config (URLs, content, nav) |
-| `web/src/LandingPage.tsx` | Main page layout + state |
-| `web/src/components/ContactForm.tsx` | Web3Forms contact modal |
+| `web/index.html` | Product story, accessible text, legal links and metadata |
+| `web/public/wb4/` | Product imagery, both video formats and interactive controls |
+| `web/src/kontakt-startseite.ts` | Customer contact form |
 | `.github/workflows/deploy.yml` | Build + deploy pipeline |
 | `web/public/favicon.ico` | Site favicon |
 
