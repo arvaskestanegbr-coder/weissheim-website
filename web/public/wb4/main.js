@@ -68,71 +68,217 @@
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = Math.max(1, Math.round(r.width * dpr));
     canvas.height = Math.max(1, Math.round(r.height * dpr));
+    letzteQuelle = null;
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
     schmutzig = true;
   }
 
-  // Solange noch nicht alle Bilder da sind, das nächstgelegene geladene zeigen
-  function naechstes(i) {
-    if (bilder[i]) return bilder[i];
-    for (var d = 1; d < N; d++) {
-      if (i - d >= 0 && bilder[i - d]) return bilder[i - d];
-      if (i + d < N && bilder[i + d]) return bilder[i + d];
+  // Die Basis zeigt die ganze Fahrt. Zwei weitere Stufen schließen die Lücken.
+  // Die Kacheln einer Datei liegen nach Bildnummer aufsteigend in acht Spalten.
+  var vorschau = new Array(N);
+  var blaetter = ['basis', 'viertel', 'gerade', 'ungerade-1', 'ungerade-3'].map(function (name) {
+    return { name: name, nummern: [] };
+  });
+  var gruppen = [[0], [1, 2], [3, 4]];
+  for (var n = 0; n < N; n++) {
+    var blattNr = n === N - 1 || n % 8 === 0 ? 0 : n % 4 === 0 ? 1 : n % 2 === 0 ? 2 : n % 4 === 1 ? 3 : 4;
+    blaetter[blattNr].nummern.push(n);
+  }
+
+  var ziel = 0, richtung = 1, gezeigt = 0;
+  var letzteQuelle = null, letztesX, letztesY, letzteHoehe;
+  var angefordert = new Array(N);
+  var offeneOriginale = 0, imScrollweg = false;
+  var naechsteGruppe = 0, gruppeLaedt = false, fertigeBlaetter = 0, fertigePosen = 0;
+  var gruppenTimer, scharfTimer, ausweichTimer;
+  var schnelleBilder = false, ausweichen = false;
+  var startbilderFertig = 0, animationAktiv = false;
+  var lade = document.getElementById('lade');
+  var balken = lade.querySelector('span');
+  lade.style.visibility = 'hidden';
+
+  // Von der Sollposition zur zuletzt gezeigten Pose suchen: Fertige Bilder dürfen
+  // die Fahrt verfeinern, aber eine nachträglich geladene Phase nie zurückspringen lassen.
+  function passendeNummer(i) {
+    var schritt = i >= gezeigt ? -1 : 1;
+    for (var j = i; j !== gezeigt; j += schritt) {
+      if (bilder[j] || vorschau[j]) return j;
     }
-    return kante.naturalWidth ? kante : null;
+    return gezeigt;
   }
 
   function male() {
     if (!schmutzig) return;
     schmutzig = false;
     var W = canvas.width, H = canvas.height;
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, W, H);
     var h = H * st.skala, w = h * FORMAT, x = W * st.cx - w / 2, y = H * st.cy - h / 2;
     var i = Math.max(0, Math.min(N - 1, Math.round(st.bild)));
-    var imHero = st.licht < 0.999;
-    if (imHero && kante.naturalWidth) {
-      // Licht geht an: Bild mit Kantenlicht, darüber das voll ausgeleuchtete Bild 0 mit wachsender Deckkraft
+    if (i !== ziel) {
+      richtung = i > ziel ? 1 : -1;
+      ziel = i;
+      planeScharfesZiel();
+      originaleNachladen();
+    }
+    if (st.licht < 0.999 && kante.naturalWidth) {
+      gezeigt = 0;
+      letzteQuelle = null;
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, W, H);
       ctx.drawImage(kante, x, y, w, h);
       if (bilder[0]) { ctx.globalAlpha = st.licht; ctx.drawImage(bilder[0], x, y, w, h); ctx.globalAlpha = 1; }
       return;
     }
-    var bild = naechstes(i);
-    if (bild) ctx.drawImage(bild, x, y, w, h);
-    vorwaermen(i);
+    var nummer = passendeNummer(i);
+    var original = bilder[nummer], kachel = vorschau[nummer];
+    var quelle = original || (kachel && kachel.blatt) || kante;
+    if (!quelle.naturalWidth) return;
+    if (quelle === letzteQuelle && nummer === gezeigt && x === letztesX && y === letztesY && h === letzteHoehe) return;
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, W, H);
+    if (!original && kachel) {
+      ctx.drawImage(quelle, kachel.x, kachel.y, 176, 220, x, y, w, h);
+    } else {
+      ctx.drawImage(quelle, x, y, w, h);
+    }
+    gezeigt = nummer;
+    letzteQuelle = quelle;
+    letztesX = x;
+    letztesY = y;
+    letzteHoehe = h;
   }
 
-  // Die nächsten Bilder in Scrollrichtung vorab dekodieren. Sonst dekodiert der Browser ein Bild erst beim ersten
-  // Zeichnen, und das kostet auf dem Hauptfaden einige Millisekunden je Bild.
-  var warm = new Array(N), zuletzt = 0;
-  function vorwaermen(i) {
-    var richtung = i >= zuletzt ? 1 : -1;
-    zuletzt = i;
-    for (var k = 1; k <= 5; k++) {
-      var j = i + richtung * k;
-      if (j < 0 || j >= N || warm[j] || !bilder[j] || !bilder[j].decode) continue;
-      warm[j] = true;
-      bilder[j].decode().catch(function () {});
+  function nachDekodierung(bild, fertig) {
+    bild.onerror = function () { fertig(false); };
+    bild.onload = function () {
+      if (typeof bild.decode !== 'function') { fertig(!!bild.naturalWidth); return; }
+      bild.decode().then(function () { fertig(true); }, function () { fertig(false); });
+    };
+  }
+
+  function ladeBlatt(index, fertig) {
+    var eintrag = blaetter[index], bild = new Image();
+    var start = performance.now();
+    bild.decoding = 'async';
+    bild.fetchPriority = 'high';
+    nachDekodierung(bild, function (ok) {
+      if (ok && bild.naturalWidth === 8 * 176 && bild.naturalHeight === Math.ceil(eintrag.nummern.length / 8) * 220) {
+        eintrag.nummern.forEach(function (nr, slot) {
+          vorschau[nr] = { blatt: bild, x: (slot % 8) * 176, y: Math.floor(slot / 8) * 220 };
+        });
+        // Eine aus dem Cache oder sehr schnell gelieferte Basis lässt Bandbreite für Originale.
+        if (index === 0) schnelleBilder = performance.now() - start < 140;
+        fertigePosen += eintrag.nummern.length;
+        balken.style.width = (100 * fertigePosen / N) + '%';
+        if (imScrollweg) schmutzig = true;
+      }
+      fertigeBlaetter++;
+      if (fertigeBlaetter === blaetter.length) lade.classList.add('lade--fertig');
+      fertig();
+      originaleNachladen();
+    });
+    bild.src = 'wb4/assets/seq/vorschau-' + eintrag.name + '.webp';
+  }
+
+  function ladeVorschau() {
+    if (!imScrollweg || gruppeLaedt || naechsteGruppe === gruppen.length) return;
+    var nummer = naechsteGruppe++, gruppe = gruppen[nummer], offen = gruppe.length;
+    gruppeLaedt = true;
+    function freigeben() {
+      if (!gruppeLaedt || naechsteGruppe !== nummer + 1) return;
+      clearTimeout(gruppenTimer);
+      gruppeLaedt = false;
+      ladeVorschau();
+    }
+    // Ein ausbleibendes Blatt hält die feineren Stufen nicht endlos zurück.
+    gruppenTimer = setTimeout(freigeben, 900);
+    gruppe.forEach(function (index) {
+      ladeBlatt(index, function () { if (--offen === 0) freigeben(); });
+    });
+  }
+
+  function fordereOriginal(nr, prioritaet) {
+    angefordert[nr] = true;
+    if (nr !== 0) offeneOriginale++;
+    var bild = new Image();
+    bild.fetchPriority = prioritaet || 'auto';
+    bild.decoding = 'async';
+    nachDekodierung(bild, function (ok) {
+      if (nr !== 0) offeneOriginale--;
+      if (ok && bild.naturalWidth) {
+        // Außerhalb der aktuellen Umgebung genügt der Browsercache. Das Hero bleibt erhalten.
+        if (nr === 0 || Math.abs(nr - ziel) <= 18) bilder[nr] = bild;
+        else angefordert[nr] = false;
+        if (imScrollweg && nr >= Math.min(gezeigt, ziel) && nr <= Math.max(gezeigt, ziel)) schmutzig = true;
+      }
+      if (nr === 0) startbildFertig();
+      originaleNachladen();
+    });
+    bild.src = ordner + String(nr).padStart(4, '0') + '.webp';
+  }
+
+  function originalLimit() {
+    return schnelleBilder || fertigeBlaetter === blaetter.length ? (klein ? 3 : 8) : 1;
+  }
+
+  function planeScharfesZiel() {
+    clearTimeout(scharfTimer);
+    if (!imScrollweg || angefordert[ziel]) return;
+    scharfTimer = setTimeout(function () {
+      // Ein reservierter Platz neben den laufenden Abrufen ist für die exakte Halteposition.
+      if (imScrollweg && !angefordert[ziel] && offeneOriginale < originalLimit() + 1) fordereOriginal(ziel, 'high');
+    }, 110);
+  }
+
+  function originaleNachladen() {
+    if (!imScrollweg) return;
+    var alleDa = fertigeBlaetter === blaetter.length;
+    if (!alleDa && !schnelleBilder && !ausweichen) return;
+    // Bei einer langsamen Verbindung bleiben die kleinen Blätter zuerst an der Reihe.
+    var limit = originalLimit();
+    if (offeneOriginale >= limit) return;
+    for (var j = 1; j < N; j++) {
+      if (bilder[j] && j !== gezeigt && Math.abs(j - ziel) > 18) {
+        bilder[j] = null;
+        angefordert[j] = false;
+      }
+    }
+    // Keine wartende Downloadliste. Ein Richtungswechsel gilt für jeden freien Platz.
+    var reichweite = limit === 1 ? 0 : klein ? 7 : 16;
+    function versuche(nr) {
+      if (offeneOriginale < limit && nr >= 0 && nr < N && !angefordert[nr]) {
+        fordereOriginal(nr, alleDa ? 'auto' : 'low');
+      }
+    }
+    versuche(ziel);
+    for (var abstand = 1; abstand <= reichweite && offeneOriginale < limit; abstand++) {
+      versuche(ziel + richtung * abstand);
+      if (abstand <= 2) versuche(ziel - richtung * abstand);
     }
   }
 
-  // Ladereihenfolge: erst Bild 0, dann jedes 8., 4., 2., zuletzt der Rest. So lässt sich früh durchscrollen.
-  var liste = (function () {
-    var gesehen = {}, out = [];
-    [N, 8, 4, 2, 1].forEach(function (schritt) {
-      for (var i = 0; i < N; i += schritt) if (!gesehen[i]) { gesehen[i] = true; out.push(i); }
-    });
-    return out;
-  })();
-  var PARALLEL = 32;      // so viele Bilder der Folge laden gleichzeitig (über HTTP/2 und HTTP/3 eine Verbindung)
-  var zeiger = 0, geladen = 0, versucht = 0;
-  var startbilderFertig = 0, animationAktiv = false, laeuft = false;
-  var seiteDa = document.readyState === 'complete';
-  var lade = document.getElementById('lade');
-  var balken = lade.querySelector('span');
-  lade.style.visibility = 'hidden';
+  function pruefeScrollweg() {
+    if (!animationAktiv) return;
+    var rand = buehne.getBoundingClientRect();
+    // Erst eine Fahrt in der Bühne startet die Folge. Ihr sichtbares Ende und ein Rücksprung bleiben aktiv.
+    var sichtbar = rand.top < -1 && (rand.bottom >= window.innerHeight ||
+      (naechsteGruppe > 0 && rand.bottom > Math.min(200, window.innerHeight / 2)));
+    if (sichtbar === imScrollweg) return;
+    imScrollweg = sichtbar;
+    clearTimeout(ausweichTimer);
+    clearTimeout(scharfTimer);
+    ausweichen = false;
+    if (!imScrollweg) return;
+    schmutzig = true;
+    lade.style.visibility = '';
+    ladeVorschau();
+    planeScharfesZiel();
+    ausweichTimer = setTimeout(function () {
+      ausweichen = true;
+      originaleNachladen();
+    }, 550);
+    originaleNachladen();
+  }
 
   function startbildFertig() {
     startbilderFertig++;
@@ -148,57 +294,17 @@
       return;
     }
     schmutzig = true;
-    starteBildfolge();
+    pruefeScrollweg();
   }
 
-  function hole(kette) {
-    if (zeiger >= liste.length) return;
-    var i = liste[zeiger++];
-    var im = new Image();
-    im.decoding = 'async';
-    im.onload = im.onerror = function () {
-      versucht++;
-      if (im.naturalWidth) {
-        bilder[i] = im;
-        geladen++;
-        schmutzig = true;
-      }
-      balken.style.width = (geladen / N * 100) + '%';
-      if (versucht === N) lade.classList.add('lade--fertig');
-      if (i === 0) startbildFertig();
-      if (kette) hole(true);
-    };
-    im.src = ordner + ('000' + i).slice(-4) + '.webp';
-  }
-
-  // Direkte Sprünge zu Maßen und Farben verlassen die Bühne. Nur innerhalb ihres
-  // Scrollwegs laden die übrigen 139 Bilder, frühestens nach dem load-Ereignis.
-  function starteBildfolge() {
-    if (laeuft || !animationAktiv || !seiteDa || startbilderFertig < 2) return;
-    var rand = buehne.getBoundingClientRect();
-    if (!(rand.top < -1 && rand.bottom > window.innerHeight)) return;
-    laeuft = true;
-    window.removeEventListener('scroll', starteBildfolge);
-    lade.style.visibility = '';
-    for (var k = 0; k < PARALLEL; k++) hole(true);
-  }
-
-  function seiteGeladen() {
-    seiteDa = true;
-    starteBildfolge();
+  window.addEventListener('scroll', pruefeScrollweg, { passive: true });
+  window.addEventListener('load', function () {
     if (animationAktiv) ScrollTrigger.refresh();
-  }
-
-  window.addEventListener('scroll', starteBildfolge, { passive: true });
-  window.addEventListener('hashchange', starteBildfolge);
-  window.addEventListener('load', seiteGeladen, { once: true });
-  if (seiteDa) seiteGeladen();
-  kante.onload = kante.onerror = function () {
-    startbildFertig();
-  };
+    pruefeScrollweg();
+  }, { once: true });
+  kante.onload = kante.onerror = startbildFertig;
   kante.src = 'wb4/assets/hero-kante' + (klein ? '-m' : '') + '.webp';
-  hole(false);
-
+  fordereOriginal(0);
   window.wb4Animation = true;
 
   function starteAnimation() {
@@ -291,6 +397,7 @@
       warten = setTimeout(function () {
         groesse();
         ScrollTrigger.refresh();
+        pruefeScrollweg();
         // Vor dem Start der Fahrt steht das Produkt an der Hero-Stelle der neuen Fenstergröße
         if (tl.scrollTrigger.progress < HERO * 0.32) { gsap.set(st, lage().hero); schmutzig = true; }
       }, 160);

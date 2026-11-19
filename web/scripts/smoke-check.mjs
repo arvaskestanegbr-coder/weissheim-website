@@ -33,6 +33,13 @@ async function checkRenderOutput() {
     const file = await readFile(path.join(docsDir, "wb4/assets", media));
     assert.equal(file.toString("ascii", 4, 8), "ftyp", `Film fehlt oder ist keine MP4-Datei: ${media}`);
   }
+  assert.match(html, /wb4\/main\.js\?v=atlas-2/, "Versionierter Bildlader fehlt.");
+  for (const [name, width, height] of [["basis", 1408, 660], ["viertel", 1408, 660], ["gerade", 1408, 1100], ["ungerade-1", 1408, 1100], ["ungerade-3", 1408, 1100]]) {
+    const file = await readFile(path.join(docsDir, "wb4/assets/seq", `vorschau-${name}.webp`));
+    assert.equal(file.toString("ascii", 8, 16), "WEBPVP8 ", `Ungültiger Vorschaubogen: ${name}`);
+    assert.equal(file.readUInt16LE(26) & 0x3fff, width, `Falsche Vorschau-Breite: ${name}`);
+    assert.equal(file.readUInt16LE(28) & 0x3fff, height, `Falsche Vorschau-Höhe: ${name}`);
+  }
   for (const size of ["d", "m"]) {
     const frames = await readdir(path.join(docsDir, "wb4/assets/seq", size));
     for (let i = 0; i < 140; i++) {

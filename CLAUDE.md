@@ -60,7 +60,7 @@ The contact form needs `VITE_WEB3FORMS_ACCESS_KEY`: locally from
 
 ## Key Decisions
 
-- **WB4 product page:** The opening sequence uses 140 locally rendered WebP frames per format. Standbilder, reduced motion and data saving use the static product view. Both films start on demand; the assembly film has portrait and landscape versions and seven chapter links.
+- **WB4 product page:** Five shared WebP sheets with 176 × 220 tiles in eight columns provide all 140 poses. The first covers frames 0, 8, …, 136, 139. The next two add the remaining even frames, the last two the odd frames. Full-resolution originals load around the current pose, with a priority request when scrolling stops. Standbilder, reduced motion and data saving use the static product view. Both films start on demand; the assembly film has portrait and landscape versions and seven chapter links.
 - **Color selection and purchase:** Each color card has its own Amazon offer and review link. The offer next to the size selector follows the selected color. Both offers remain accessible without JavaScript.
 - **Navigation:** Contact and color choices are directly accessible. The mobile menu contains dimensions, help and the optional motion switch. Existing fragment links include `#produkt`, `#vorteile`, `#stimmen`, `#ueber-uns` and `#kontakt`.
 - **Separate preview:** The older Netlify preview remains on its separate branch. The local study, its pipeline and its internal PDF are maintained in the company repository.
