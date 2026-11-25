@@ -61,3 +61,4 @@ html:has(.kundendialog[open]) { overflow: hidden; }
 .kundendialog__vorschau > p { font-size: 15px; color: #c0c0c2; }
 .kundendialog__inhalt a { text-decoration: underline; text-underline-offset: .18em; }
 .kundendialog :focus-visible { outline: 2px solid #dac3a0; outline-offset: 2px; }
+.kundendialog:not([data-tastaturoeffnung]) #anfrage-titel:focus { outline: none; }

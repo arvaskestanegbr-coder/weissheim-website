@@ -47,13 +47,14 @@ function initKontakt() {
     scrollArea.scrollTop = 0;
   }
 
-  function open(link: HTMLAnchorElement) {
+  function open(link: HTMLAnchorElement, keyboardActivation = false) {
     if (dialog.open) return;
     resetForm();
     session++;
     opener = link;
     startedOutside = false;
     openedAt = Date.now();
+    dialog.toggleAttribute("data-tastaturoeffnung", keyboardActivation);
     dialog.showModal();
     trackContactOpen(link.closest("header") ? "header" : "kontakt");
   }
@@ -64,7 +65,7 @@ function initKontakt() {
     link.addEventListener("click", event => {
       if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       event.preventDefault();
-      open(link);
+      open(link, event.detail === 0);
     });
   }
 
@@ -184,6 +185,14 @@ function initKontakt() {
   }
   window.addEventListener("hashchange", openFromHash);
   openFromHash();
+  if (dialog.open && document.readyState !== "complete") {
+    // Beim Direktaufruf kann der native Sprung zu #kontakt den Dialogfokus beim Laden verdrängen.
+    window.addEventListener("load", () => requestAnimationFrame(() => {
+      if (dialog.open && document.activeElement === document.body) {
+        dialog.querySelector<HTMLElement>("[autofocus]")?.focus({ preventScroll: true });
+      }
+    }), { once: true });
+  }
 }
 
 initKontakt();

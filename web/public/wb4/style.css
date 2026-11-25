@@ -94,6 +94,8 @@ a { color: inherit; }
 .bewegt .buehne__fest { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
 .bewegt .buehne__bild { display: block; position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1.4s ease 0.1s; }
 .bewegt.bereit .buehne__bild { opacity: 1; }
+.bewegt.startmotiv .buehne__bild { opacity: 1; transition: none; }
+.bewegt.startmotiv:not(.bereit) .hero { opacity: var(--frueher-text, 1); }
 .bewegt .ruhig-bilder { display: none; }
 
 .bewegt .hero {

@@ -112,8 +112,20 @@
       var w = window.innerWidth, h = window.innerHeight;
       if (!w || !h) { w = screen.width; h = screen.height; }
       var klein = window.wb4KleineBilder = w <= 820 || h <= 560;
+      // Übersteigt die gezeichnete Höhe 900 Pixel, liefert die größere Fassung echte zusätzliche Details.
+      var mobilbild = window.wb4MobilesOriginal = klein && h * 0.82 * Math.min(devicePixelRatio || 1, 2) <= 900;
+      // Die erste Bewegungsstufe schon mit dem HTML anfordern, damit auch der erste
+      // schnelle Wisch über die ganze Produktgeschichte scharfe Posen vorfindet.
+      window.wb4StartOben = !location.hash || location.hash === '#inhalt' || location.hash === '#buehne';
+      if (window.wb4StartOben) {
+        var fahrt = document.createElement('link');
+        fahrt.rel = 'preload'; fahrt.as = 'image'; fahrt.type = 'image/avif';
+        fahrt.href = 'wb4/assets/seq/detail/fahrt-0.avif'; fahrt.fetchPriority = 'high';
+        document.head.appendChild(fahrt);
+      }
       // Die beiden Bilder des ersten Anblicks sofort anfordern, nicht erst, wenn js/main.js am Seitenende läuft
-      ['wb4/assets/hero-kante' + (klein ? '-m' : '') + '.webp', 'wb4/assets/seq/' + (klein ? 'm' : 'd') + '/0000.webp'].forEach(function (adresse) {
+      window.wb4StartAdressen = ['wb4/assets/hero-kante' + (mobilbild ? '-m' : '') + '.webp', 'wb4/assets/seq/' + (mobilbild ? 'm' : 'd') + '/0000.webp'];
+      window.wb4StartAdressen.forEach(function (adresse) {
         var l = document.createElement('link');
         l.rel = 'preload';
         l.as = 'image';
@@ -122,8 +134,8 @@
       });
     })();
   </script>
-  <link rel="stylesheet" href="/wb4/style.css">
-  <link rel="stylesheet" href="/wb4/kontakt.css">
+  <link rel="stylesheet" href="/wb4/style.css?v=sofort-1">
+  <link rel="stylesheet" href="/wb4/kontakt.css?v=2">
 </head>
 <body>
   <a class="sprung" href="#main-content">Zum Inhalt springen</a>
@@ -190,6 +202,85 @@
         <div class="lade" id="lade" aria-hidden="true"><span></span></div>
       </div>
     </section>
+    <script>
+      // Zeichnet auf derselben Canvas schon während GSAP lädt. Der Bildlader übernimmt
+      // anschließend genau diese Bilder, Abmessungen und Beleuchtung.
+      (function () {
+        if (!window.wb4StartAdressen) return;
+        var canvas = document.getElementById('folge'), fest = canvas.parentElement;
+        var buehne = document.getElementById('buehne'), claim = document.querySelector('.hero__claim');
+        var ctx;
+        try { ctx = canvas.getContext('2d', { alpha: false }); } catch (fehler) { return; }
+        if (!ctx) return;
+        var hero = 0.13, licht = 0.48, aktiv = true, raf = 0;
+        var kante = new Image(), original = new Image(), bogen = window.wb4StartOben ? new Image() : null;
+        // Lage des Bildes auf der Bühne: Mitte (Anteil von Breite/Höhe) und Bildhöhe (Anteil der Bühnenhöhe)
+        function lage() {
+          if (window.matchMedia('(max-height: 560px) and (min-aspect-ratio: 4/3)').matches) {
+            return { hero: { cx: 0.73, cy: 0.56, skala: 0.88 }, folge: { cx: 0.69, cy: 0.55, skala: 0.88 } };
+          }
+          if (matchMedia('(max-width: 1023px), (max-height: 560px)').matches) {
+            // Auf kurzen Handydisplays braucht der umgebrochene Text mehr Platz. Die
+            // freien Ränder des gerenderten Motivs liegen schon innerhalb des Bildes.
+            var hoehe = Math.max(1, fest.clientHeight);
+            var textEnde = (claim.offsetTop + claim.offsetHeight + 8) / hoehe;
+            var unten = 1 - 42 / hoehe;
+            var skala = Math.max(0, Math.min(0.74, (unten - textEnde) / 0.83));
+            return { hero: { cx: 0.5, cy: (textEnde + unten) / 2, skala: skala }, folge: { cx: 0.5, cy: 0.43, skala: 0.82 } };
+          }
+          return { hero: { cx: 0.7, cy: 0.525, skala: 0.94 }, folge: { cx: 0.585, cy: 0.515, skala: 0.99 } };
+        }
+        function groesse() {
+          var r = fest.getBoundingClientRect(), dpr = Math.min(devicePixelRatio || 1, 2);
+          var w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
+          if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+          ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+        }
+        function zeichneLicht(anteil, x, y, w, h) {
+          if (kante.naturalWidth) ctx.drawImage(kante, x, y, w, h);
+          if (original.naturalWidth) {
+            ctx.globalAlpha = anteil; ctx.drawImage(original, x, y, w, h); ctx.globalAlpha = 1;
+          }
+        }
+        function anzeigen() {
+          raf = 0;
+          if (!aktiv || !(original.naturalWidth || kante.naturalWidth)) return;
+          var rect = buehne.getBoundingClientRect();
+          if (rect.bottom <= 0 || rect.top >= innerHeight) return;
+          groesse();
+          var p = Math.max(0, Math.min(1, -rect.top / Math.max(1, rect.height - innerHeight)));
+          var t = Math.max(0, Math.min(1, (p / hero - 0.32) / 0.68));
+          var k = t < 0.5 ? 4*t*t*t : 1 - Math.pow(2-2*t, 3)/2;
+          var pos = lage();
+          function wert(feld) { return pos.hero[feld] + (pos.folge[feld] - pos.hero[feld]) * k; }
+          var h = canvas.height * wert('skala'), w = h * 0.8;
+          var x = canvas.width * wert('cx') - w/2, y = canvas.height * wert('cy') - h/2;
+          var nr = Math.round(Math.max(0, (p - hero) / (1 - hero)) * 139);
+          ctx.fillStyle = '#000'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+          if (bogen && bogen.naturalWidth === 2016 && bogen.naturalHeight === 1872 && nr >= 8) {
+            var slot = nr === 139 ? 17 : Math.floor(nr / 8) - 1;
+            ctx.drawImage(bogen, (slot % 6)*336, Math.floor(slot/6)*624, 336, 624,
+              x + w*160/720, y + h*48/900, w*448/720, h*832/900);
+          } else {
+            zeichneLicht(licht + (1-licht)*Math.min(1, p/(hero*0.8)), x, y, w, h);
+          }
+          fest.style.setProperty('--frueher-text', Math.max(0, Math.min(1, 1 - (p/hero - 0.04)/0.36)));
+          document.documentElement.classList.add('startmotiv');
+        }
+        function planen() { if (aktiv && !raf) raf = requestAnimationFrame(anzeigen); }
+        function stop() {
+          aktiv = false; cancelAnimationFrame(raf);
+          window.removeEventListener('scroll', planen); window.removeEventListener('resize', planen);
+        }
+        window.wb4Startmotiv = { kante: kante, original: original, bogen: bogen, lage: lage, groesse: groesse,
+          hero: hero, licht: licht, zeichneLicht: zeichneLicht, stop: stop };
+        kante.addEventListener('load', planen); original.addEventListener('load', planen);
+        kante.src = window.wb4StartAdressen[0]; original.src = window.wb4StartAdressen[1];
+        if (bogen) { bogen.addEventListener('load', planen); bogen.src = 'wb4/assets/seq/detail/fahrt-0.avif'; }
+        window.addEventListener('scroll', planen, { passive: true }); window.addEventListener('resize', planen);
+        if (document.fonts) document.fonts.ready.then(planen);
+      })();
+    </script>
 
     <!-- 3: Zahl -->
     <section class="zahl" id="zahl" tabindex="-1" aria-labelledby="zahl-titel">
@@ -394,13 +485,13 @@
   <script src="/wb4/lib/gsap.min.js"></script>
   <script src="/wb4/lib/ScrollTrigger.min.js"></script>
   <script src="/wb4/lib/lenis.min.js"></script>
-  <script src="/wb4/main.js?v=atlas-2"></script>
+  <script src="/wb4/main.js?v=detail-4"></script>
   <script src="/wb4/produktansicht.js"></script>
   <script src="/wb4/navigation.js"></script>
   <script type="module" src="/src/main.tsx"></script>
   <script src="/wb4/aufbaufilm.js"></script>
   <!-- Falls main.js nicht lädt oder abbricht: zurück zur ruhigen Fassung, damit nichts unsichtbar bleibt. -->
-  <script>if (!window.wb4Animation) document.documentElement.className = document.documentElement.className.replace(/\bbewegt\b/g, '');</script>
+  <script>if (!window.wb4Animation) { if (window.wb4Startmotiv) window.wb4Startmotiv.stop(); document.documentElement.classList.remove('bewegt', 'bereit', 'startmotiv'); }</script>
   <script>
     (function () {
       var schalter = document.getElementById('ansicht');

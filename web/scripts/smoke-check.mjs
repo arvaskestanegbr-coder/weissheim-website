@@ -33,12 +33,21 @@ async function checkRenderOutput() {
     const file = await readFile(path.join(docsDir, "wb4/assets", media));
     assert.equal(file.toString("ascii", 4, 8), "ftyp", `Film fehlt oder ist keine MP4-Datei: ${media}`);
   }
-  assert.match(html, /wb4\/main\.js\?v=atlas-2/, "Versionierter Bildlader fehlt.");
-  for (const [name, width, height] of [["basis", 1408, 660], ["viertel", 1408, 660], ["gerade", 1408, 1100], ["ungerade-1", 1408, 1100], ["ungerade-3", 1408, 1100]]) {
-    const file = await readFile(path.join(docsDir, "wb4/assets/seq", `vorschau-${name}.webp`));
-    assert.equal(file.toString("ascii", 8, 16), "WEBPVP8 ", `Ungültiger Vorschaubogen: ${name}`);
-    assert.equal(file.readUInt16LE(26) & 0x3fff, width, `Falsche Vorschau-Breite: ${name}`);
-    assert.equal(file.readUInt16LE(28) & 0x3fff, height, `Falsche Vorschau-Höhe: ${name}`);
+  assert.match(html, /wb4\/main\.js\?v=detail-4/, "Versionierter Bildlader fehlt.");
+  for (let start = 0; start < 140; start += 24) {
+    const anzahl = Math.floor((Math.min(139, start + 24) - start) / 2);
+    await pruefeBildbogen(`bewegung-${String(start).padStart(3, "0")}`, 6 * 336, Math.ceil(anzahl / 6) * 624);
+  }
+  for (const [rest, anzahl] of [[0, 18], [4, 17], [2, 18], [6, 17]]) {
+    await pruefeBildbogen(`fahrt-${rest}`, 6 * 336, Math.ceil(anzahl / 6) * 624);
+  }
+  async function pruefeBildbogen(name, breite, hoehe) {
+    const file = await readFile(path.join(docsDir, "wb4/assets/seq/detail", `${name}.avif`));
+    assert.equal(file.toString("ascii", 4, 12), "ftypavif", `Ungültiger Bildbogen: ${name}`);
+    const ispe = file.indexOf("ispe");
+    assert.ok(ispe >= 0, `Bildabmessungen fehlen: ${name}`);
+    assert.equal(file.readUInt32BE(ispe + 8), breite, `Falsche Breite: ${name}`);
+    assert.equal(file.readUInt32BE(ispe + 12), hoehe, `Falsche Höhe: ${name}`);
   }
   for (const size of ["d", "m"]) {
     const frames = await readdir(path.join(docsDir, "wb4/assets/seq", size));
